@@ -170,7 +170,13 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   let star: HTMLElement | null = appContent?.querySelector<HTMLElement>(".slh") || null;
   let disposeGalaxy = () => {}, galaxyReady = false, createdStar = false;
   const themeStorageKey = "clone-site-theme";
+  const themeDefaultKey = "clone-site-theme-default";
+  const themeDefaultVersion = "starry-default-v2";
   const orbitVideoMarkup = '<video class="slh-video" muted loop playsinline preload="auto" disablepictureinpicture><source src="/media/starlight-orbit.mp4" type="video/mp4"></video>';
+  if (window.localStorage.getItem(themeDefaultKey) !== themeDefaultVersion) {
+    window.localStorage.setItem(themeStorageKey, "星空极光");
+    window.localStorage.setItem(themeDefaultKey, themeDefaultVersion);
+  }
   let themeChoice = window.localStorage.getItem(themeStorageKey) || "星空极光";
   const selectTheme = (name: string) => {
     themeChoice = name;
@@ -225,7 +231,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     navButton?.setAttribute("title",open?"收起":"切换背景主题");
     nav.querySelector(".ns-panel")?.remove();if(!open)return;
     const panel=document.createElement("div");panel.className="ns-panel";panel.setAttribute("data-v-deb9fdfc","");
-    panel.innerHTML=`<div data-v-deb9fdfc class="ns-title">背景主题</div>${[["⚡","赛博编程"],["✦","星空极光"]].map(([icon,name])=>`<button data-v-deb9fdfc class="ns-opt ${name===themeChoice?"active":""}"><span data-v-deb9fdfc class="ns-opt-icon">${icon}</span><span data-v-deb9fdfc class="ns-opt-label">${name}</span>${name===themeChoice?'<span data-v-deb9fdfc class="ns-opt-check">✓</span>':""}</button>`).join("")}`;
+    panel.innerHTML=`<div data-v-deb9fdfc class="ns-title">背景主题</div>${[["✦","星空极光"],["⚡","赛博编程"]].map(([icon,name])=>`<button data-v-deb9fdfc class="ns-opt ${name===themeChoice?"active":""}"><span data-v-deb9fdfc class="ns-opt-icon">${icon}</span><span data-v-deb9fdfc class="ns-opt-label">${name}</span>${name===themeChoice?'<span data-v-deb9fdfc class="ns-opt-check">✓</span>':""}</button>`).join("")}`;
     nav.append(panel);panel.querySelectorAll<HTMLButtonElement>(".ns-opt").forEach(button=>button.addEventListener("click",()=>selectTheme(button.querySelector(".ns-opt-label")?.textContent||"赛博编程")));
   };
   navButton?.addEventListener("click",toggleTheme);
