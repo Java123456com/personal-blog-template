@@ -59,39 +59,81 @@ function paintGalaxy(container: HTMLElement) {
   const zodiacIcons=Array.from(container.querySelectorAll<SVGGElement>(".zod-icn"));
   const zodiacSectors=Array.from(container.querySelectorAll<SVGGElement>(".zod-sector"));
   const wheel=container.querySelector<SVGElement>(".zod-wheel");
-  let shownZodiac=0, cardZodiac=0, wheelAngle=0, wheelFrame=0;
+  const zodiacPointer=container.querySelector<HTMLElement>(".zod-pointer");
+  const spin=container.querySelector<HTMLButtonElement>(".zod-spin");
+  const zodiacSound=container.querySelector<HTMLButtonElement>(".zod-snd");
+  let shownZodiac=0, cardZodiac=0, passingZodiac=-1, wheelAngle=0, wheelFrame=0, pointerTimer=0, spinning=false, lastTickAt=0;
+  let wheelMuted=false, zodiacAudioContext:AudioContext|null=null;
   if(wheel)wheel.style.transition="none";
+  const wheelSoundEnabled=()=>!wheelMuted&&document.documentElement.dataset.soundEffects!=="off";
+  const playZodiacTone=(type:OscillatorType,frequency:number,duration:number,gainValue:number,delay=0)=>{
+    if(!wheelSoundEnabled())return;
+    try{
+      zodiacAudioContext??=new AudioContext();
+      if(zodiacAudioContext.state==="suspended")void zodiacAudioContext.resume();
+      const master=Number(document.documentElement.dataset.soundVolume??"1");
+      const volume=Number.isFinite(master)?Math.min(1,Math.max(0,master)):1;
+      const began=zodiacAudioContext.currentTime+delay;
+      const oscillator=zodiacAudioContext.createOscillator(),gain=zodiacAudioContext.createGain();
+      oscillator.type=type;oscillator.frequency.setValueAtTime(frequency,began);
+      gain.gain.setValueAtTime(.0001,began);gain.gain.linearRampToValueAtTime(gainValue*volume,began+.008);gain.gain.exponentialRampToValueAtTime(.0001,began+duration);
+      oscillator.connect(gain).connect(zodiacAudioContext.destination);oscillator.start(began);oscillator.stop(began+duration+.03);
+    }catch{/* Web Audio may be unavailable in a restricted browser. */}
+  };
+  const playZodiacTick=()=>playZodiacTone("square",920,.05,.05);
+  const playZodiacHit=()=>{
+    playZodiacTone("triangle",392,.12,.1);
+    playZodiacTone("triangle",587,.14,.1,.08);
+    playZodiacTone("sine",784,.24,.09,.16);
+    playZodiacTone("sine",1568,.3,.03,.24);
+  };
+  const updateZodiacHub=(index:number)=>{
+    const hub=container.querySelector<HTMLElement>(".zod-hub");
+    if(hub)hub.outerHTML=zodiacStates[index].hub;
+  };
   const showZodiac=(index:number,showCard=true)=>{
     if(index!==shownZodiac){
       shownZodiac=index;
       zodiacIcons.forEach((item,i)=>item.classList.toggle("sel",i===index));
       zodiacSectors.forEach((item,i)=>item.classList.toggle("sel",i===index));
-      const hub=container.querySelector<HTMLElement>(".zod-hub");
-      if(hub)hub.outerHTML=zodiacStates[index].hub;
     }
+    passingZodiac=-1;
+    zodiacIcons.forEach(item=>item.classList.remove("pass"));
+    zodiacSectors.forEach(item=>item.classList.remove("pass"));
+    updateZodiacHub(index);
     if(showCard&&index!==cardZodiac){
       cardZodiac=index;
       const card=container.querySelector<HTMLElement>(".zd-card");
       if(card)card.outerHTML=zodiacStates[index].card;
     }
   };
+  const showPassingZodiac=(index:number,now:number)=>{
+    if(index===passingZodiac)return;
+    passingZodiac=index;
+    zodiacIcons.forEach((item,i)=>item.classList.toggle("pass",i===index));
+    zodiacSectors.forEach((item,i)=>item.classList.toggle("pass",i===index));
+    updateZodiacHub(index);
+    if(now-lastTickAt>=36){lastTickAt=now;playZodiacTick();}
+  };
   const zodiacAtAngle=(angle:number)=>{
     const normalized=((angle%360)+360)%360;
     return ((Math.round((345-normalized)/30)%12)+12)%12;
   };
-  const selectZodiac=(index:number,fullSpin=false)=>{
-    if(!wheel)return;
+  const selectZodiac=(index:number)=>{
+    if(!wheel||spinning)return;
     window.cancelAnimationFrame(wheelFrame);
+    spinning=true;if(spin)spin.disabled=true;
+    zodiacPointer?.classList.remove("flick");window.clearTimeout(pointerTimer);
     const start=wheelAngle;
     const target=((345-index*30)%360+360)%360;
     const current=((start%360)+360)%360;
     const advance=(target-current+360)%360;
-    const turns=fullSpin ? 4+Math.floor(Math.random()*2) : 0;
+    const turns=4+Math.floor(Math.random()*3);
     const finish=start+turns*360+advance;
-    const duration=fullSpin ? 2600 : 650;
+    const duration=4300;
     if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
-      wheelAngle=finish;wheel.style.transform=`rotate(${finish}deg)`;
-      showZodiac(index);return;
+      wheelAngle=((finish%360)+360)%360;wheel.style.transform=`rotate(${wheelAngle}deg)`;
+      showZodiac(index);playZodiacHit();spinning=false;if(spin)spin.disabled=false;return;
     }
     const began=performance.now();
     const frame=(now:number)=>{
@@ -100,17 +142,22 @@ function paintGalaxy(container: HTMLElement) {
       wheelAngle=start+(finish-start)*eased;
       wheel.style.transform=`rotate(${wheelAngle}deg)`;
       const passing=zodiacAtAngle(wheelAngle);
-      if(passing!==shownZodiac)showZodiac(passing,false);
+      showPassingZodiac(passing,now);
       if(progress<1)wheelFrame=window.requestAnimationFrame(frame);
-      else showZodiac(index);
+      else{
+        wheelAngle=((finish%360)+360)%360;wheel.style.transform=`rotate(${wheelAngle}deg)`;
+        showZodiac(index);playZodiacHit();spinning=false;if(spin)spin.disabled=false;
+        if(zodiacPointer){void zodiacPointer.offsetWidth;zodiacPointer.classList.add("flick");pointerTimer=window.setTimeout(()=>zodiacPointer.classList.remove("flick"),700);}
+      }
     };
     wheelFrame=window.requestAnimationFrame(frame);
   };
-  const zodiacListeners=zodiacIcons.map((item,index)=>{const click=()=>selectZodiac(index);item.addEventListener("click",click);return()=>item.removeEventListener("click",click);});
-  const spin=container.querySelector<HTMLButtonElement>(".zod-spin");
-  const turn=()=>selectZodiac((zodiacAtAngle(wheelAngle)+1+Math.floor(Math.random()*11))%12,true);
+  const zodiacListeners=[...zodiacIcons,...zodiacSectors].map((item,index)=>{const zodiacIndex=index%12;const click=()=>selectZodiac(zodiacIndex);item.addEventListener("click",click);return()=>item.removeEventListener("click",click);});
+  const turn=()=>selectZodiac(Math.floor(Math.random()*12));
+  const toggleZodiacSound=()=>{wheelMuted=!wheelMuted;zodiacSound?.classList.toggle("off",wheelMuted);if(zodiacSound){zodiacSound.title=wheelMuted?"开启轮盘音效":"关闭轮盘音效";const icon=zodiacSound.querySelector("span");if(icon)icon.textContent=wheelMuted?"🔇":"🔊";}if(!wheelMuted)playZodiacTone("triangle",784,.1,.06);};
   spin?.addEventListener("click",turn);
-  return ()=>{disposeCosmic();window.cancelAnimationFrame(wheelFrame);dipperSwap++;dipperAnimation?.cancel();buttons[0]?.removeEventListener("click",scrollGalaxy);buttons[1]?.removeEventListener("click",scrollGame);dipperListeners.forEach(fn=>fn());zodiacListeners.forEach(fn=>fn());spin?.removeEventListener("click",turn);};
+  zodiacSound?.addEventListener("click",toggleZodiacSound);
+  return ()=>{disposeCosmic();window.cancelAnimationFrame(wheelFrame);window.clearTimeout(pointerTimer);void zodiacAudioContext?.close();dipperSwap++;dipperAnimation?.cancel();buttons[0]?.removeEventListener("click",scrollGalaxy);buttons[1]?.removeEventListener("click",scrollGame);dipperListeners.forEach(fn=>fn());zodiacListeners.forEach(fn=>fn());spin?.removeEventListener("click",turn);zodiacSound?.removeEventListener("click",toggleZodiacSound);};
 }
 
 export function enhanceNav(root: HTMLElement, starMarkup: string) {

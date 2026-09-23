@@ -138,7 +138,8 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
 /* Keep the zodiac wheel cursor stable while rotating beneath a stationary mouse. */
 .slh .zod-stage,.slh .zod-stage *{cursor:pointer!important;user-select:none!important;-webkit-user-select:none!important;caret-color:transparent!important;-webkit-tap-highlight-color:transparent}
 .slh .zod-stage svg,.slh .zod-stage g,.slh .zod-stage path,.slh .zod-stage text{outline:none!important}
-.slh .zod-pointer,.slh .zod-pointer.flick{animation:none!important;opacity:1!important;transform:translate3d(-50%,0,0)!important;backface-visibility:hidden;will-change:transform}
+.slh .zod-pointer{opacity:1!important;backface-visibility:hidden;will-change:transform}
+.slh .zod-pointer.flick{animation:ptrFlick-28aad0a8 .6s cubic-bezier(.36,1.6,.5,1)!important}
 @media(prefers-reduced-motion:reduce){.cosmic-marker,.cosmic-reticle,.cosmic-status-dot{animation:none!important;transition:none!important}}
 
 /* Empty content states keep the captured layouts ready for future data. */
