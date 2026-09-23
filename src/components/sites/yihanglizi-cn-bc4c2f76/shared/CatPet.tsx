@@ -84,7 +84,14 @@ export default function CatPet() {
     let bubbleTimer: number | undefined;
     let helpTimer: number | undefined;
     let holdTimer: number | undefined;
+    const meowPool = MEOWS.map(source => {
+      const audio = new Audio(source);
+      audio.preload = "auto";
+      audio.load();
+      return audio;
+    });
     let activeAudio: HTMLAudioElement | null = null;
+    let lastMeow = -1;
     let bubbleShown = false;
 
     const setDimensions = () => {
@@ -107,9 +114,15 @@ export default function CatPet() {
       if (document.documentElement.dataset.soundEffects === "off") return;
       try {
         activeAudio?.pause();
-        const audio = new Audio(MEOWS[Math.floor(Math.random() * MEOWS.length)]);
+        let next = Math.floor(Math.random() * meowPool.length);
+        if (meowPool.length > 1 && next === lastMeow) next = (next + 1) % meowPool.length;
+        lastMeow = next;
+        const audio = meowPool[next];
         const master = Number(document.documentElement.dataset.soundVolume ?? "1");
-        audio.volume = .7 * (Number.isFinite(master) ? Math.min(1, Math.max(0, master)) : 1);
+        audio.pause();
+        audio.currentTime = 0;
+        audio.playbackRate = .96 + Math.random() * .08;
+        audio.volume = Number.isFinite(master) ? Math.min(1, Math.max(0, master)) : 1;
         activeAudio = audio;
         void audio.play().catch(() => {});
         const clear = () => { if (activeAudio === audio) activeAudio = null; };
@@ -171,13 +184,13 @@ export default function CatPet() {
       playMeow();
       showBubble("喵！");
     };
-    const startShowcase = () => {
+    const startShowcase = (vocal = true) => {
       if (reduced) return showBubble("已开启减弱动效：仅可拖拽");
       mode = "showcase";
       showcaseIndex = 0;
       showcaseElapsed = 0;
       row = SHOWCASE[0];
-      playMeow();
+      if (vocal) playMeow();
       showBubble("炫技开始～");
     };
     const toggleHelp = () => {
@@ -193,7 +206,7 @@ export default function CatPet() {
       if (mode === "drag") return;
       if (command === "walk" || command === "run") startTravel(command, true);
       else if (command === "jump") startJump();
-      else choosePose();
+      else { playMeow(); choosePose(); }
     };
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target;
@@ -201,7 +214,7 @@ export default function CatPet() {
       if (!event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return;
       const commands: Record<string, "walk" | "run" | "jump" | "pose"> = { KeyW: "walk", KeyR: "run", KeyJ: "jump", KeyP: "pose" };
       if (commands[event.code]) runCommand(commands[event.code]);
-      else if (/^Digit[0-9]$/.test(event.code)) startPoseRow(Number(event.code.slice(5)));
+      else if (/^Digit[0-9]$/.test(event.code)) { playMeow(); startPoseRow(Number(event.code.slice(5))); }
       else if (event.code === "KeyC") startShowcase();
       else if (event.code === "KeyH") toggleHelp();
       else return;
@@ -218,10 +231,11 @@ export default function CatPet() {
       pointerOffsetX = event.clientX - x;
       bubbleShown = false;
       setBubble(null);
+      playMeow();
       try { stage.setPointerCapture(pointerId); } catch {}
       holdTimer = window.setTimeout(() => {
         longPressTriggered = true;
-        startShowcase();
+        startShowcase(false);
       }, 550);
     };
     const onPointerMove = (event: PointerEvent) => {
@@ -243,7 +257,6 @@ export default function CatPet() {
       pointerId = -1;
       stage.classList.remove("grabbing");
       if (mode === "showcase" || longPressTriggered) return;
-      playMeow();
       if (pointerMoved) {
         mode = "drop";
         row = 8;
@@ -360,6 +373,7 @@ export default function CatPet() {
       window.clearTimeout(helpTimer);
       window.clearTimeout(holdTimer);
       activeAudio?.pause();
+      meowPool.forEach(audio => { audio.pause(); audio.src = ""; });
       window.removeEventListener("resize", onResize);
       window.removeEventListener("keydown", onKeyDown);
       stage.removeEventListener("pointerdown", onPointerDown);
@@ -382,7 +396,7 @@ export default function CatPet() {
           <div className="cp-help-title">🐾 试玩测试键（按住 Shift）</div>
           <code>W</code> 巡逻　<code>R</code> 奔跑　<code>J</code> 跳跃　<code>P</code> 随机待机　<code>C</code> 炫技连招
           <div className="cp-help-row"><code>1 ~ 8</code> 逐一预览精灵图动作行（0-3/5-7/9 行为不同动作）</div>
-          <div className="cp-help-row">点击 = 随机动作；落地 = 随机动作；<b>长按猫</b> = 炫技连招；拖动可摆放</div>
+          <div className="cp-help-row">点击 = 猫叫 + 随机动作；落地 = 随机动作；<b>长按猫</b> = 炫技连招；拖动可摆放</div>
         </div>
       )}
     </div>
