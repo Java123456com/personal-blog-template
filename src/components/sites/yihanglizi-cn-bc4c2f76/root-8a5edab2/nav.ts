@@ -62,9 +62,9 @@ function paintGalaxy(container: HTMLElement) {
   const zodiacPointer=container.querySelector<HTMLElement>(".zod-pointer");
   const spin=container.querySelector<HTMLButtonElement>(".zod-spin");
   const zodiacSound=container.querySelector<HTMLButtonElement>(".zod-snd");
-  let shownZodiac=0, cardZodiac=0, passingZodiac=-1, wheelAngle=0, wheelFrame=0, pointerTimer=0, spinning=false, lastTickAt=0;
+  let shownZodiac=0, cardZodiac=0, passingZodiac=-1, wheelAngle=345, wheelFrame=0, pointerTimer=0, spinning=false, lastTickAt=0;
   let wheelMuted=false, zodiacAudioContext:AudioContext|null=null;
-  if(wheel)wheel.style.transition="none";
+  if(wheel){wheel.style.transition="none";wheel.style.transform=`rotate(${wheelAngle}deg)`;}
   const wheelSoundEnabled=()=>!wheelMuted&&document.documentElement.dataset.soundEffects!=="off";
   const playZodiacTone=(type:OscillatorType,frequency:number,duration:number,gainValue:number,delay=0)=>{
     if(!wheelSoundEnabled())return;
@@ -132,7 +132,7 @@ function paintGalaxy(container: HTMLElement) {
     const finish=start+turns*360+advance;
     const duration=4300;
     if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
-      wheelAngle=((finish%360)+360)%360;wheel.style.transform=`rotate(${wheelAngle}deg)`;
+      wheelAngle=target;wheel.style.transform=`rotate(${wheelAngle}deg)`;
       showZodiac(index);playZodiacHit();spinning=false;if(spin)spin.disabled=false;return;
     }
     const began=performance.now();
@@ -145,7 +145,7 @@ function paintGalaxy(container: HTMLElement) {
       showPassingZodiac(passing,now);
       if(progress<1)wheelFrame=window.requestAnimationFrame(frame);
       else{
-        wheelAngle=((finish%360)+360)%360;wheel.style.transform=`rotate(${wheelAngle}deg)`;
+        wheelAngle=target;wheel.style.transform=`rotate(${wheelAngle}deg)`;
         showZodiac(index);playZodiacHit();spinning=false;if(spin)spin.disabled=false;
         if(zodiacPointer){void zodiacPointer.offsetWidth;zodiacPointer.classList.add("flick");pointerTimer=window.setTimeout(()=>zodiacPointer.classList.remove("flick"),700);}
       }
