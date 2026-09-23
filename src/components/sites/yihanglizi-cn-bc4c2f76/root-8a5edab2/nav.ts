@@ -166,6 +166,22 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   const navButton = nav?.querySelector<HTMLButtonElement>(".ns-btn");
   const sound = document.querySelector<HTMLElement>(".sound-toggle");
   const soundButton = sound?.querySelector<HTMLButtonElement>(".st-btn");
+  const closeThemePanel = () => {
+    nav?.classList.remove("open");
+    nav?.querySelector(".ns-panel")?.remove();
+    navButton?.setAttribute("title", "切换背景主题");
+  };
+  const closeSoundPanel = () => {
+    sound?.classList.remove("open");
+    sound?.querySelector(".st-panel")?.remove();
+    soundButton?.setAttribute("title", "声音设置");
+  };
+  const closePanelsOnOutsidePointer = (event: PointerEvent) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (nav?.classList.contains("open") && !nav.contains(target)) closeThemePanel();
+    if (sound?.classList.contains("open") && !sound.contains(target)) closeSoundPanel();
+  };
   const appContent = root.parentElement;
   let star: HTMLElement | null = appContent?.querySelector<HTMLElement>(".slh") || null;
   let disposeGalaxy = () => {}, galaxyReady = false, createdStar = false;
@@ -213,8 +229,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
       if (starry && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) void activeVideo.play().catch(() => {});
       else activeVideo.pause();
     }
-    nav?.classList.remove("open");nav?.querySelector(".ns-panel")?.remove();
-    navButton?.setAttribute("title", "切换背景主题");
+    closeThemePanel();
     window.scrollTo({top:0,behavior:"instant"});
   };
   selectTheme(themeChoice);
@@ -227,9 +242,12 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   document.addEventListener("visibilitychange", syncOrbitPlayback);
   const toggleTheme = () => {
     if (!nav) return;
-    const open=!nav.classList.contains("open");nav.classList.toggle("open",open);
-    navButton?.setAttribute("title",open?"收起":"切换背景主题");
-    nav.querySelector(".ns-panel")?.remove();if(!open)return;
+    const open=!nav.classList.contains("open");
+    if (!open) { closeThemePanel(); return; }
+    closeSoundPanel();
+    nav.classList.add("open");
+    navButton?.setAttribute("title","收起");
+    nav.querySelector(".ns-panel")?.remove();
     const panel=document.createElement("div");panel.className="ns-panel";panel.setAttribute("data-v-deb9fdfc","");
     panel.innerHTML=`<div data-v-deb9fdfc class="ns-title">背景主题</div>${[["✦","星空极光"],["⚡","赛博编程"]].map(([icon,name])=>`<button data-v-deb9fdfc class="ns-opt ${name===themeChoice?"active":""}"><span data-v-deb9fdfc class="ns-opt-icon">${icon}</span><span data-v-deb9fdfc class="ns-opt-label">${name}</span>${name===themeChoice?'<span data-v-deb9fdfc class="ns-opt-check">✓</span>':""}</button>`).join("")}`;
     nav.append(panel);panel.querySelectorAll<HTMLButtonElement>(".ns-opt").forEach(button=>button.addEventListener("click",()=>selectTheme(button.querySelector(".ns-opt-label")?.textContent||"赛博编程")));
@@ -292,8 +310,12 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   };
   document.addEventListener("click", clickTone);
   const toggleSound = () => {
-    if(!sound)return;const open=!sound.classList.contains("open");sound.classList.toggle("open",open);
-    soundButton?.setAttribute("title",open?"收起声音设置":"声音设置");sound.querySelector(".st-panel")?.remove();if(!open)return;
+    if(!sound)return;
+    const open=!sound.classList.contains("open");
+    if(!open){closeSoundPanel();return;}
+    closeThemePanel();
+    sound.classList.add("open");
+    soundButton?.setAttribute("title","收起声音设置");sound.querySelector(".st-panel")?.remove();
     const panel=document.createElement("div");panel.className="st-panel";panel.setAttribute("data-v-316b056f","");
     panel.innerHTML=`<div data-v-316b056f class="st-title">声音设置</div><button data-v-316b056f class="st-row ${effects?"on":""}"><span data-v-316b056f class="st-row-ico">🔔</span><span data-v-316b056f class="st-row-label">交互音效</span><span data-v-316b056f class="st-row-state">${effects?"ON":"OFF"}</span></button><button data-v-316b056f class="st-row ${music?"on":""}"><span data-v-316b056f class="st-row-ico">🎶</span><span data-v-316b056f class="st-row-label">背景音乐</span><span data-v-316b056f class="st-row-state">${music?"ON":"OFF"}</span></button><div data-v-316b056f class="st-vol"><span data-v-316b056f class="st-vol-ico">🔊</span><input data-v-316b056f class="st-range" type="range" min="0" max="100" step="1" aria-label="音量 ${soundVolume}%" value="${soundVolume}"><span data-v-316b056f class="st-vol-num">${soundVolume}</span></div><div data-v-316b056f class="st-tip">音乐状态与播放进度会跨页面保持</div>`;
     sound.append(panel);
@@ -301,6 +323,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     panel.querySelector<HTMLInputElement>(".st-range")?.addEventListener("input",e=>{soundVolume=Number((e.target as HTMLInputElement).value);panel.querySelector(".st-vol-num")!.textContent=String(soundVolume);audio.volume=soundVolume/100;document.documentElement.dataset.soundVolume=String(soundVolume/100);window.localStorage.setItem("clone-sound-volume",String(soundVolume));});
   };
   soundButton?.addEventListener("click",toggleSound);
+  document.addEventListener("pointerdown",closePanelsOnOutsidePointer);
 
   const burger=document.querySelector<HTMLButtonElement>(".VPNavBarHamburger");let mobile:HTMLElement|null=null;
   const toggleMobile=()=>{const open=burger?.getAttribute("aria-expanded")!=="true";burger?.setAttribute("aria-expanded",String(open));document.querySelector(".VPNavBar")?.classList.toggle("screen-open",open);mobile?.remove();mobile=null;if(open){mobile=document.createElement("div");mobile.className="clone-mobile-menu";mobile.innerHTML=links.map(([name,href])=>name==="博客"?`<details class="clone-mobile-blog"><summary>博客 <span aria-hidden="true">⌄</span></summary>${journalLinks.map(([label,url])=>`<a href="${url}">${label}</a>`).join("")}</details>`:`<a href="${href}">${name}</a>`).join("");document.body.append(mobile);}};
@@ -319,5 +342,5 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape")closeSearch();};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }
