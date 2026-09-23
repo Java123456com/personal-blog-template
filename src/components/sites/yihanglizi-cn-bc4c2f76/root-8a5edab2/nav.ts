@@ -3,7 +3,7 @@ import zodiacStates from "./zodiac-states.json";
 import { mountCosmicGalaxy } from "./cosmic-galaxy";
 
 const links: ReadonlyArray<readonly [string, string]> = [
-  ["首页", "/"], ["博客", "/blog/"],
+  ["首页", "/"],
   ["简历", "/resume/"], ["友链", "/friends/"],
   ["工具", "/tools/"], ["关于", "/about/"],
 ];
@@ -123,7 +123,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   let star: HTMLElement | null = appContent?.querySelector<HTMLElement>(".slh") || null;
   let disposeGalaxy = () => {}, galaxyReady = false, createdStar = false;
   const themeStorageKey = "clone-site-theme";
-  const orbitVideoMarkup = '<video class="slh-video" muted loop playsinline preload="metadata"><source src="/media/starlight-orbit.mp4" type="video/mp4"></video>';
+  const orbitVideoMarkup = '<video class="slh-video" muted loop playsinline preload="auto" disablepictureinpicture><source src="/media/starlight-orbit.mp4" type="video/mp4"></video>';
   let themeChoice = window.localStorage.getItem(themeStorageKey) || "星空极光";
   const selectTheme = (name: string) => {
     themeChoice = name;
@@ -165,6 +165,13 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     window.scrollTo({top:0,behavior:"instant"});
   };
   selectTheme(themeChoice);
+  const syncOrbitPlayback = () => {
+    const video = star?.querySelector<HTMLVideoElement>(".slh-video");
+    if (!video) return;
+    if (!document.hidden && themeChoice === "星空极光" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) void video.play().catch(() => {});
+    else video.pause();
+  };
+  document.addEventListener("visibilitychange", syncOrbitPlayback);
   const toggleTheme = () => {
     if (!nav) return;
     const open=!nav.classList.contains("open");nav.classList.toggle("open",open);
@@ -259,5 +266,5 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape")closeSearch();};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }

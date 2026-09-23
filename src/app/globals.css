@@ -61,35 +61,48 @@ html[data-doc-theme] .clone-search-input{border-color:var(--clone-border)}
 html[data-doc-theme] .clone-search-results a{color:var(--clone-text)}
 html[data-doc-theme] .clone-search-results a:hover{background:var(--clone-accent);color:#07101f}
 html[data-doc-theme] .clone-search-foot{border-color:var(--clone-border);color:var(--clone-muted)}
-/* The two home systems carry their own atmosphere; the legacy floating cat breaks both compositions. */
-.catpet{display:none!important}
+/* Interactive desktop pet shared by every page. */
+.catpet{position:fixed;inset:0;width:100vw;height:100vh;z-index:2147483000;pointer-events:none;line-height:0;user-select:none;-webkit-user-select:none;touch-action:none;transform:translateZ(0)}
+.cp-stage{position:absolute;bottom:0;pointer-events:auto;cursor:grab;touch-action:none;will-change:left}
+.cp-stage.grabbing,.cp-stage:active{cursor:grabbing}.cp-stage:hover{filter:drop-shadow(0 4px 10px color-mix(in srgb,var(--clone-accent,#ffd98a) 25%,transparent))}
+.cp-sprite{position:absolute;left:0;top:0;image-rendering:pixelated;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));backface-visibility:hidden;will-change:transform,background-position}
+.cp-shadow{position:absolute;bottom:1px;left:50%;width:70%;height:6px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.42),transparent 70%);filter:blur(1px);transition:transform .1s ease}
+.cp-bubble{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);padding:6px 11px;font:13px/1 "JetBrains Mono",Consolas,monospace;white-space:nowrap;border:1px solid color-mix(in srgb,var(--clone-accent,#fff) 42%,transparent);border-radius:9px;color:var(--clone-text,#fff);background:color-mix(in srgb,var(--vp-c-bg-elv,#121426) 91%,transparent);box-shadow:0 6px 18px #0006;pointer-events:none;animation:cp-float 1.3s ease forwards}
+.cp-bubble:after{content:"";position:absolute;left:50%;bottom:-5px;width:9px;height:9px;transform:translateX(-50%) rotate(45deg);background:inherit;border-right:1px solid rgba(255,255,255,.26);border-bottom:1px solid rgba(255,255,255,.26)}
+.cp-help{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483001;width:max-content;max-width:92vw;padding:10px 14px;font:12px/1.9 "JetBrains Mono",Consolas,"PingFang SC","Microsoft YaHei",monospace;color:var(--clone-text,#e7e9f5);background:color-mix(in srgb,var(--vp-c-bg-elv,#121426) 92%,transparent);border:1px solid color-mix(in srgb,var(--clone-accent,#fff) 26%,transparent);border-radius:12px;box-shadow:0 10px 30px #0008,0 0 22px var(--clone-glow,transparent);pointer-events:none;white-space:normal;text-align:left;animation:cp-help-in .35s ease}
+.cp-help-title{margin-bottom:3px;font-weight:700;color:var(--clone-accent,#ffd98b)}.cp-help code{display:inline-block;min-width:18px;margin-right:2px;padding:0 5px;text-align:center;color:#8ef0ff;background:#ffffff14;border:1px solid rgba(255,255,255,.22);border-radius:5px}.cp-help-row{margin-top:2px}
+@keyframes cp-float{0%{opacity:0;transform:translate(-50%,5px)}15%,75%{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-5px)}}
+@keyframes cp-help-in{from{opacity:0;transform:translate(-50%,8px) scale(.97)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@media(max-width:640px){.cp-help{bottom:10px;padding:8px 10px;font-size:10px;line-height:1.8}.cp-bubble{font-size:11px}}
 
 /* 星空极光首页：用户提供的星际轨道视频作为整页的沉浸式底图。 */
 html[data-doc-theme=starry] .slh{position:relative;isolation:isolate;background:transparent!important}
 html[data-doc-theme=starry] .slh-video-layer{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#070b1d}
-html[data-doc-theme=starry] .slh-video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;filter:saturate(1.08) contrast(1.04) brightness(.66)}
+html[data-doc-theme=starry] .slh-video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;filter:saturate(1.08) contrast(1.04) brightness(.66);transform:translateZ(0);backface-visibility:hidden}
 html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,6,22,.5),rgba(5,9,29,.34) 42%,rgba(4,8,25,.62)),radial-gradient(ellipse at 50% 30%,transparent 0%,rgba(5,8,28,.27) 82%)}
 @media (prefers-reduced-motion:reduce){html[data-doc-theme=starry] .slh-video{display:none}}
+.quest-grid[data-v-fcc15a3a]>.quest-card:last-of-type:nth-of-type(odd){grid-column:1/-1}
 
 /* One wide content measure for both home themes and document routes. */
 :root{--clone-page-width:min(calc(100vw - 2 * clamp(24px,4vw,120px)),2200px)}
 @media (min-width:960px){
-  :root{--vp-nav-height:94px}
-  .VPNav,.VPNavBar,.VPNavBar .wrapper,.VPNavBar .container,.VPNavBar .content,.VPNavBar .content-body{height:94px!important}
+  :root{--vp-nav-height:104px}
+  .VPNav,.VPNavBar,.VPNavBar .wrapper,.VPNavBar .container,.VPNavBar .content,.VPNavBar .content-body{height:104px!important}
   .VPNav{width:100%!important}
   .VPNavBar .wrapper{padding-inline:clamp(24px,2vw,60px)!important}
   .VPNavBar .container{width:100%!important;max-width:none!important}
-  .VPNavBarTitle .title{height:94px!important}
+  .VPNavBarTitle .title{height:104px!important;gap:12px!important}
   .VPNavBarTitle .ba{display:flex!important}
-  .VPNavBarTitle .lz-nav-logo{width:38px!important;height:38px!important}
-  .VPNavBarSearch{flex:1 1 auto;min-width:160px;padding-left:32px!important}
-  .DocSearch-Button{height:52px!important;min-width:250px!important;padding:0 14px!important;border-radius:12px!important;font-size:1rem!important}
-  .VPNavBarMenu{margin-left:auto!important;gap:2px!important}
-  .VPNavBarMenuLink,.VPNavBarMenuGroup .button{height:94px!important;padding:0 .7rem!important;font-size:1.08rem!important;font-weight:600!important}
-  .VPNavBarMenuGroup .button .text{font-size:1.08rem!important;font-weight:600!important;line-height:94px!important}
-  .nav-switcher,.sound-toggle{margin-left:4px!important}
-  .ns-btn,.st-btn{width:42px!important;height:42px!important}
-  .ns-icon,.st-icon{width:26px!important;height:26px!important}
+  .VPNavBarTitle .lz-nav-logo{width:44px!important;height:44px!important}
+  .template-brand-icon{width:42px!important;height:42px!important;font-size:27px!important}.template-brand-name{font-size:1.42rem!important}
+  .VPNavBarSearch{flex:1 1 auto;min-width:190px;padding-left:38px!important}
+  .DocSearch-Button{height:58px!important;min-width:285px!important;padding:0 18px!important;border-radius:14px!important;font-size:1.1rem!important}
+  .VPNavBarMenu{margin-left:auto!important;gap:10px!important}
+  .VPNavBarMenuLink,.VPNavBarMenuGroup .button{height:104px!important;padding:0 .9rem!important;font-size:1.2rem!important;font-weight:650!important}
+  .VPNavBarMenuGroup .button .text{font-size:1.2rem!important;font-weight:650!important;line-height:104px!important}
+  .nav-switcher,.sound-toggle{margin-left:8px!important}
+  .ns-btn,.st-btn{width:48px!important;height:48px!important}
+  .ns-icon,.st-icon{width:29px!important;height:29px!important}
   .slh,.wasteland .hud{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
   .wasteland{margin-top:0!important}
   .VPDoc .container{max-width:var(--clone-page-width)!important}
@@ -139,9 +152,10 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
 .clone-mobile-blog a{display:block;padding-left:32px;border-bottom:0}
 /* The blog flyout is a prominent two-option menu in both desktop themes. */
 @media(min-width:960px){
-  .VPNavBarMenuGroup>.menu{top:76px!important;right:0!important}
-  .VPNavBarMenuGroup>.menu .VPMenu{box-sizing:border-box;min-width:168px;padding:10px;border-radius:12px;border:1px solid color-mix(in srgb,var(--clone-accent,#ffb000) 52%,transparent);background:color-mix(in srgb,var(--vp-c-bg-elv,#17120d) 96%,black);box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 18px var(--clone-glow,rgba(255,174,26,.15))}
-  .VPNavBarMenuGroup>.menu .VPMenuLink .link{display:block;padding:8px 10px;border-radius:8px;line-height:1.35;font-size:.82rem;font-weight:600;letter-spacing:.01em;color:var(--clone-text,#f8ecd5);white-space:nowrap}
+  .VPNavBarMenuGroup>.menu{top:88px!important;right:0!important}
+  .VPNavBarMenuGroup>.menu .VPMenu{box-sizing:border-box;min-width:224px;padding:15px;border-radius:16px;border:1px solid color-mix(in srgb,var(--clone-accent,#ffb000) 52%,transparent);background:color-mix(in srgb,var(--vp-c-bg-elv,#17120d) 96%,black);box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 24px var(--clone-glow,rgba(255,174,26,.2))}
+  .VPNavBarMenuGroup>.menu .VPMenuLink .link{display:block;padding:13px 16px;border-radius:10px;line-height:1.45;font-size:1.06rem;font-weight:650;letter-spacing:.02em;color:var(--clone-text,#f8ecd5);white-space:nowrap}
   .VPNavBarMenuGroup>.menu .VPMenuLink .link:hover{color:var(--clone-accent,#ffb000);background:color-mix(in srgb,var(--clone-accent,#ffb000) 10%,transparent)}
+  .ns-panel,.st-panel{min-width:250px!important;padding:16px!important;border-radius:16px!important}.ns-title,.st-title{padding:3px 4px 12px!important;font-size:1rem!important;letter-spacing:.12em!important}.ns-opt,.st-row{min-height:54px!important;padding:12px 14px!important;border-radius:11px!important;font-size:1.06rem!important}.ns-opt-icon,.st-row-ico{font-size:1.25rem!important}.st-vol{padding:14px 8px 6px!important}
 }
 @media(max-width:700px){.template-empty{min-height:180px;padding:34px 20px;margin:14px auto 28px}}

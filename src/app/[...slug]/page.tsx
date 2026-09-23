@@ -6,7 +6,6 @@ import PageEnhancements from "@/components/sites/yihanglizi-cn-bc4c2f76/shared/P
 
 const site = "src/components/sites/yihanglizi-cn-bc4c2f76";
 const pages: Record<string, string> = {
-  "/blog/": "blog-68a120ac",
   "/moments/tech/": "moments-tech-e3a2705e",
   "/moments/life/": "moments-life-24139972",
   "/friends/": "friends-74954218",

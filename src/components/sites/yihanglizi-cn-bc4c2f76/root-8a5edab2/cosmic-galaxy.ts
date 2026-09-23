@@ -188,8 +188,8 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   pip.innerHTML = `<video muted playsinline></video><canvas width="240" height="160"></canvas><span>HAND TRACKING</span>`;
   galaxy.append(markerLayer, hud, pip);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: "high-performance" });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, window.innerWidth < 700 ? 1 : 1.25));
   renderer.setClearColor(0x000000, 0);
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x05091d, .012);
@@ -284,6 +284,8 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   let focused = 0;
   let destroyed = false;
   let initialSized = false;
+  let galaxyVisible = false;
+  let lastRendered = 0;
   const resize = () => {
     const rect = galaxy.getBoundingClientRect();
     width = Math.max(1, rect.width);
@@ -298,6 +300,11 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   };
   const observer = new ResizeObserver(resize);
   observer.observe(galaxy);
+  const visibilityObserver = new IntersectionObserver(
+    entries => { galaxyVisible = entries[0]?.isIntersecting ?? false; },
+    { rootMargin: "180px 0px" },
+  );
+  visibilityObserver.observe(galaxy);
   resize();
 
   const pointerDown = (event: PointerEvent) => {
@@ -429,6 +436,8 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   const animate = (now: number) => {
     if (destroyed) return;
     frame = requestAnimationFrame(animate);
+    if (document.hidden || !galaxyVisible || now - lastRendered < 1000 / 30) return;
+    lastRendered = now;
     rotation += (targetRotation - rotation) * .075;
     zoom += (targetZoom - zoom) * .075;
     camera.position.z = zoom;
@@ -472,6 +481,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     stopCamera();
     void hands?.close();
     observer.disconnect();
+    visibilityObserver.disconnect();
     canvas.removeEventListener("pointerdown", pointerDown);
     canvas.removeEventListener("pointermove", pointerMove);
     canvas.removeEventListener("pointerup", pointerUp);

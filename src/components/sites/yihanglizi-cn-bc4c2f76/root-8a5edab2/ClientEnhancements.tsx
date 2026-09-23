@@ -4,13 +4,12 @@ import { useLayoutEffect } from "react";
 import { enhanceGame } from "./game";
 import { enhanceNav } from "./nav";
 
-const site = "/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2";
 const scope = "data-v-fcc15a3a";
 const feedLines = [
   ["> ", "whoami"], ["= ", "站点主人 :: 内容待填写"],
   ["> ", "cat ./notes.log"], ["= ", "技术学习记录 · 日常生活记录"],
   ["> ", "echo $STATUS"], ["= ", '"等待第一篇内容。"'],
-  ["> ", "ls ./modules"], ["= ", "blog/  tech/  life/  tools/  about/"],
+  ["> ", "ls ./modules"], ["= ", "tech/  life/  friends/  tools/  about/"],
 ];
 
 function enhanceTerminal(root: HTMLElement) {
@@ -18,12 +17,6 @@ function enhanceTerminal(root: HTMLElement) {
   if (feed) feed.innerHTML = feedLines.map(([prompt, text]) => `<div ${scope} class="feed-line"><span ${scope} class="feed-prompt">${prompt === "> " ? "&gt; " : "= "}</span><span ${scope} class="feed-text">${text}</span></div>`).join("");
   const command = root.querySelector<HTMLElement>(".ph-cmd");
   if (command) command.textContent = "ls ./modules";
-  const cat = document.createElement("div");
-  cat.className = "catpet";
-  cat.setAttribute("data-v-848dda0c", "");
-  cat.setAttribute("aria-hidden", "true");
-  cat.innerHTML = `<div class="cp-stage" data-v-848dda0c style="width:128px;height:128px;left:0"><div class="cp-sprite" data-v-848dda0c style="width:128px;height:128px;background-image:url(${site}/img/cat-sprite.png);background-repeat:no-repeat;background-size:1024px 1280px;background-position:0 0;transform:scaleX(-1)"></div><span class="cp-shadow" data-v-848dda0c></span></div>`;
-  document.body.append(cat);
   const start = Date.now();
   const update = () => {
     const clock = root.querySelector<HTMLElement>(".hud-bar-right .hud-bar-text:last-child");
@@ -63,7 +56,7 @@ function enhanceTerminal(root: HTMLElement) {
       draw();
     }
   }
-  return () => { window.clearInterval(interval); cancelAnimationFrame(frame); observer?.disconnect(); cat.remove(); };
+  return () => { window.clearInterval(interval); cancelAnimationFrame(frame); observer?.disconnect(); };
 }
 
 function enhanceCipher(root: HTMLElement) {

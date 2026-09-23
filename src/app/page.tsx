@@ -11,7 +11,7 @@ export default function Home() {
     join(process.cwd(), "src/components/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2/starry.html"),
     "utf8",
   );
-  const orbitVideo = '<div class="slh-video-layer" aria-hidden="true"><video class="slh-video" autoplay muted loop playsinline preload="metadata"><source src="/media/starlight-orbit.mp4" type="video/mp4"></video></div>';
+  const orbitVideo = '<div class="slh-video-layer" aria-hidden="true"><video class="slh-video" autoplay muted loop playsinline preload="auto" disablepictureinpicture><source src="/media/starlight-orbit.mp4" type="video/mp4"></video></div>';
   const starHome = starMarkup.replace(/(<div[^>]*class="slh"[^>]*>)/, `$1${orbitVideo}`);
   const insertionPoint = "</footer></div><!----><!----><!----></div></div></div><!--[--><!--]--></div></div><footer";
   if (!markup.includes(insertionPoint)) throw new Error("Home theme insertion point is missing");
