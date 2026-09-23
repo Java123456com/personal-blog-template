@@ -77,7 +77,7 @@ function makeParticles(count: number, radius: number, color: number, texture: TH
     positions[index * 3] = r * Math.sin(phi) * Math.cos(theta);
     positions[index * 3 + 1] = r * Math.cos(phi) * (shell ? .72 : 1);
     positions[index * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-    const mixed = base.clone().lerp(white, Math.random() * .72);
+    const mixed = base.clone().lerp(white, .08 + Math.random() * .42);
     colors[index * 3] = mixed.r;
     colors[index * 3 + 1] = mixed.g;
     colors[index * 3 + 2] = mixed.b;
@@ -86,7 +86,7 @@ function makeParticles(count: number, radius: number, color: number, texture: TH
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   const material = new THREE.PointsMaterial({
-    size: shell ? .26 : .18,
+    size: shell ? .31 : .22,
     map: texture,
     vertexColors: true,
     transparent: true,
@@ -181,7 +181,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   markerLayer.className = "cosmic-markers";
   const hud = document.createElement("div");
   hud.className = "cosmic-hud";
-  hud.innerHTML = `<div class="cosmic-status"><span class="cosmic-status-dot"></span><span class="cosmic-status-main">鼠标控制已就绪</span><small>GESTURE LINK · STANDBY</small></div><div class="cosmic-actions"><button type="button" class="cosmic-camera">◉ 开启手势控制</button><button type="button" class="cosmic-reset" title="复位星域">↻ 复位</button></div>`;
+  hud.innerHTML = `<div class="cosmic-status"><span class="cosmic-status-dot"></span><span class="cosmic-status-main">自动巡航中 · 可拖动</span><small>AUTO ORBIT · ONLINE</small></div><div class="cosmic-actions"><button type="button" class="cosmic-camera">◉ 开启手势控制</button><button type="button" class="cosmic-reset" title="复位星域">↻ 复位</button></div>`;
   const pip = document.createElement("div");
   pip.className = "cosmic-pip";
   pip.hidden = true;
@@ -214,6 +214,20 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   const nucleus = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, color: 0xfff1c6, transparent: true, opacity: .82, depthWrite: false, blending: THREE.AdditiveBlending }));
   nucleus.scale.set(5.2, 3.2, 1);
   root.add(nucleus);
+
+  const energyRings = [
+    { radius: 12.8, color: 0x72dfff, opacity: .18, tilt: 1.43 },
+    { radius: 17.6, color: 0xa779ff, opacity: .13, tilt: 1.31 },
+    { radius: 23.2, color: 0xffc867, opacity: .08, tilt: 1.51 },
+  ].map(({ radius, color, opacity, tilt }, index) => {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(radius, .035 + index * .012, 4, 128),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending }),
+    );
+    ring.rotation.set(tilt, index * .37, index * .46);
+    root.add(ring);
+    return ring;
+  });
 
   const dustGeometry = new THREE.BufferGeometry();
   const dustPositions = new Float32Array(2600 * 3);
@@ -276,7 +290,8 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   let frame = 0;
   let rotation = .22;
   let targetRotation = rotation;
-  let zoom = 44;
+  const initialZoom = () => width < 700 ? 42 : 34;
+  let zoom = 34;
   let targetZoom = zoom;
   let dragX = 0;
   let dragging = false;
@@ -291,7 +306,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     width = Math.max(1, rect.width);
     height = Math.max(1, rect.height);
     if (!initialSized) {
-      zoom = targetZoom = width < 700 ? 50 : 44;
+      zoom = targetZoom = initialZoom();
       initialSized = true;
     }
     renderer.setSize(width, height, false);
@@ -324,7 +339,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   const pointerUp = () => { dragging = false; galaxy.classList.remove("is-dragging"); };
   const wheel = (event: WheelEvent) => {
     event.preventDefault();
-    targetZoom = THREE.MathUtils.clamp(targetZoom + event.deltaY * .018, 34, 64);
+    targetZoom = THREE.MathUtils.clamp(targetZoom + event.deltaY * .018, 30, 62);
   };
   canvas.addEventListener("pointerdown", pointerDown);
   canvas.addEventListener("pointermove", pointerMove);
@@ -337,7 +352,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     hud.querySelector<HTMLElement>(".cosmic-status small")!.textContent = sub;
     hud.classList.toggle("is-live", live);
   };
-  const reset = () => { sounds.pulse(); targetRotation = .22; targetZoom = width < 700 ? 50 : 44; setStatus("星域坐标已复位", "ORBIT CALIBRATED", Boolean(stream)); };
+  const reset = () => { sounds.pulse(); targetRotation = .22; targetZoom = initialZoom(); setStatus("星域坐标已复位 · 自动巡航", "AUTO ORBIT · ONLINE", Boolean(stream)); };
   const resetButton = hud.querySelector<HTMLButtonElement>(".cosmic-reset")!;
   resetButton.addEventListener("click", reset);
 
@@ -361,7 +376,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     video.srcObject = null;
     pip.hidden = true;
     cameraButton.textContent = "◉ 开启手势控制";
-    setStatus("鼠标控制已就绪", "GESTURE LINK · STANDBY");
+    setStatus("自动巡航中 · 可拖动", "AUTO ORBIT · ONLINE");
   };
   const drawHand = (landmarks: Array<{ x: number; y: number }>) => {
     pipContext.clearRect(0, 0, pipCanvas.width, pipCanvas.height);
@@ -433,22 +448,30 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   cameraButton.addEventListener("click", startCamera);
 
   const projected = new THREE.Vector3();
+  let elapsed = 0;
   const animate = (now: number) => {
     if (destroyed) return;
     frame = requestAnimationFrame(animate);
     if (document.hidden || !galaxyVisible || now - lastRendered < 1000 / 30) return;
+    const delta = lastRendered ? Math.min((now - lastRendered) / 1000, .06) : 1 / 30;
     lastRendered = now;
+    elapsed += delta;
+    if (!dragging && !stream) targetRotation += delta * .13;
     rotation += (targetRotation - rotation) * .075;
     zoom += (targetZoom - zoom) * .075;
     camera.position.z = zoom;
-    camera.position.y = 10 + (zoom - 44) * .08;
+    camera.position.y = 9.2 + (zoom - 34) * .06;
     camera.lookAt(0, 0, 0);
     root.rotation.y = rotation;
-    core.rotation.y += .00065;
-    coreGlow.rotation.y -= .00038;
-    dust.rotation.y += .00028;
+    core.rotation.y += delta * .035;
+    coreGlow.rotation.y -= delta * .022;
+    dust.rotation.y += delta * .017;
+    energyRings.forEach((ring, index) => { ring.rotation.z += delta * (.028 + index * .012); });
+    const pulse = 1 + Math.sin(elapsed * 2.1) * .085;
+    nucleus.scale.set(5.2 * pulse, 3.2 * pulse, 1);
+    nucleusGlow.scale.set(16 * (1 + Math.sin(elapsed * 1.35) * .08), 10 * (1 + Math.sin(elapsed * 1.35) * .08), 1);
     nodes.forEach((node, index) => {
-      node.group.rotation.y += .004;
+      node.group.rotation.y += delta * .12;
       node.group.getWorldPosition(node.position);
       (lineGeometry.attributes.position.array as Float32Array).set([node.position.x,node.position.y,node.position.z], index*3);
       projected.copy(node.position).project(camera);
