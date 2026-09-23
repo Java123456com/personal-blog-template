@@ -102,6 +102,69 @@ function distance(a: { x: number; y: number }, b: { x: number; y: number }) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+class CosmicSoundEngine {
+  private context: AudioContext | null = null;
+  private lastHover = 0;
+
+  private getContext() {
+    if (document.documentElement.dataset.soundEffects === "off") return null;
+    this.context ??= new AudioContext();
+    if (this.context.state === "suspended") void this.context.resume();
+    return this.context;
+  }
+
+  private tone(type: OscillatorType, from: number, to: number, duration: number, volume: number, delay = 0) {
+    const context = this.getContext();
+    if (!context) return;
+    const began = context.currentTime + delay;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(from, began);
+    oscillator.frequency.exponentialRampToValueAtTime(Math.max(30, to), began + duration);
+    gain.gain.setValueAtTime(.0001, began);
+    gain.gain.exponentialRampToValueAtTime(volume, began + Math.min(.018, duration * .2));
+    gain.gain.exponentialRampToValueAtTime(.0001, began + duration);
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start(began);
+    oscillator.stop(began + duration + .02);
+  }
+
+  hover(index: number) {
+    const now = performance.now();
+    if (now - this.lastHover < 85) return;
+    this.lastHover = now;
+    const note = [523, 587, 659, 698, 784, 880, 988][index % 7];
+    this.tone("sine", note, note * 1.12, .11, .025);
+    this.tone("triangle", note * 2, note * 1.72, .16, .012, .012);
+  }
+
+  warp() {
+    this.tone("sawtooth", 150, 920, .34, .035);
+    this.tone("sine", 880, 180, .44, .045, .04);
+    this.tone("triangle", 1240, 420, .28, .018, .09);
+  }
+
+  pulse() {
+    this.tone("sine", 210, 420, .2, .035);
+    this.tone("triangle", 520, 680, .13, .018, .055);
+  }
+
+  camera(active: boolean) {
+    if (active) {
+      this.tone("square", 360, 520, .08, .018);
+      this.tone("sine", 560, 920, .16, .03, .07);
+    } else {
+      this.tone("sine", 720, 310, .2, .03);
+    }
+  }
+
+  close() {
+    void this.context?.close();
+    this.context = null;
+  }
+}
+
 export function mountCosmicGalaxy(container: HTMLElement) {
   const galaxy = container.querySelector<HTMLElement>(".galaxy");
   const canvas = galaxy?.querySelector<HTMLCanvasElement>("canvas");
@@ -132,6 +195,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   camera.position.set(0, 12, 52);
   camera.lookAt(0, 0, 0);
   const texture = particleTexture();
+  const sounds = new CosmicSoundEngine();
 
   const root = new THREE.Group();
   root.rotation.x = -.12;
@@ -191,7 +255,11 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     label.className = "cosmic-marker";
     label.style.setProperty("--module-color", `#${module.color.toString(16).padStart(6, "0")}`);
     label.innerHTML = `<span class="cosmic-reticle"></span><b>${module.symbol}</b><span><strong>${module.title}</strong><small>${module.subtitle}</small></span>`;
-    label.addEventListener("click", () => { window.location.href = module.href; });
+    label.addEventListener("pointerenter", () => sounds.hover(index));
+    label.addEventListener("click", () => {
+      sounds.warp();
+      window.setTimeout(() => { window.location.href = module.href; }, 180);
+    });
     markerLayer.append(label);
     nodes.push({ group, label, position: new THREE.Vector3(), data: module });
   });
@@ -255,7 +323,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     hud.querySelector<HTMLElement>(".cosmic-status small")!.textContent = sub;
     hud.classList.toggle("is-live", live);
   };
-  const reset = () => { targetRotation = .22; targetZoom = 52; setStatus("星域坐标已复位", "ORBIT CALIBRATED", Boolean(stream)); };
+  const reset = () => { sounds.pulse(); targetRotation = .22; targetZoom = 52; setStatus("星域坐标已复位", "ORBIT CALIBRATED", Boolean(stream)); };
   const resetButton = hud.querySelector<HTMLButtonElement>(".cosmic-reset")!;
   resetButton.addEventListener("click", reset);
 
@@ -305,7 +373,8 @@ export function mountCosmicGalaxy(container: HTMLElement) {
       setStatus(`握拳确认 ${MODULES[focused].title} · ${Math.round(progress)}%`, "HOLD TO ENTER", true);
       if (performance.now() - fistSince > 650 && performance.now() - lastEnter > 1800) {
         lastEnter = performance.now();
-        window.location.href = MODULES[focused].href;
+        sounds.warp();
+        window.setTimeout(() => { window.location.href = MODULES[focused].href; }, 180);
       }
     } else {
       fistSince = 0;
@@ -321,7 +390,8 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     handFrame = requestAnimationFrame(pumpHands);
   };
   const startCamera = async () => {
-    if (stream) { stopCamera(); return; }
+    if (stream) { sounds.camera(false); stopCamera(); return; }
+    sounds.camera(true);
     cameraButton.disabled = true;
     cameraButton.textContent = "连接摄像头…";
     setStatus("正在载入手势识别", "MEDIAPIPE INITIALIZING", true);
@@ -410,6 +480,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     });
     texture.dispose();
     renderer.dispose();
+    sounds.close();
     markerLayer.remove(); hud.remove(); pip.remove();
     galaxy.classList.remove("cosmic-nexus", "is-dragging");
   };

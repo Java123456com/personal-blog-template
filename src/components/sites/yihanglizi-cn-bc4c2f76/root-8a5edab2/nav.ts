@@ -176,12 +176,13 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   };
   navButton?.addEventListener("click",toggleTheme);
 
-  let effects=true,music=false;
+  let effects=window.localStorage.getItem("clone-sound-effects")!=="off",music=false;
+  document.documentElement.dataset.soundEffects=effects?"on":"off";
   const audio = new Audio("/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2/audio/bgm.mp3");
   audio.loop = true; audio.volume = .7;
   let audioContext: AudioContext | null = null;
   const clickTone = (event: MouseEvent) => {
-    if (!effects || !(event.target as HTMLElement).closest("button,a")) return;
+    if (!effects || (event.target as HTMLElement).closest(".cosmic-nexus") || !(event.target as HTMLElement).closest("button,a")) return;
     try {
       audioContext ??= new AudioContext();
       const oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
@@ -199,7 +200,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     const panel=document.createElement("div");panel.className="st-panel";panel.setAttribute("data-v-316b056f","");
     panel.innerHTML=`<div data-v-316b056f class="st-title">声音设置</div><button data-v-316b056f class="st-row ${effects?"on":""}"><span data-v-316b056f class="st-row-ico">🔔</span><span data-v-316b056f class="st-row-label">交互音效</span><span data-v-316b056f class="st-row-state">${effects?"ON":"OFF"}</span></button><button data-v-316b056f class="st-row ${music?"on":""}"><span data-v-316b056f class="st-row-ico">🎶</span><span data-v-316b056f class="st-row-label">背景音乐</span><span data-v-316b056f class="st-row-state">${music?"ON":"OFF"}</span></button><div data-v-316b056f class="st-vol"><span data-v-316b056f class="st-vol-ico">🔊</span><input data-v-316b056f class="st-range" type="range" min="0" max="100" step="1" aria-label="音量 70%" value="70"><span data-v-316b056f class="st-vol-num">70</span></div><div data-v-316b056f class="st-tip">背景音乐默认关闭，仅保留交互音效</div>`;
     sound.append(panel);
-    panel.querySelectorAll<HTMLButtonElement>(".st-row").forEach((button,index)=>button.addEventListener("click",()=>{if(index===0)effects=!effects;else {music=!music;if(music)void audio.play().catch(()=>{});else audio.pause();}const on=index===0?effects:music;button.classList.toggle("on",on);button.querySelector(".st-row-state")!.textContent=on?"ON":"OFF";}));
+    panel.querySelectorAll<HTMLButtonElement>(".st-row").forEach((button,index)=>button.addEventListener("click",()=>{if(index===0){effects=!effects;window.localStorage.setItem("clone-sound-effects",effects?"on":"off");document.documentElement.dataset.soundEffects=effects?"on":"off";}else {music=!music;if(music)void audio.play().catch(()=>{});else audio.pause();}const on=index===0?effects:music;button.classList.toggle("on",on);button.querySelector(".st-row-state")!.textContent=on?"ON":"OFF";}));
     panel.querySelector<HTMLInputElement>(".st-range")?.addEventListener("input",e=>{const value=(e.target as HTMLInputElement).value;panel.querySelector(".st-vol-num")!.textContent=value;audio.volume=Number(value)/100;});
   };
   soundButton?.addEventListener("click",toggleSound);
