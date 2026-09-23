@@ -134,6 +134,11 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
 .slh .galaxy.cosmic-nexus .galaxy-hint{z-index:8;pointer-events:none}
 @keyframes cosmic-reticle{50%{opacity:.8;transform:scale(1.06)}}@keyframes cosmic-live{50%{opacity:.45;transform:scale(.82)}}
 @media(max-width:700px){.slh .galaxy.cosmic-nexus{min-height:610px}.cosmic-hud{top:10px;left:10px;right:10px;align-items:flex-start}.cosmic-status{min-width:0;padding:9px}.cosmic-status small{display:none}.cosmic-actions{flex-direction:column}.cosmic-actions button{height:32px;padding:0 9px;font-size:9px}.cosmic-marker{min-width:auto;padding:7px}.cosmic-marker>b{width:27px;height:27px}.cosmic-marker small{display:none}.cosmic-marker strong{font-size:12px}.cosmic-pip{left:10px;bottom:55px;width:150px;height:100px}.cosmic-pip canvas{width:150px!important;height:100px!important}}
+
+/* Keep the zodiac wheel cursor stable while rotating beneath a stationary mouse. */
+.slh .zod-stage,.slh .zod-stage *{cursor:pointer!important;user-select:none!important;-webkit-user-select:none!important;caret-color:transparent!important;-webkit-tap-highlight-color:transparent}
+.slh .zod-stage svg,.slh .zod-stage g,.slh .zod-stage path,.slh .zod-stage text{outline:none!important}
+.slh .zod-pointer,.slh .zod-pointer.flick{animation:none!important;opacity:1!important;transform:translate3d(-50%,0,0)!important;backface-visibility:hidden;will-change:transform}
 @media(prefers-reduced-motion:reduce){.cosmic-marker,.cosmic-reticle,.cosmic-status-dot{animation:none!important;transition:none!important}}
 
 /* Empty content states keep the captured layouts ready for future data. */
