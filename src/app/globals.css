@@ -15,6 +15,7 @@ html[data-doc-theme=starry] .slh{background:linear-gradient(180deg,rgba(15,20,43
 .hv .capture-frame,.moments-header .capture-frame{object-fit:cover;object-position:center 52%;width:100%;height:100%;display:block}
 .hv .capture-frame{transform:scale(1.12) translateY(-3.5%)}
 .moments-header .capture-frame{transform:scale(1.5) translateY(-10%);filter:blur(9px) brightness(.8)}
+.moments-header video.moments-header-video{object-position:center center;filter:none}
 /* The source reveals these blocks with Vue scroll observers. Static pages need their final state. */
 .friends-page .boot-overlay{display:none!important}
 .friends-page .section-head,.friends-page .owner-card,.friends-page .friend-card,.friends-page .apply-card,
