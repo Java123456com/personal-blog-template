@@ -194,13 +194,14 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x05091d, .012);
   const camera = new THREE.PerspectiveCamera(48, 1, .1, 180);
-  camera.position.set(0, 10, 44);
-  camera.lookAt(0, 0, 0);
+  const cameraTarget = new THREE.Vector3(0, -1.05, 0);
+  camera.position.set(0, 6.7, 40);
+  camera.lookAt(cameraTarget);
   const texture = particleTexture();
   const sounds = new CosmicSoundEngine();
 
   const root = new THREE.Group();
-  root.rotation.x = -.12;
+  root.rotation.x = -.09;
   scene.add(root);
   const core = makeParticles(15000, 9.6, 0xa889ff, texture, true);
   core.scale.set(1.45, .74, 1.05);
@@ -290,8 +291,12 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   let frame = 0;
   let rotation = .22;
   let targetRotation = rotation;
-  const initialZoom = () => width < 700 ? 42 : 34;
-  let zoom = 34;
+  const initialZoom = () => {
+    if (width < 700) return 58;
+    const aspect = width / Math.max(1, height);
+    return THREE.MathUtils.clamp(38 + Math.max(0, 1.45 - aspect) * 5, 38, 43);
+  };
+  let zoom = 40;
   let targetZoom = zoom;
   let dragX = 0;
   let dragging = false;
@@ -299,24 +304,38 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   let focused = 0;
   let destroyed = false;
   let initialSized = false;
-  let galaxyVisible = false;
+  let userZoomed = false;
+  let galaxyVisible = true;
+  let contextLost = false;
   let lastRendered = 0;
   const resize = () => {
     const rect = galaxy.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return;
     width = Math.max(1, rect.width);
     height = Math.max(1, rect.height);
-    if (!initialSized) {
+    if (!initialSized || !userZoomed) {
       zoom = targetZoom = initialZoom();
       initialSized = true;
     }
     renderer.setSize(width, height, false);
+    root.scale.setScalar(width < 700 ? .68 : 1);
     camera.aspect = width / height;
+    camera.position.z = zoom;
+    camera.position.y = 6.7 + (zoom - 40) * .04;
+    camera.lookAt(cameraTarget);
     camera.updateProjectionMatrix();
+    renderer.render(scene, camera);
   };
   const observer = new ResizeObserver(resize);
   observer.observe(galaxy);
   const visibilityObserver = new IntersectionObserver(
-    entries => { galaxyVisible = entries[0]?.isIntersecting ?? false; },
+    entries => {
+      galaxyVisible = entries[0]?.isIntersecting ?? false;
+      if (galaxyVisible) {
+        lastRendered = 0;
+        resize();
+      }
+    },
     { rootMargin: "180px 0px" },
   );
   visibilityObserver.observe(galaxy);
@@ -339,6 +358,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   const pointerUp = () => { dragging = false; galaxy.classList.remove("is-dragging"); };
   const wheel = (event: WheelEvent) => {
     event.preventDefault();
+    userZoomed = true;
     targetZoom = THREE.MathUtils.clamp(targetZoom + event.deltaY * .018, 30, 62);
   };
   canvas.addEventListener("pointerdown", pointerDown);
@@ -352,7 +372,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     hud.querySelector<HTMLElement>(".cosmic-status small")!.textContent = sub;
     hud.classList.toggle("is-live", live);
   };
-  const reset = () => { sounds.pulse(); targetRotation = .22; targetZoom = initialZoom(); setStatus("星域坐标已复位 · 自动巡航", "AUTO ORBIT · ONLINE", Boolean(stream)); };
+  const reset = () => { sounds.pulse(); userZoomed = false; targetRotation = .22; targetZoom = initialZoom(); setStatus("星域坐标已复位 · 自动巡航", "AUTO ORBIT · ONLINE", Boolean(stream)); };
   const resetButton = hud.querySelector<HTMLButtonElement>(".cosmic-reset")!;
   resetButton.addEventListener("click", reset);
 
@@ -394,6 +414,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     if (lastHandX !== null) targetRotation += THREE.MathUtils.clamp(palmX - lastHandX, -.06, .06) * 3.4;
     lastHandX = palmX;
     const palmSize = distance(landmarks[0], landmarks[9]);
+    userZoomed = true;
     targetZoom = THREE.MathUtils.clamp(65 - palmSize * 115, 35, 62);
     const curled = [8,12,16,20].filter(tip => distance(landmarks[tip], landmarks[0]) < distance(landmarks[tip-2], landmarks[0]) * 1.12).length;
     if (curled >= 3) {
@@ -447,21 +468,40 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   };
   cameraButton.addEventListener("click", startCamera);
 
+  const onContextLost = (event: Event) => {
+    event.preventDefault();
+    contextLost = true;
+    setStatus("星域渲染暂时中断", "WEBGL CONTEXT LOST · RECOVERING");
+  };
+  const onContextRestored = () => {
+    contextLost = false;
+    lastRendered = 0;
+    resize();
+    setStatus("星域渲染已恢复 · 自动巡航", "AUTO ORBIT · ONLINE", Boolean(stream));
+  };
+  canvas.addEventListener("webglcontextlost", onContextLost);
+  canvas.addEventListener("webglcontextrestored", onContextRestored);
+
   const projected = new THREE.Vector3();
   let elapsed = 0;
   const animate = (now: number) => {
     if (destroyed) return;
     frame = requestAnimationFrame(animate);
-    if (document.hidden || !galaxyVisible || now - lastRendered < 1000 / 30) return;
+    if (document.hidden || !galaxyVisible || contextLost || now - lastRendered < 1000 / 30) return;
     const delta = lastRendered ? Math.min((now - lastRendered) / 1000, .06) : 1 / 30;
     lastRendered = now;
     elapsed += delta;
     if (!dragging && !stream) targetRotation += delta * .13;
+    if (!dragging && Math.abs(targetRotation) > Math.PI * 200) {
+      const turns = Math.trunc(targetRotation / (Math.PI * 2)) * Math.PI * 2;
+      targetRotation -= turns;
+      rotation -= turns;
+    }
     rotation += (targetRotation - rotation) * .075;
     zoom += (targetZoom - zoom) * .075;
     camera.position.z = zoom;
-    camera.position.y = 9.2 + (zoom - 34) * .06;
-    camera.lookAt(0, 0, 0);
+    camera.position.y = 6.7 + (zoom - 40) * .04;
+    camera.lookAt(cameraTarget);
     root.rotation.y = rotation;
     core.rotation.y += delta * .035;
     coreGlow.rotation.y -= delta * .022;
@@ -476,7 +516,12 @@ export function mountCosmicGalaxy(container: HTMLElement) {
       (lineGeometry.attributes.position.array as Float32Array).set([node.position.x,node.position.y,node.position.z], index*3);
       projected.copy(node.position).project(camera);
       const visible = projected.z < 1 && projected.z > -1;
-      node.label.style.transform = `translate3d(${(projected.x*.5+.5)*width}px,${(-projected.y*.5+.5)*height}px,0) translate(-50%,-50%) scale(${THREE.MathUtils.clamp(1.05-projected.z*.23,.68,1.12)})`;
+      const rawX = (projected.x * .5 + .5) * width;
+      const rawY = (-projected.y * .5 + .5) * height;
+      const halfLabel = Math.max(38, node.label.offsetWidth * .5);
+      const screenX = THREE.MathUtils.clamp(rawX, halfLabel + 10, width - halfLabel - 10);
+      const screenY = THREE.MathUtils.clamp(rawY, 72, height - 46);
+      node.label.style.transform = `translate3d(${screenX}px,${screenY}px,0) translate(-50%,-50%) scale(${THREE.MathUtils.clamp(1.05-projected.z*.23,.68,1.12)})`;
       node.label.style.opacity = visible ? String(THREE.MathUtils.clamp(1.15-projected.z*.45,.28,1)) : "0";
       node.label.style.zIndex = String(Math.round((1-projected.z)*50));
     });
@@ -510,6 +555,8 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     canvas.removeEventListener("pointerup", pointerUp);
     canvas.removeEventListener("pointercancel", pointerUp);
     canvas.removeEventListener("wheel", wheel);
+    canvas.removeEventListener("webglcontextlost", onContextLost);
+    canvas.removeEventListener("webglcontextrestored", onContextRestored);
     resetButton.removeEventListener("click", reset);
     cameraButton.removeEventListener("click", startCamera);
     scene.traverse(object => {

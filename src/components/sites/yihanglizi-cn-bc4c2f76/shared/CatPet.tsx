@@ -385,7 +385,16 @@ export default function CatPet() {
   }, []);
 
   return (
-    <div className="catpet" aria-hidden="true">
+    <div className="catpet">
+      <button
+        type="button"
+        className="cp-shortcut"
+        aria-expanded={helpVisible}
+        onClick={() => setHelpVisible(value => !value)}
+        title="打开猫咪操作指南"
+      >
+        <kbd>Shift</kbd><span>+</span><kbd>H</kbd><span>猫咪指南</span>
+      </button>
       <div ref={stageRef} className="cp-stage">
         {bubble && <div className="cp-bubble">{bubble}</div>}
         <div ref={spriteRef} className="cp-sprite" />
