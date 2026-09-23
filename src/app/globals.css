@@ -1,0 +1,146 @@
+@import url('/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2/assets/original.css');
+@font-face{font-family:Inter;src:url('/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2/assets/inter.woff2') format('woff2');font-display:swap}
+.clone-flyout-open .menu{opacity:1!important;visibility:visible!important;transform:none!important}
+.clone-search-mask{position:fixed;inset:0;z-index:300;background:rgba(10,8,5,.75);display:flex;justify-content:center;align-items:flex-start;padding:15vh 16px 20px;backdrop-filter:blur(4px)}
+.clone-search-box{width:min(560px,100%);background:#171717;border:1px solid #444;border-radius:8px;color:#dedede;box-shadow:0 20px 70px #0009;overflow:hidden;font-family:Inter,system-ui,sans-serif}
+.clone-search-input{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid #444;color:#8f8f8f}.clone-search-input>span{font-size:25px}.clone-search-input input{flex:1;background:transparent;border:0;outline:0;color:white;font:inherit;font-size:18px}.clone-search-input button{background:#333;border:1px solid #555;color:#ccc;border-radius:4px;padding:4px 7px;cursor:pointer}
+.clone-search-results{padding:10px;max-height:50vh;overflow:auto}.clone-search-results a{display:flex;justify-content:space-between;color:#ddd;text-decoration:none;padding:11px 14px;border-radius:5px}.clone-search-results a:hover{background:#ffb000;color:#1a0f00}.clone-search-results p{padding:14px}.clone-search-foot{border-top:1px solid #444;color:#999;padding:10px 16px;font-size:12px}
+.clone-mobile-menu{position:fixed;top:64px;left:0;right:0;bottom:0;z-index:100;background:#0a0805;overflow:auto;padding:20px 26px;display:flex;flex-direction:column}.clone-mobile-menu a{color:#e6dccb;text-decoration:none;padding:15px;border-bottom:1px solid #40301c;font-size:16px}.clone-mobile-menu a:hover{color:#ffb000}
+html[data-doc-theme=starry] .clone-mobile-menu{background:#101427}
+html[data-doc-theme=starry] body{background:#05060e}
+html[data-doc-theme=starry] .wasteland,html:not([data-doc-theme=starry]) .slh{display:none!important}
+html[data-doc-theme=starry] .VPNav{background:rgba(14,18,36,.91)!important}
+html[data-doc-theme=starry] .slh{background:linear-gradient(180deg,rgba(15,20,43,.58),rgba(14,22,42,.16) 40%,transparent)}
+.article-draft{min-height:52vh;padding-top:32px}.article-draft-note{margin:32px 0;padding:20px 24px;border-left:3px solid var(--vp-c-brand-1,#d89b56);background:var(--vp-c-bg-soft,#242424);border-radius:0 8px 8px 0}
+.hv .capture-frame,.moments-header .capture-frame{object-fit:cover;object-position:center 52%;width:100%;height:100%;display:block}
+.hv .capture-frame{transform:scale(1.12) translateY(-3.5%)}
+.moments-header .capture-frame{transform:scale(1.5) translateY(-10%);filter:blur(9px) brightness(.8)}
+/* The source reveals these blocks with Vue scroll observers. Static pages need their final state. */
+.friends-page .boot-overlay{display:none!important}
+.friends-page .section-head,.friends-page .owner-card,.friends-page .friend-card,.friends-page .apply-card,
+.resume-page .tl-item,
+.about-page .stats,.about-page .section-head,.about-page .identity-text,.about-page .identity-card,.about-page .marquee,.about-page .skill-card,.about-page .project-card,.about-page .timeline-item,.about-page .contact-card,.about-page .contact-cta,.about-page .footer-quote,.about-page .footer-meta{opacity:1!important;transform:none!important}
+/* The source logo uses a runtime letter-morph animation. Keep the captured site title stable. */
+.VPNavBarTitle .VPImage.logo{display:none!important}
+
+/* Two intentionally separate page themes. The captured site supplied the layouts;
+   these tokens make every shared surface follow the selected background theme. */
+html[data-doc-theme=cyber]{
+  --clone-accent:#ffae1a;--clone-accent-strong:#ff6b26;--clone-text:#f8ecd5;--clone-muted:#b9a989;
+  --clone-surface:rgba(17,15,10,.88);--clone-border:rgba(255,174,26,.22);--clone-glow:rgba(255,125,28,.18);
+  --vp-c-brand-1:#ffb000;--vp-c-brand-2:#ffd24a;--vp-c-brand-3:#ff8e1f;
+  --vp-c-bg:#090806;--vp-c-bg-alt:#0d0a06;--vp-c-bg-elv:#151009;--vp-c-bg-soft:#1b140b;
+  --vp-c-text-1:#f1e4cd;--vp-c-text-2:#b8aa93;--vp-c-text-3:#897b65;--vp-c-divider:rgba(255,176,0,.16)
+}
+html[data-doc-theme=starry]{
+  --clone-accent:#69d5ff;--clone-accent-strong:#b78cff;--clone-text:#e8edff;--clone-muted:#aeb9dc;
+  --clone-surface:rgba(13,19,43,.78);--clone-border:rgba(111,193,255,.24);--clone-glow:rgba(108,163,255,.2);
+  --vp-c-brand-1:#6ad7ff;--vp-c-brand-2:#a18cff;--vp-c-brand-3:#4ec5ee;
+  --vp-c-bg:#090d20;--vp-c-bg-alt:#0c1128;--vp-c-bg-elv:#111a38;--vp-c-bg-soft:#172243;
+  --vp-c-text-1:#e6ecff;--vp-c-text-2:#b4c0df;--vp-c-text-3:#8290b5;--vp-c-divider:rgba(126,184,255,.16)
+}
+html[data-doc-theme=cyber] body{background:#080705;background-image:linear-gradient(rgba(255,174,26,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,174,26,.028) 1px,transparent 1px);background-size:26px 26px;background-attachment:fixed}
+html[data-doc-theme=starry] body{background:#05060e}
+html[data-doc-theme=cyber] .doc-bg{background:radial-gradient(circle at 75% 10%,rgba(255,102,20,.13),transparent 27%),radial-gradient(circle at 12% 22%,rgba(255,196,52,.1),transparent 28%),#080705!important}
+html[data-doc-theme=starry] .doc-bg{background:#05060e!important}
+html[data-doc-theme] .VPNav{background:color-mix(in srgb,var(--vp-c-bg) 91%,transparent)!important;border-bottom-color:var(--clone-border)!important;backdrop-filter:blur(16px) saturate(135%)}
+html[data-doc-theme] .VPNavBarMenuLink.active,html[data-doc-theme] .VPNavBarMenuGroup.active .button,html[data-doc-theme] .VPNavBarMenuLink:hover{color:var(--clone-accent)!important}
+html[data-doc-theme] .DocSearch-Button{background:color-mix(in srgb,var(--clone-surface) 88%,transparent)!important;border-color:var(--clone-border)!important;color:var(--clone-muted)!important}
+html[data-doc-theme] .ns-panel{background:color-mix(in srgb,var(--vp-c-bg-elv) 94%,transparent)!important;border-color:var(--clone-border)!important;box-shadow:0 18px 48px var(--clone-glow),inset 0 1px rgba(255,255,255,.06)!important}
+html[data-doc-theme] .ns-title{color:var(--clone-muted)!important;border-bottom-color:var(--clone-border)!important}
+html[data-doc-theme] .ns-opt{color:var(--clone-text)!important}
+html[data-doc-theme] .ns-opt:hover,html[data-doc-theme] .ns-opt.active{background:linear-gradient(100deg,color-mix(in srgb,var(--clone-accent) 86%,#fff),color-mix(in srgb,var(--clone-accent-strong) 72%,#fff))!important;color:#07101f!important}
+html[data-doc-theme] :is(.bl-card,.moment-card,.friend-card,.owner-card,.apply-card,.tl-card,.skill-card,.project-card,.contact-card,.tool-card,.vp-doc,.resume-modal){border-color:var(--clone-border)!important}
+html[data-doc-theme=starry] :is(.bl-card,.moment-card,.friend-card,.owner-card,.apply-card,.tl-card,.skill-card,.project-card,.contact-card,.tool-card,.vp-doc,.resume-modal){box-shadow:0 12px 38px rgba(2,7,26,.28),inset 0 1px rgba(255,255,255,.045)!important}
+html[data-doc-theme=cyber] :is(.bl-card,.moment-card,.friend-card,.owner-card,.apply-card,.tl-card,.skill-card,.project-card,.contact-card,.tool-card,.vp-doc,.resume-modal){box-shadow:0 12px 32px rgba(0,0,0,.34),inset 0 1px rgba(255,201,93,.035)!important}
+html[data-doc-theme] :is(.bl-card a,.moment-card a,.friend-card a,.project-card a,.contact-card a,.vp-doc a){color:var(--clone-accent)!important}
+html[data-doc-theme] .clone-search-box{background:var(--vp-c-bg-elv);border-color:var(--clone-border);color:var(--clone-text);box-shadow:0 22px 72px var(--clone-glow)}
+html[data-doc-theme] .clone-search-mask{background:rgba(3,5,15,.78)}
+html[data-doc-theme] .clone-search-input{border-color:var(--clone-border)}
+html[data-doc-theme] .clone-search-results a{color:var(--clone-text)}
+html[data-doc-theme] .clone-search-results a:hover{background:var(--clone-accent);color:#07101f}
+html[data-doc-theme] .clone-search-foot{border-color:var(--clone-border);color:var(--clone-muted)}
+/* The two home systems carry their own atmosphere; the legacy floating cat breaks both compositions. */
+.catpet{display:none!important}
+
+/* 星空极光首页：用户提供的星际轨道视频作为整页的沉浸式底图。 */
+html[data-doc-theme=starry] .slh{position:relative;isolation:isolate;background:transparent!important}
+html[data-doc-theme=starry] .slh-video-layer{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#070b1d}
+html[data-doc-theme=starry] .slh-video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;filter:saturate(1.08) contrast(1.04) brightness(.66)}
+html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,6,22,.5),rgba(5,9,29,.34) 42%,rgba(4,8,25,.62)),radial-gradient(ellipse at 50% 30%,transparent 0%,rgba(5,8,28,.27) 82%)}
+@media (prefers-reduced-motion:reduce){html[data-doc-theme=starry] .slh-video{display:none}}
+
+/* One wide content measure for both home themes and document routes. */
+:root{--clone-page-width:min(calc(100vw - 2 * clamp(24px,4vw,120px)),2200px)}
+@media (min-width:960px){
+  :root{--vp-nav-height:94px}
+  .VPNav,.VPNavBar,.VPNavBar .wrapper,.VPNavBar .container,.VPNavBar .content,.VPNavBar .content-body{height:94px!important}
+  .VPNav{width:100%!important}
+  .VPNavBar .wrapper{padding-inline:clamp(24px,2vw,60px)!important}
+  .VPNavBar .container{width:100%!important;max-width:none!important}
+  .VPNavBarTitle .title{height:94px!important}
+  .VPNavBarTitle .ba{display:flex!important}
+  .VPNavBarTitle .lz-nav-logo{width:38px!important;height:38px!important}
+  .VPNavBarSearch{flex:1 1 auto;min-width:160px;padding-left:32px!important}
+  .DocSearch-Button{height:52px!important;min-width:250px!important;padding:0 14px!important;border-radius:12px!important;font-size:1rem!important}
+  .VPNavBarMenu{margin-left:auto!important;gap:2px!important}
+  .VPNavBarMenuLink,.VPNavBarMenuGroup .button{height:94px!important;padding:0 .7rem!important;font-size:1.08rem!important;font-weight:600!important}
+  .VPNavBarMenuGroup .button .text{font-size:1.08rem!important;font-weight:600!important;line-height:94px!important}
+  .nav-switcher,.sound-toggle{margin-left:4px!important}
+  .ns-btn,.st-btn{width:42px!important;height:42px!important}
+  .ns-icon,.st-icon{width:26px!important;height:26px!important}
+  .slh,.wasteland .hud{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
+  .wasteland{margin-top:0!important}
+  .VPDoc .container{max-width:var(--clone-page-width)!important}
+  .VPDoc .content,.VPDoc .content-container{max-width:none!important}
+  .bl-inner,.tools-root{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
+  .friends-page,.about-page,.resume-page{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
+  .friends-page .section-inner,.friends-page .hero-inner,.about-page .section-inner,.about-page .hero-inner{max-width:var(--clone-page-width)!important}
+  .moments-content{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
+}
+.slh .galaxy canvas{width:100%!important;height:100%!important}
+
+/* Gemini particle concept adapted to the starry home constellation portal. */
+.slh .galaxy.cosmic-nexus{position:relative;isolation:isolate;overflow:hidden;min-height:clamp(560px,56vw,790px);cursor:grab;background:radial-gradient(ellipse at 50% 52%,rgba(3,8,27,.97) 0%,rgba(5,11,34,.95) 45%,rgba(2,5,20,.99) 100%);border-color:rgba(124,204,255,.38);box-shadow:inset 0 0 110px rgba(0,2,18,.72),0 18px 64px rgba(0,4,24,.38)}
+.slh .galaxy.cosmic-nexus:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 53%,rgba(51,35,124,.22),transparent 34%),radial-gradient(ellipse at 50% 54%,rgba(22,181,217,.11),transparent 53%),linear-gradient(rgba(120,160,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(120,160,255,.018) 1px,transparent 1px);background-size:auto,auto,44px 44px,44px 44px}
+.slh .galaxy.cosmic-nexus.is-dragging{cursor:grabbing}
+.slh .galaxy.cosmic-nexus>canvas{position:absolute;inset:0;z-index:1;display:block;touch-action:none;outline:0}
+.cosmic-markers{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.cosmic-marker{--module-color:#69d5ff;position:absolute;left:0;top:0;display:flex;align-items:center;gap:9px;min-width:122px;padding:8px 11px 8px 8px;border:1px solid color-mix(in srgb,var(--module-color) 55%,transparent);border-radius:11px;background:rgba(7,11,34,.72);color:#eef6ff;box-shadow:0 0 20px color-mix(in srgb,var(--module-color) 22%,transparent),inset 0 1px rgba(255,255,255,.1);backdrop-filter:blur(8px);pointer-events:auto;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s;white-space:nowrap}
+.cosmic-marker>b{display:grid;place-items:center;width:30px;height:30px;border:1px solid color-mix(in srgb,var(--module-color) 68%,transparent);border-radius:8px;background:color-mix(in srgb,var(--module-color) 15%,transparent);color:var(--module-color);font:700 17px/1 ui-monospace,monospace;text-shadow:0 0 10px var(--module-color)}
+.cosmic-marker>span:last-child{display:flex;flex-direction:column;align-items:flex-start;gap:2px}.cosmic-marker strong{font-size:14px;line-height:1.2;letter-spacing:.08em}.cosmic-marker small{font:8px/1.2 ui-monospace,monospace;letter-spacing:.16em;color:#8fa4cd}
+.cosmic-marker:hover,.cosmic-marker.is-focused{border-color:var(--module-color);background:rgba(12,19,51,.9);box-shadow:0 0 29px color-mix(in srgb,var(--module-color) 43%,transparent),inset 0 0 16px color-mix(in srgb,var(--module-color) 8%,transparent)}
+.cosmic-reticle{position:absolute;inset:-8px;border:1px solid var(--module-color);border-radius:15px;opacity:0;transform:scale(.88);transition:.25s;pointer-events:none}.cosmic-marker.is-focused .cosmic-reticle{opacity:.45;transform:scale(1);animation:cosmic-reticle 1.8s ease-in-out infinite}
+.cosmic-hud{position:absolute;z-index:6;top:18px;left:18px;right:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;pointer-events:none}
+.cosmic-status,.cosmic-actions{border:1px solid rgba(113,174,255,.25);background:rgba(5,10,31,.72);box-shadow:0 10px 32px rgba(0,0,20,.3);backdrop-filter:blur(10px)}
+.cosmic-status{display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center;min-width:238px;padding:10px 13px;border-radius:10px;color:#dceaff;font:12px/1.2 ui-monospace,monospace;letter-spacing:.05em}.cosmic-status small{grid-column:2;color:#6d85b6;font-size:8px;letter-spacing:.15em;margin-top:3px}.cosmic-status-dot{grid-row:1/3;width:7px;height:7px;border-radius:50%;background:#7b91ba;box-shadow:0 0 9px #7b91ba}.cosmic-hud.is-live .cosmic-status-dot{background:#6fffd1;box-shadow:0 0 13px #6fffd1;animation:cosmic-live 1s ease-in-out infinite}
+.cosmic-actions{display:flex;gap:7px;padding:6px;border-radius:12px;pointer-events:auto}.cosmic-actions button{height:35px;padding:0 13px;border:1px solid rgba(115,179,255,.25);border-radius:8px;background:rgba(21,31,68,.74);color:#cfeaff;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;cursor:pointer}.cosmic-actions button:hover{border-color:#69d5ff;background:rgba(33,63,111,.82);box-shadow:0 0 16px rgba(105,213,255,.18)}.cosmic-actions button:disabled{opacity:.55;cursor:wait}
+.cosmic-pip{position:absolute;z-index:7;left:18px;bottom:58px;width:240px;height:160px;overflow:hidden;border:1px solid rgba(105,213,255,.42);border-radius:12px;background:#030716;box-shadow:0 12px 40px rgba(0,0,20,.48),0 0 25px rgba(105,213,255,.16);pointer-events:none}.cosmic-pip[hidden]{display:none}.cosmic-pip video,.cosmic-pip canvas{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important}.cosmic-pip video{transform:scaleX(-1);opacity:.55}.cosmic-pip canvas{z-index:2}.cosmic-pip span{position:absolute;z-index:3;left:8px;top:7px;padding:4px 6px;border-radius:4px;background:#030716b8;color:#8be4ff;font:8px/1 ui-monospace,monospace;letter-spacing:.12em}
+.slh .galaxy.cosmic-nexus .galaxy-hint{z-index:8;pointer-events:none}
+@keyframes cosmic-reticle{50%{opacity:.8;transform:scale(1.06)}}@keyframes cosmic-live{50%{opacity:.45;transform:scale(.82)}}
+@media(max-width:700px){.slh .galaxy.cosmic-nexus{min-height:570px}.cosmic-hud{top:10px;left:10px;right:10px;align-items:flex-start}.cosmic-status{min-width:0;padding:9px}.cosmic-status small{display:none}.cosmic-actions{flex-direction:column}.cosmic-actions button{height:32px;padding:0 9px;font-size:9px}.cosmic-marker{min-width:auto;padding:7px}.cosmic-marker>b{width:27px;height:27px}.cosmic-marker small{display:none}.cosmic-marker strong{font-size:12px}.cosmic-pip{left:10px;bottom:55px;width:150px;height:100px}.cosmic-pip canvas{width:150px!important;height:100px!important}}
+@media(prefers-reduced-motion:reduce){.cosmic-marker,.cosmic-reticle,.cosmic-status-dot{animation:none!important;transition:none!important}}
+
+/* Empty content states keep the captured layouts ready for future data. */
+.template-brand-icon{display:inline-grid;place-items:center;width:36px;height:36px;border:1px solid var(--clone-border,#9a773d);border-radius:10px;color:var(--clone-accent,#ffbd56);font-size:24px;line-height:1;background:var(--clone-surface,#15120d)}
+.template-brand-name{font-size:1.2rem;font-weight:800;letter-spacing:.08em;color:var(--clone-text,#f8ecd5)}
+.VPNavBarTitle .title>.template-brand-icon{display:inline-grid!important}
+.VPNavBarTitle .title>.template-brand-name{display:inline-block!important}
+.template-empty{box-sizing:border-box;grid-column:1/-1;width:100%;min-height:220px;margin:20px auto 36px;padding:48px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px dashed var(--clone-border,rgba(255,174,26,.3));border-radius:18px;background:var(--clone-surface,rgba(17,15,10,.78));box-shadow:0 16px 42px var(--clone-glow,rgba(255,125,28,.1));color:var(--clone-text,#f8ecd5)}
+.template-empty-icon{font-size:28px;color:var(--clone-accent,#ffbd56);margin-bottom:12px}
+.template-empty h3{font-size:1.35rem;line-height:1.4;margin:0 0 8px;font-weight:700}
+.template-empty p{font-size:.95rem;line-height:1.7;margin:0;color:var(--clone-muted,#b9a989)}
+.template-avatar{width:100%;height:100%;display:grid;place-items:center;font-size:clamp(3rem,7vw,6rem);color:var(--clone-accent,#ffbd56);background:radial-gradient(circle at 50% 40%,var(--clone-glow,rgba(255,125,28,.3)),transparent 65%)}
+.clone-mobile-blog{border-bottom:1px solid var(--clone-border,#40301c)}
+.clone-mobile-blog summary{list-style:none;color:var(--clone-text,#e6dccb);padding:15px;font-size:16px;cursor:pointer;display:flex;justify-content:space-between}
+.clone-mobile-blog summary::-webkit-details-marker{display:none}
+.clone-mobile-blog[open] summary{color:var(--clone-accent,#ffb000)}
+.clone-mobile-blog a{display:block;padding-left:32px;border-bottom:0}
+/* The blog flyout is a prominent two-option menu in both desktop themes. */
+@media(min-width:960px){
+  .VPNavBarMenuGroup>.menu{top:76px!important;right:0!important}
+  .VPNavBarMenuGroup>.menu .VPMenu{box-sizing:border-box;min-width:268px;padding:16px 14px;border-radius:22px;border:1px solid color-mix(in srgb,var(--clone-accent,#ffb000) 52%,transparent);background:color-mix(in srgb,var(--vp-c-bg-elv,#17120d) 96%,black);box-shadow:0 16px 40px rgba(0,0,0,.34),0 0 18px var(--clone-glow,rgba(255,174,26,.15))}
+  .VPNavBarMenuGroup>.menu .VPMenuLink .link{display:block;padding:18px 32px;border-radius:12px;line-height:1.35;font-size:28px;font-weight:500;letter-spacing:.01em;color:var(--clone-text,#f8ecd5);white-space:nowrap}
+  .VPNavBarMenuGroup>.menu .VPMenuLink .link:hover{color:var(--clone-accent,#ffb000);background:color-mix(in srgb,var(--clone-accent,#ffb000) 10%,transparent)}
+}
+@media(max-width:700px){.template-empty{min-height:180px;padding:34px 20px;margin:14px auto 28px}}
