@@ -140,6 +140,7 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
 .slh .zod-stage svg,.slh .zod-stage g,.slh .zod-stage path,.slh .zod-stage text{outline:none!important}
 .slh .zod-pointer{opacity:1!important;backface-visibility:hidden;will-change:transform}
 .slh .zod-pointer.flick{animation:ptrFlick-28aad0a8 .6s cubic-bezier(.36,1.6,.5,1)!important}
+@media(min-width:1440px){.slh .zod{grid-template-columns:clamp(440px,31vw,640px) minmax(0,1fr);gap:clamp(22px,3vw,56px)}.slh .zod-col{min-width:0}.slh .zod-stage{width:100%;max-width:640px}}
 @media(prefers-reduced-motion:reduce){.cosmic-marker,.cosmic-reticle,.cosmic-status-dot{animation:none!important;transition:none!important}}
 
 /* Empty content states keep the captured layouts ready for future data. */
