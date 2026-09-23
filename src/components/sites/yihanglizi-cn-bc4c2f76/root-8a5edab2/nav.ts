@@ -250,7 +250,10 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     nav.querySelector(".ns-panel")?.remove();
     const panel=document.createElement("div");panel.className="ns-panel";panel.setAttribute("data-v-deb9fdfc","");
     panel.innerHTML=`<div data-v-deb9fdfc class="ns-title">背景主题</div>${[["✦","星空极光"],["⚡","赛博编程"]].map(([icon,name])=>`<button data-v-deb9fdfc class="ns-opt ${name===themeChoice?"active":""}"><span data-v-deb9fdfc class="ns-opt-icon">${icon}</span><span data-v-deb9fdfc class="ns-opt-label">${name}</span>${name===themeChoice?'<span data-v-deb9fdfc class="ns-opt-check">✓</span>':""}</button>`).join("")}`;
-    nav.append(panel);panel.querySelectorAll<HTMLButtonElement>(".ns-opt").forEach(button=>button.addEventListener("click",()=>selectTheme(button.querySelector(".ns-opt-label")?.textContent||"赛博编程")));
+    nav.append(panel);panel.querySelectorAll<HTMLButtonElement>(".ns-opt").forEach(button=>button.addEventListener("click",()=>{
+      try { playThemeSwitchTone(); } catch { /* Audio may be unavailable in a restricted browser. */ }
+      selectTheme(button.querySelector(".ns-opt-label")?.textContent||"赛博编程");
+    }));
   };
   navButton?.addEventListener("click",toggleTheme);
 
@@ -293,8 +296,16 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     gain.gain.setValueAtTime(.0001,began);gain.gain.exponentialRampToValueAtTime(level*(soundVolume/100),began+.015);gain.gain.exponentialRampToValueAtTime(.0001,began+duration);
     oscillator.connect(gain).connect(audioContext.destination);oscillator.start(began);oscillator.stop(began+duration+.02);
   };
+  const playThemeSwitchTone=()=>{
+    if(!effects)return;
+    // Three overlapping bell-like notes descend and leave a longer, clear tail.
+    playTone("sine",2093,1568,.18,.045);
+    playTone("triangle",1568,1047,.43,.09,.04);
+    playTone("triangle",1318,880,.48,.075,.2);
+    playTone("sine",988,659,.52,.065,.38);
+  };
   const clickTone = (event: MouseEvent) => {
-    if (!effects || (event.target as HTMLElement).closest(".cosmic-nexus") || !(event.target as HTMLElement).closest("button,a")) return;
+    if (!effects || (event.target as HTMLElement).closest(".cosmic-nexus,.ns-opt") || !(event.target as HTMLElement).closest("button,a")) return;
     try {
       const anchor=(event.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
       if(anchor){
