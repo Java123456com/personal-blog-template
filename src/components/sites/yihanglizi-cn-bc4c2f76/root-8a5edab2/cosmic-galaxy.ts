@@ -116,6 +116,8 @@ class CosmicSoundEngine {
   private tone(type: OscillatorType, from: number, to: number, duration: number, volume: number, delay = 0) {
     const context = this.getContext();
     if (!context) return;
+    const storedVolume = Number(document.documentElement.dataset.soundVolume ?? "1");
+    const masterVolume = Number.isFinite(storedVolume) ? THREE.MathUtils.clamp(storedVolume, 0, 1) : 1;
     const began = context.currentTime + delay;
     const oscillator = context.createOscillator();
     const gain = context.createGain();
@@ -123,7 +125,7 @@ class CosmicSoundEngine {
     oscillator.frequency.setValueAtTime(from, began);
     oscillator.frequency.exponentialRampToValueAtTime(Math.max(30, to), began + duration);
     gain.gain.setValueAtTime(.0001, began);
-    gain.gain.exponentialRampToValueAtTime(volume, began + Math.min(.018, duration * .2));
+    gain.gain.exponentialRampToValueAtTime(volume * masterVolume, began + Math.min(.018, duration * .2));
     gain.gain.exponentialRampToValueAtTime(.0001, began + duration);
     oscillator.connect(gain).connect(context.destination);
     oscillator.start(began);
@@ -140,14 +142,14 @@ class CosmicSoundEngine {
   }
 
   warp() {
-    this.tone("sawtooth", 150, 920, .34, .035);
-    this.tone("sine", 880, 180, .44, .045, .04);
-    this.tone("triangle", 1240, 420, .28, .018, .09);
+    this.tone("sawtooth", 150, 920, .34, .075);
+    this.tone("sine", 880, 180, .44, .085, .04);
+    this.tone("triangle", 1240, 420, .28, .04, .09);
   }
 
   pulse() {
-    this.tone("sine", 210, 420, .2, .035);
-    this.tone("triangle", 520, 680, .13, .018, .055);
+    this.tone("sine", 210, 420, .2, .065);
+    this.tone("triangle", 520, 680, .13, .035, .055);
   }
 
   camera(active: boolean) {
@@ -192,7 +194,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x05091d, .012);
   const camera = new THREE.PerspectiveCamera(48, 1, .1, 180);
-  camera.position.set(0, 12, 52);
+  camera.position.set(0, 10, 44);
   camera.lookAt(0, 0, 0);
   const texture = particleTexture();
   const sounds = new CosmicSoundEngine();
@@ -274,17 +276,22 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   let frame = 0;
   let rotation = .22;
   let targetRotation = rotation;
-  let zoom = 52;
+  let zoom = 44;
   let targetZoom = zoom;
   let dragX = 0;
   let dragging = false;
   let moved = false;
   let focused = 0;
   let destroyed = false;
+  let initialSized = false;
   const resize = () => {
     const rect = galaxy.getBoundingClientRect();
     width = Math.max(1, rect.width);
     height = Math.max(1, rect.height);
+    if (!initialSized) {
+      zoom = targetZoom = width < 700 ? 50 : 44;
+      initialSized = true;
+    }
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
@@ -310,7 +317,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
   const pointerUp = () => { dragging = false; galaxy.classList.remove("is-dragging"); };
   const wheel = (event: WheelEvent) => {
     event.preventDefault();
-    targetZoom = THREE.MathUtils.clamp(targetZoom + event.deltaY * .018, 38, 68);
+    targetZoom = THREE.MathUtils.clamp(targetZoom + event.deltaY * .018, 34, 64);
   };
   canvas.addEventListener("pointerdown", pointerDown);
   canvas.addEventListener("pointermove", pointerMove);
@@ -323,7 +330,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     hud.querySelector<HTMLElement>(".cosmic-status small")!.textContent = sub;
     hud.classList.toggle("is-live", live);
   };
-  const reset = () => { sounds.pulse(); targetRotation = .22; targetZoom = 52; setStatus("星域坐标已复位", "ORBIT CALIBRATED", Boolean(stream)); };
+  const reset = () => { sounds.pulse(); targetRotation = .22; targetZoom = width < 700 ? 50 : 44; setStatus("星域坐标已复位", "ORBIT CALIBRATED", Boolean(stream)); };
   const resetButton = hud.querySelector<HTMLButtonElement>(".cosmic-reset")!;
   resetButton.addEventListener("click", reset);
 
@@ -365,7 +372,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     if (lastHandX !== null) targetRotation += THREE.MathUtils.clamp(palmX - lastHandX, -.06, .06) * 3.4;
     lastHandX = palmX;
     const palmSize = distance(landmarks[0], landmarks[9]);
-    targetZoom = THREE.MathUtils.clamp(69 - palmSize * 115, 39, 66);
+    targetZoom = THREE.MathUtils.clamp(65 - palmSize * 115, 35, 62);
     const curled = [8,12,16,20].filter(tip => distance(landmarks[tip], landmarks[0]) < distance(landmarks[tip-2], landmarks[0]) * 1.12).length;
     if (curled >= 3) {
       if (!fistSince) fistSince = performance.now();
@@ -425,7 +432,7 @@ export function mountCosmicGalaxy(container: HTMLElement) {
     rotation += (targetRotation - rotation) * .075;
     zoom += (targetZoom - zoom) * .075;
     camera.position.z = zoom;
-    camera.position.y = 11 + (zoom - 52) * .08;
+    camera.position.y = 10 + (zoom - 44) * .08;
     camera.lookAt(0, 0, 0);
     root.rotation.y = rotation;
     core.rotation.y += .00065;

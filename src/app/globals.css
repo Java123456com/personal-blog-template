@@ -139,8 +139,8 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
 /* The blog flyout is a prominent two-option menu in both desktop themes. */
 @media(min-width:960px){
   .VPNavBarMenuGroup>.menu{top:76px!important;right:0!important}
-  .VPNavBarMenuGroup>.menu .VPMenu{box-sizing:border-box;min-width:268px;padding:16px 14px;border-radius:22px;border:1px solid color-mix(in srgb,var(--clone-accent,#ffb000) 52%,transparent);background:color-mix(in srgb,var(--vp-c-bg-elv,#17120d) 96%,black);box-shadow:0 16px 40px rgba(0,0,0,.34),0 0 18px var(--clone-glow,rgba(255,174,26,.15))}
-  .VPNavBarMenuGroup>.menu .VPMenuLink .link{display:block;padding:18px 32px;border-radius:12px;line-height:1.35;font-size:28px;font-weight:500;letter-spacing:.01em;color:var(--clone-text,#f8ecd5);white-space:nowrap}
+  .VPNavBarMenuGroup>.menu .VPMenu{box-sizing:border-box;min-width:168px;padding:10px;border-radius:12px;border:1px solid color-mix(in srgb,var(--clone-accent,#ffb000) 52%,transparent);background:color-mix(in srgb,var(--vp-c-bg-elv,#17120d) 96%,black);box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 18px var(--clone-glow,rgba(255,174,26,.15))}
+  .VPNavBarMenuGroup>.menu .VPMenuLink .link{display:block;padding:8px 10px;border-radius:8px;line-height:1.35;font-size:.82rem;font-weight:600;letter-spacing:.01em;color:var(--clone-text,#f8ecd5);white-space:nowrap}
   .VPNavBarMenuGroup>.menu .VPMenuLink .link:hover{color:var(--clone-accent,#ffb000);background:color-mix(in srgb,var(--clone-accent,#ffb000) 10%,transparent)}
 }
 @media(max-width:700px){.template-empty{min-height:180px;padding:34px 20px;margin:14px auto 28px}}

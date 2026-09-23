@@ -176,21 +176,58 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   };
   navButton?.addEventListener("click",toggleTheme);
 
-  let effects=window.localStorage.getItem("clone-sound-effects")!=="off",music=false;
+  let effects=window.localStorage.getItem("clone-sound-effects")!=="off";
+  let music=window.localStorage.getItem("clone-background-music")==="on";
+  const storedVolume=Number(window.localStorage.getItem("clone-sound-volume")??"100");
+  let soundVolume=Number.isFinite(storedVolume)?Math.min(100,Math.max(0,storedVolume)):100;
   document.documentElement.dataset.soundEffects=effects?"on":"off";
+  document.documentElement.dataset.soundVolume=String(soundVolume/100);
   const audio = new Audio("/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2/audio/bgm.mp3");
-  audio.loop = true; audio.volume = .7;
+  audio.loop = true; audio.volume = soundVolume/100;
+  document.documentElement.dataset.backgroundMusic=music?"loading":"off";
+  const markMusicPlaying=()=>{document.documentElement.dataset.backgroundMusic="playing";};
+  const markMusicPaused=()=>{document.documentElement.dataset.backgroundMusic=music?"paused":"off";};
+  audio.addEventListener("playing",markMusicPlaying);
+  audio.addEventListener("pause",markMusicPaused);
+  const savedMusicTime=Number(window.sessionStorage.getItem("clone-background-music-time")||"0");
+  const restoreMusicTime=()=>{if(Number.isFinite(savedMusicTime)&&savedMusicTime>0&&Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=savedMusicTime%audio.duration;};
+  audio.addEventListener("loadedmetadata",restoreMusicTime,{once:true});
+  let resumeMusic:((event:Event)=>void)|null=null;
+  const tryPlayMusic=()=>{
+    if(!music)return;
+    void audio.play().catch(()=>{
+      if(resumeMusic)return;
+      resumeMusic=()=>{resumeMusic=null;if(music)void audio.play().catch(()=>{});};
+      document.addEventListener("pointerdown",resumeMusic,{once:true});
+    });
+  };
+  const saveMusicProgress=()=>{if(Number.isFinite(audio.currentTime))window.sessionStorage.setItem("clone-background-music-time",String(audio.currentTime));};
+  audio.addEventListener("timeupdate",saveMusicProgress);
+  window.addEventListener("beforeunload",saveMusicProgress);
+  if(music)tryPlayMusic();
   let audioContext: AudioContext | null = null;
+  const playTone=(type:OscillatorType,from:number,to:number,duration:number,level:number,delay=0)=>{
+    audioContext??=new AudioContext();
+    if(audioContext.state==="suspended")void audioContext.resume();
+    const began=audioContext.currentTime+delay;
+    const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();
+    oscillator.type=type;oscillator.frequency.setValueAtTime(from,began);oscillator.frequency.exponentialRampToValueAtTime(Math.max(30,to),began+duration);
+    gain.gain.setValueAtTime(.0001,began);gain.gain.exponentialRampToValueAtTime(level*(soundVolume/100),began+.015);gain.gain.exponentialRampToValueAtTime(.0001,began+duration);
+    oscillator.connect(gain).connect(audioContext.destination);oscillator.start(began);oscillator.stop(began+duration+.02);
+  };
   const clickTone = (event: MouseEvent) => {
     if (!effects || (event.target as HTMLElement).closest(".cosmic-nexus") || !(event.target as HTMLElement).closest("button,a")) return;
     try {
-      audioContext ??= new AudioContext();
-      const oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
-      oscillator.type = "sine"; oscillator.frequency.value = 620;
-      gain.gain.setValueAtTime(.025 * audio.volume, audioContext.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .055);
-      oscillator.connect(gain).connect(audioContext.destination);
-      oscillator.start(); oscillator.stop(audioContext.currentTime + .06);
+      const anchor=(event.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
+      if(anchor){
+        playTone("sawtooth",170,760,.22,.085);playTone("sine",980,260,.3,.075,.035);playTone("triangle",1280,620,.2,.04,.075);
+        const url=new URL(anchor.href,location.href);
+        if(url.origin===location.origin&&!anchor.target&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey){
+          event.preventDefault();saveMusicProgress();window.setTimeout(()=>{location.href=url.href;},150);
+        }
+      }else{
+        playTone("sine",520,840,.11,.065);playTone("triangle",1040,690,.16,.035,.025);
+      }
     } catch { /* Audio may be unavailable in a restricted browser. */ }
   };
   document.addEventListener("click", clickTone);
@@ -198,10 +235,10 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     if(!sound)return;const open=!sound.classList.contains("open");sound.classList.toggle("open",open);
     soundButton?.setAttribute("title",open?"收起声音设置":"声音设置");sound.querySelector(".st-panel")?.remove();if(!open)return;
     const panel=document.createElement("div");panel.className="st-panel";panel.setAttribute("data-v-316b056f","");
-    panel.innerHTML=`<div data-v-316b056f class="st-title">声音设置</div><button data-v-316b056f class="st-row ${effects?"on":""}"><span data-v-316b056f class="st-row-ico">🔔</span><span data-v-316b056f class="st-row-label">交互音效</span><span data-v-316b056f class="st-row-state">${effects?"ON":"OFF"}</span></button><button data-v-316b056f class="st-row ${music?"on":""}"><span data-v-316b056f class="st-row-ico">🎶</span><span data-v-316b056f class="st-row-label">背景音乐</span><span data-v-316b056f class="st-row-state">${music?"ON":"OFF"}</span></button><div data-v-316b056f class="st-vol"><span data-v-316b056f class="st-vol-ico">🔊</span><input data-v-316b056f class="st-range" type="range" min="0" max="100" step="1" aria-label="音量 70%" value="70"><span data-v-316b056f class="st-vol-num">70</span></div><div data-v-316b056f class="st-tip">背景音乐默认关闭，仅保留交互音效</div>`;
+    panel.innerHTML=`<div data-v-316b056f class="st-title">声音设置</div><button data-v-316b056f class="st-row ${effects?"on":""}"><span data-v-316b056f class="st-row-ico">🔔</span><span data-v-316b056f class="st-row-label">交互音效</span><span data-v-316b056f class="st-row-state">${effects?"ON":"OFF"}</span></button><button data-v-316b056f class="st-row ${music?"on":""}"><span data-v-316b056f class="st-row-ico">🎶</span><span data-v-316b056f class="st-row-label">背景音乐</span><span data-v-316b056f class="st-row-state">${music?"ON":"OFF"}</span></button><div data-v-316b056f class="st-vol"><span data-v-316b056f class="st-vol-ico">🔊</span><input data-v-316b056f class="st-range" type="range" min="0" max="100" step="1" aria-label="音量 ${soundVolume}%" value="${soundVolume}"><span data-v-316b056f class="st-vol-num">${soundVolume}</span></div><div data-v-316b056f class="st-tip">音乐状态与播放进度会跨页面保持</div>`;
     sound.append(panel);
-    panel.querySelectorAll<HTMLButtonElement>(".st-row").forEach((button,index)=>button.addEventListener("click",()=>{if(index===0){effects=!effects;window.localStorage.setItem("clone-sound-effects",effects?"on":"off");document.documentElement.dataset.soundEffects=effects?"on":"off";}else {music=!music;if(music)void audio.play().catch(()=>{});else audio.pause();}const on=index===0?effects:music;button.classList.toggle("on",on);button.querySelector(".st-row-state")!.textContent=on?"ON":"OFF";}));
-    panel.querySelector<HTMLInputElement>(".st-range")?.addEventListener("input",e=>{const value=(e.target as HTMLInputElement).value;panel.querySelector(".st-vol-num")!.textContent=value;audio.volume=Number(value)/100;});
+    panel.querySelectorAll<HTMLButtonElement>(".st-row").forEach((button,index)=>button.addEventListener("click",()=>{if(index===0){effects=!effects;window.localStorage.setItem("clone-sound-effects",effects?"on":"off");document.documentElement.dataset.soundEffects=effects?"on":"off";}else {music=!music;window.localStorage.setItem("clone-background-music",music?"on":"off");if(music)tryPlayMusic();else {saveMusicProgress();audio.pause();}}const on=index===0?effects:music;button.classList.toggle("on",on);button.querySelector(".st-row-state")!.textContent=on?"ON":"OFF";}));
+    panel.querySelector<HTMLInputElement>(".st-range")?.addEventListener("input",e=>{soundVolume=Number((e.target as HTMLInputElement).value);panel.querySelector(".st-vol-num")!.textContent=String(soundVolume);audio.volume=soundVolume/100;document.documentElement.dataset.soundVolume=String(soundVolume/100);window.localStorage.setItem("clone-sound-volume",String(soundVolume));});
   };
   soundButton?.addEventListener("click",toggleSound);
 
@@ -222,5 +259,5 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape")closeSearch();};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }
