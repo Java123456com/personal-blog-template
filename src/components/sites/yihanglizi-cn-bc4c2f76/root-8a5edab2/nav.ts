@@ -462,6 +462,8 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     };
     const update=()=>{
       const query=input.value.trim();const normalized=query.toLocaleLowerCase("zh-CN");
+      if(!normalized){status.hidden=true;results.hidden=true;status.textContent="";results.innerHTML="";searchActive=0;return;}
+      status.hidden=false;results.hidden=false;
       if(searchLoading){status.textContent="正在载入文章索引";results.innerHTML='<div class="clone-search-empty"><b>正在载入知识文章…</b><span>稍等片刻即可开始搜索</span></div>';return;}
       if(searchLoadFailed){status.textContent="文章索引暂时不可用";results.innerHTML='<div class="clone-search-empty"><b>暂时无法载入知识文章</b><span>请稍后重试</span></div>';return;}
       const matched=searchItems.map(item=>{
@@ -470,8 +472,8 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
         return {item,score,matched:!normalized||haystack.includes(normalized)};
       }).filter(result=>result.matched).sort((a,b)=>b.score-a.score).slice(0,30);
       searchActive=0;
-      status.textContent=normalized?`${matched.length} 篇匹配文章`:`共收录 ${searchItems.length} 篇知识文章`;
-      results.innerHTML=!normalized?'<div class="clone-search-empty"><b>搜索知识文章</b><span>输入标题、标签或正文关键词查看匹配结果</span></div>':matched.length?matched.map(({item},index)=>`<a class="clone-search-result ${index===0?"is-active":""}" role="option" aria-selected="${index===0}" href="${escapeSearchHtml(item.href)}" data-index="${index}"><span class="clone-search-result-icon" aria-hidden="true">▤</span><span class="clone-search-result-copy"><strong>${highlightSearchText(item.title,query)}</strong><small>${escapeSearchHtml(item.category)}</small>${searchDetails?`<em>${highlightSearchText(item.excerpt,query)}</em>`:""}</span><span class="clone-search-result-arrow" aria-hidden="true">↗</span></a>`).join(""):`<div class="clone-search-empty"><b>没有找到“${escapeSearchHtml(query)}”</b><span>可以尝试标题、标签、摘要或正文里的其他关键词</span></div>`;
+      status.textContent=`${matched.length} 篇匹配文章`;
+      results.innerHTML=matched.length?matched.map(({item},index)=>`<a class="clone-search-result ${index===0?"is-active":""}" role="option" aria-selected="${index===0}" href="${escapeSearchHtml(item.href)}" data-index="${index}"><span class="clone-search-result-icon" aria-hidden="true">▤</span><span class="clone-search-result-copy"><strong>${highlightSearchText(item.title,query)}</strong><small>${escapeSearchHtml(item.category)}</small>${searchDetails?`<em>${highlightSearchText(item.excerpt,query)}</em>`:""}</span><span class="clone-search-result-arrow" aria-hidden="true">↗</span></a>`).join(""):`<div class="clone-search-empty"><b>没有找到“${escapeSearchHtml(query)}”</b><span>可以尝试标题、标签、摘要或正文里的其他关键词</span></div>`;
       visibleItems().forEach((item,index)=>item.addEventListener("pointerenter",()=>select(index)));
     };
     const onInputKey=(event:KeyboardEvent)=>{
