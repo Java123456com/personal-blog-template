@@ -137,7 +137,50 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
   .friends-page .section-inner,.friends-page .hero-inner,.about-page .section-inner,.about-page .hero-inner{max-width:var(--clone-page-width)!important}
   .moments-content{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
 }
-.tools-root{box-sizing:border-box;width:min(960px,calc(100% - 32px))!important;max-width:960px!important;margin-inline:auto!important}
+.tools-root{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:1600px!important;margin-inline:auto!important}
+.tools-root .hero{padding:62px 24px 44px!important}
+.tools-root .hero-badge{padding:7px 18px!important;margin-bottom:22px!important;font-size:15px!important}
+.tools-root .hero-title{margin-bottom:18px!important;font-size:clamp(38px,3vw,52px)!important;letter-spacing:-.8px!important}
+.tools-root .hero-sub{max-width:900px!important;margin-bottom:24px!important;font-size:18px!important;line-height:1.8!important}
+.tools-root .hero-meta{gap:16px!important;font-size:15px!important}
+.tools-root .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:24px!important;padding:12px 0 0!important}
+.tools-root .card{min-height:244px;padding:28px!important;border-radius:20px!important;contain:layout paint style;transform:translate3d(0,0,0);backface-visibility:hidden;transition:transform .32s cubic-bezier(.2,.8,.2,1),border-color .25s ease,box-shadow .32s ease!important}
+.tools-root .card:hover{transform:translate3d(0,-7px,0)!important;box-shadow:0 20px 48px -20px var(--accent)!important}
+.tools-root .card-head{gap:16px!important;margin-bottom:17px!important}
+.tools-root .logo{width:58px!important;height:58px!important;border-radius:15px!important}
+.tools-root .card-titles h3{font-size:21px!important}
+.tools-root .card-titles p{margin-top:4px!important;font-size:14px!important}
+.tools-root .card-desc{min-height:78px;margin-bottom:22px!important;font-size:15.5px!important;line-height:1.72!important}
+.tools-root .tag{padding:5px 12px!important;font-size:13px!important}
+.tools-root .more{font-size:14px!important}
+.tools-root>section{animation:tools-surface-in .3s cubic-bezier(.2,.8,.2,1) both}
+.tools-root .detail{padding-bottom:36px}
+.tools-root .back{margin-top:24px!important;padding:9px 17px!important;font-size:14px!important}
+.tools-root .d-hero{padding:38px!important;border-radius:24px!important}
+.tools-root .logo.lg{width:88px!important;height:88px!important;border-radius:20px!important}
+.tools-root .d-hero h1{font-size:38px!important}
+.tools-root .d-company{font-size:16px!important}
+.tools-root .d-desc{font-size:17px!important}
+.tools-root .stat{padding:16px 18px!important}.tools-root .stat b{font-size:19px!important}.tools-root .stat span{font-size:14px!important}
+.tools-root .d-section{margin-top:40px!important}.tools-root .d-section h2{font-size:23px!important}
+.tools-root .dl-card,.tools-root .rt,.tools-root .feat{padding:24px!important}
+@keyframes tools-surface-in{from{opacity:.25;transform:translate3d(0,12px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@media(max-width:1080px){.tools-root .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:700px){
+  .VPDoc:has(.vp-doc._tools_){padding-inline:12px!important}
+  .VPDoc:has(.vp-doc._tools_) .content{padding-inline:0!important}
+  .vp-doc._tools_{padding-inline:0!important}
+  .tools-root{width:100%!important;max-width:100%!important}
+  .tools-root .hero{padding:42px 8px 30px!important}
+  .tools-root .hero-title{font-size:30px!important}
+  .tools-root .hero-sub{font-size:15px!important}
+  .tools-root .hero-meta{gap:10px!important;font-size:13px!important}
+  .tools-root .grid{grid-template-columns:1fr!important;gap:16px!important;padding-inline:0!important}
+  .tools-root .card{min-height:0;padding:22px!important}
+  .tools-root .d-hero{padding:22px!important}
+  .tools-root .d-hero h1{font-size:30px!important}
+}
+@media(prefers-reduced-motion:reduce){.tools-root>section{animation:none}.tools-root .card{transition:none!important}}
 @media (max-width:959px){.nav-admin-link{display:none}}
 .slh .galaxy canvas{width:100%!important;height:100%!important}
 

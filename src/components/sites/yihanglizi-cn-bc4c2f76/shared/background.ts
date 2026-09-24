@@ -46,6 +46,8 @@ export function enhanceBackground(root: HTMLElement): () => void {
   let startedAt = performance.now();
   let lastDraw = 0;
   let lastMeteorFrame = startedAt;
+  let scrolling = false;
+  let scrollTimer = 0;
 
   const makeStars = () => {
     let seed = (0x65a51e7 ^ Math.round(width * 17 + height * 31)) >>> 0;
@@ -211,7 +213,7 @@ export function enhanceBackground(root: HTMLElement): () => void {
   };
 
   const tick = (time: number) => {
-    if (time - lastDraw >= 33) {
+    if (!scrolling && time - lastDraw >= 33) {
       render(time);
       lastDraw = time;
     }
@@ -236,6 +238,15 @@ export function enhanceBackground(root: HTMLElement): () => void {
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-doc-theme"] });
   reducedMotion.addEventListener("change", sync);
   document.addEventListener("visibilitychange", sync);
+  const onScroll = () => {
+    scrolling = true;
+    window.clearTimeout(scrollTimer);
+    scrollTimer = window.setTimeout(() => {
+      scrolling = false;
+      lastDraw = 0;
+    }, 110);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
   resize();
   sync();
 
@@ -245,6 +256,8 @@ export function enhanceBackground(root: HTMLElement): () => void {
     themeObserver.disconnect();
     reducedMotion.removeEventListener("change", sync);
     document.removeEventListener("visibilitychange", sync);
+    window.removeEventListener("scroll", onScroll);
+    window.clearTimeout(scrollTimer);
     context.clearRect(0, 0, width, height);
   };
 }

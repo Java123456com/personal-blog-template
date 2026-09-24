@@ -98,6 +98,17 @@ export function enhanceTools(root: HTMLElement): () => void {
   const host = root.querySelector<HTMLElement>(".tools-root");
   if (!host) return () => {};
   let selected = -1;
+  const preloaded = new Set<string>();
+  const preload = (index: number) => {
+    const tool = tools[index];
+    if (!tool) return;
+    const src = `${assetRoot}${tool.showcase}`;
+    if (preloaded.has(src)) return;
+    preloaded.add(src);
+    const image = new Image();
+    image.decoding = "async";
+    image.src = src;
+  };
 
   const showList = () => {
     selected = -1;
@@ -124,12 +135,20 @@ export function enhanceTools(root: HTMLElement): () => void {
       showDetail(Number(card.dataset.toolIndex));
     } else if (selected >= 0 && event.key === "Escape") showList();
   };
+  const onIntent = (event: Event) => {
+    const card = (event.target as Element).closest<HTMLElement>("[data-tool-index]");
+    if (card) preload(Number(card.dataset.toolIndex));
+  };
 
   host.addEventListener("click", onClick);
   host.addEventListener("keydown", onKeyDown);
+  host.addEventListener("pointerover", onIntent);
+  host.addEventListener("focusin", onIntent);
   showList();
   return () => {
     host.removeEventListener("click", onClick);
     host.removeEventListener("keydown", onKeyDown);
+    host.removeEventListener("pointerover", onIntent);
+    host.removeEventListener("focusin", onIntent);
   };
 }
