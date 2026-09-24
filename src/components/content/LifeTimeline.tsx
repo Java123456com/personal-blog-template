@@ -118,7 +118,7 @@ export function LifeTimeline({ entries }: { entries: ContentEntry[] }) {
       ) : (
         <ol className="life-timeline__list">
           {visibleEntries.map((entry) => (
-            <li className="life-timeline__item" key={entry.id}>
+            <li className="life-timeline__item" id={`moment-${entry.id}`} key={entry.id}>
               <article className="life-timeline__card">
                 <time className="life-timeline__date" dateTime={entryDate(entry)}>
                   {formatDate(entryDate(entry))}

@@ -11,7 +11,60 @@ const journalLinks: ReadonlyArray<readonly [string, string]> = [
   ["技术学习记录", "/moments/tech/"],
   ["日常生活记录", "/moments/life/"],
 ];
-const searchLinks = [...links, ...journalLinks];
+type SearchItem = {
+  title: string;
+  href: string;
+  category: string;
+  excerpt: string;
+  keywords: string;
+  priority: number;
+};
+
+type SearchEntry = {
+  id: number;
+  type: "article" | "moment";
+  slug: string;
+  title: string;
+  summary: string;
+  bodyMd: string;
+  tags: string[];
+};
+
+const staticSearchItems: SearchItem[] = [
+  ["首页", "/", "站内页面", "个人博客首页与星空观测站", "主页 星座 星系 星空 赛博", 100],
+  ["技术学习记录", "/moments/tech/", "内容归档", "技术文章、开发笔记与学习记录", "博客 技术 编程 文章", 96],
+  ["日常生活记录", "/moments/life/", "内容归档", "日常生活片段与图片记录", "生活 动态 朋友圈", 95],
+  ["简历", "/resume/", "站内页面", "个人经历、能力与项目介绍", "经历 技能 项目", 90],
+  ["友链", "/friends/", "站内页面", "朋友站点与友情链接", "朋友 链接", 80],
+  ["工具", "/tools/", "站内页面", "常用工具与资源收藏", "工具箱 资源", 80],
+  ["关于", "/about/", "站内页面", "个人介绍与联系方式", "联系 介绍", 80],
+].map(([title, href, category, excerpt, keywords, priority]) => ({
+  title: String(title), href: String(href), category: String(category), excerpt: String(excerpt),
+  keywords: String(keywords), priority: Number(priority),
+}));
+
+const escapeSearchHtml = (value: string) => value.replace(/[&<>'"]/g, character => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
+}[character] ?? character));
+
+const stripMarkdown = (value: string) => value
+  .replace(/```[\s\S]*?```/g, " ")
+  .replace(/`([^`]+)`/g, "$1")
+  .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+  .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+  .replace(/^[#>*+-]+\s*/gm, "")
+  .replace(/[|_*~]/g, " ")
+  .replace(/\s+/g, " ")
+  .trim();
+
+function highlightSearchText(value: string, query: string) {
+  if (!query) return escapeSearchHtml(value);
+  const source = value.toLocaleLowerCase("zh-CN");
+  const needle = query.toLocaleLowerCase("zh-CN");
+  const index = source.indexOf(needle);
+  if (index < 0) return escapeSearchHtml(value);
+  return `${escapeSearchHtml(value.slice(0, index))}<mark>${escapeSearchHtml(value.slice(index, index + query.length))}</mark>${escapeSearchHtml(value.slice(index + query.length))}`;
+}
 
 function paintGalaxy(container: HTMLElement) {
   const canvas = container.querySelector<HTMLCanvasElement>(".galaxy canvas");
@@ -365,12 +418,77 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   blogMenu?.addEventListener("click",toggleBlogMenu);
 
   const searchButton=document.querySelector<HTMLButtonElement>(".DocSearch-Button");let search:HTMLElement|null=null;
-  const closeSearch=()=>{search?.remove();search=null;};
-  const openSearch=()=>{if(search)return;search=document.createElement("div");search.className="clone-search-mask";
-    search.innerHTML='<div class="clone-search-box"><div class="clone-search-input"><span>⌕</span><input placeholder="搜索文档" aria-label="搜索文档"><button class="clone-search-close">ESC</button></div><div class="clone-search-results"></div><div class="clone-search-foot">搜索站内页面</div></div>';
-    document.body.append(search);const layer=search,input=layer.querySelector<HTMLInputElement>("input")!,results=layer.querySelector<HTMLElement>(".clone-search-results")!;
-    const update=()=>{const q=input.value.toLowerCase();results.innerHTML=searchLinks.filter(([name])=>!q||name.toLowerCase().includes(q)).map(([name,href])=>`<a href="${href}">▤ &nbsp; ${name}<span>↗</span></a>`).join("")||"<p>❌ 未找到相关结果</p>";};
-    input.addEventListener("input",update);update();input.focus();layer.querySelector(".clone-search-close")?.addEventListener("click",closeSearch);layer.addEventListener("click",e=>{if(e.target===layer)closeSearch();});};
+  let searchItems=[...staticSearchItems],searchRequest=0,searchDetails=true,searchActive=0;
+  let searchPreviousOverflow="",searchPreviousFocus:HTMLElement|null=null;
+  const closeSearch=()=>{
+    if(!search)return;
+    search.remove();search=null;searchRequest++;
+    document.body.style.overflow=searchPreviousOverflow;
+    searchPreviousFocus?.focus();searchPreviousFocus=null;
+  };
+  const entryToSearchItem=(entry:SearchEntry):SearchItem=>{
+    const cleanBody=stripMarkdown(entry.bodyMd||"");
+    const fallback=cleanBody.slice(0,150);
+    return {
+      title:entry.title||(entry.type==="article"?"未命名文章":"生活记录"),
+      href:entry.type==="article"&&entry.slug?`/moments/tech/${encodeURIComponent(entry.slug)}/`:`/moments/life/#moment-${entry.id}`,
+      category:entry.type==="article"?"技术文章":"生活记录",
+      excerpt:entry.summary||fallback||"查看完整内容",
+      keywords:`${entry.tags?.join(" ")||""} ${entry.summary||""} ${cleanBody}`,
+      priority:entry.type==="article"?70:60,
+    };
+  };
+  const loadSearchEntries=async(layer:HTMLElement,update:()=>void)=>{
+    const request=++searchRequest;
+    try{
+      const responses=await Promise.allSettled([
+        fetch("/api/entries?type=article",{cache:"no-store"}).then(response=>response.ok?response.json():Promise.reject()),
+        fetch("/api/entries?type=moment",{cache:"no-store"}).then(response=>response.ok?response.json():Promise.reject()),
+      ]);
+      if(request!==searchRequest||!layer.isConnected)return;
+      const dynamic=responses.flatMap(result=>result.status==="fulfilled"&&Array.isArray(result.value?.entries)?result.value.entries:[])
+        .map(entryToSearchItem);
+      searchItems=[...staticSearchItems,...dynamic];
+    }catch{/* Static page search remains available when the database is offline. */}
+    finally{if(request===searchRequest&&layer.isConnected)update();}
+  };
+  const openSearch=()=>{
+    if(search){search.querySelector<HTMLInputElement>("input")?.focus();return;}
+    searchPreviousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
+    searchPreviousOverflow=document.body.style.overflow;document.body.style.overflow="hidden";
+    search=document.createElement("div");search.className="clone-search-mask";search.setAttribute("role","dialog");search.setAttribute("aria-modal","true");search.setAttribute("aria-label","站内搜索");
+    search.innerHTML='<div class="clone-search-box"><div class="clone-search-input"><span aria-hidden="true">⌕</span><input type="search" placeholder="搜索文档、文章和生活记录" aria-label="搜索文档"><button type="button" class="clone-search-detail" title="切换摘要显示" aria-pressed="true">☷</button><button type="button" class="clone-search-close" aria-label="关闭搜索">ESC</button></div><div class="clone-search-status" aria-live="polite"></div><div class="clone-search-results" role="listbox" aria-label="搜索结果"></div><div class="clone-search-foot"><span><kbd>↑</kbd><kbd>↓</kbd> 切换</span><span><kbd>↵</kbd> 打开</span><span><kbd>ESC</kbd> 关闭</span></div></div>';
+    document.body.append(search);
+    const layer=search,input=layer.querySelector<HTMLInputElement>("input")!,results=layer.querySelector<HTMLElement>(".clone-search-results")!,status=layer.querySelector<HTMLElement>(".clone-search-status")!;
+    const visibleItems=()=>Array.from(results.querySelectorAll<HTMLAnchorElement>(".clone-search-result"));
+    const select=(index:number)=>{
+      const items=visibleItems();if(!items.length){searchActive=0;return;}
+      searchActive=(index+items.length)%items.length;
+      items.forEach((item,itemIndex)=>{const active=itemIndex===searchActive;item.classList.toggle("is-active",active);item.setAttribute("aria-selected",String(active));});
+      items[searchActive]?.scrollIntoView({block:"nearest"});
+    };
+    const update=()=>{
+      const query=input.value.trim();const normalized=query.toLocaleLowerCase("zh-CN");
+      const matched=searchItems.map(item=>{
+        const title=item.title.toLocaleLowerCase("zh-CN"),category=item.category.toLocaleLowerCase("zh-CN"),haystack=`${item.title} ${item.category} ${item.excerpt} ${item.keywords}`.toLocaleLowerCase("zh-CN");
+        let score=item.priority;if(normalized){if(title===normalized)score+=1000;else if(title.startsWith(normalized))score+=700;else if(title.includes(normalized))score+=500;if(category.includes(normalized))score+=220;if(haystack.includes(normalized))score+=100;}
+        return {item,score,matched:!normalized||haystack.includes(normalized)};
+      }).filter(result=>result.matched).sort((a,b)=>b.score-a.score).slice(0,30);
+      searchActive=0;
+      status.textContent=normalized?`${matched.length} 条匹配结果`:`${matched.length} 个可搜索页面与内容`;
+      results.innerHTML=matched.length?matched.map(({item},index)=>`<a class="clone-search-result ${index===0?"is-active":""}" role="option" aria-selected="${index===0}" href="${escapeSearchHtml(item.href)}" data-index="${index}"><span class="clone-search-result-icon" aria-hidden="true">▤</span><span class="clone-search-result-copy"><strong>${highlightSearchText(item.title,query)}</strong><small>${escapeSearchHtml(item.category)}</small>${searchDetails?`<em>${highlightSearchText(item.excerpt,query)}</em>`:""}</span><span class="clone-search-result-arrow" aria-hidden="true">↗</span></a>`).join(""):`<div class="clone-search-empty"><b>没有找到“${escapeSearchHtml(query)}”</b><span>可以尝试标题、标签或正文里的其他关键词</span></div>`;
+      visibleItems().forEach((item,index)=>item.addEventListener("pointerenter",()=>select(index)));
+    };
+    const onInputKey=(event:KeyboardEvent)=>{
+      if(event.key==="ArrowDown"||event.key==="ArrowUp"){event.preventDefault();select(searchActive+(event.key==="ArrowDown"?1:-1));}
+      else if(event.key==="Enter"){const current=visibleItems()[searchActive];if(current){event.preventDefault();current.click();}}
+    };
+    input.addEventListener("input",update);input.addEventListener("keydown",onInputKey);
+    layer.querySelector(".clone-search-close")?.addEventListener("click",closeSearch);
+    layer.querySelector(".clone-search-detail")?.addEventListener("click",event=>{searchDetails=!searchDetails;(event.currentTarget as HTMLButtonElement).setAttribute("aria-pressed",String(searchDetails));update();});
+    layer.addEventListener("click",event=>{if(event.target===layer)closeSearch();});
+    update();input.focus();void loadSearchEntries(layer,update);
+  };
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape")closeSearch();};
   document.addEventListener("keydown",keydown);
