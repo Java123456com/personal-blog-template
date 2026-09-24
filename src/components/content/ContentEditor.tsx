@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ContentEntry, EntryStatus, EntryType } from "@/lib/content/types";
 import { mediaUrl } from "@/lib/content/types";
+import { MermaidPre } from "./MermaidDiagram";
 import "./ContentEditor.css";
 
 type EditorForm = Pick<ContentEntry, "type" | "slug" | "title" | "summary" | "bodyMd" | "tags" | "coverMediaId" | "imageIds" | "publishedAt">;
@@ -328,10 +329,10 @@ export default function ContentEditor() {
                 <label>发布日期 <span>可自定义，留空则使用发布时间</span><input type="date" value={dateInputValue(form.publishedAt)} onChange={(event) => setForm({ ...form, publishedAt: event.target.value ? `${event.target.value}T12:00:00+08:00` : null })} /></label>
               </div>
 
-              <div className="content-editor__body-head"><label htmlFor="content-editor-body">正文 <span>Markdown</span></label><button type="button" onClick={() => fileRef.current?.click()} disabled={uploading || busy}>{uploading ? "正在上传…" : "＋ 上传图片"}</button><input ref={fileRef} className="content-editor__file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={uploadImage} /></div>
+              <div className="content-editor__body-head"><label htmlFor="content-editor-body">正文 <span>Markdown · Mermaid</span></label><button type="button" onClick={() => fileRef.current?.click()} disabled={uploading || busy}>{uploading ? "正在上传…" : "＋ 上传图片"}</button><input ref={fileRef} className="content-editor__file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={uploadImage} /></div>
               <div className="content-editor__panes">
                 <textarea ref={textareaRef} id="content-editor-body" className="content-editor__markdown" value={form.bodyMd} onChange={(event) => setForm({ ...form, bodyMd: event.target.value })} placeholder={type === "article" ? "# 开始写作\n\n用 Markdown 记录思路、代码和图片…" : "写下此刻的想法…"} spellCheck={false} />
-                <div className="content-editor__preview" aria-label="Markdown 实时预览"><p className="content-editor__preview-label">实时预览</p>{form.bodyMd.trim() ? <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{form.bodyMd}</ReactMarkdown> : <p className="content-editor__preview-empty">正文预览会显示在这里。</p>}</div>
+                <div className="content-editor__preview" aria-label="Markdown 实时预览"><p className="content-editor__preview-label">实时预览</p>{form.bodyMd.trim() ? <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml components={{ pre: MermaidPre }}>{form.bodyMd}</ReactMarkdown> : <p className="content-editor__preview-empty">正文预览会显示在这里。使用 ```mermaid 代码块可以插入图表。</p>}</div>
               </div>
 
               {type === "moment" && form.imageIds.length > 0 && (

@@ -1,8 +1,11 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { isValidElement } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ContentEntry } from "@/lib/content/types";
+import { MermaidPre } from "./MermaidDiagram";
 import "./ArticleReader.css";
 
 interface HeadingLink {
@@ -109,6 +112,7 @@ export default function ArticleReader({ entry }: { entry: ContentEntry }) {
                 remarkPlugins={[remarkGfm]}
                 skipHtml
                 components={{
+                  pre: MermaidPre,
                   h1: ({ children }) => heading(1, children),
                   h2: ({ children }) => heading(2, children),
                   h3: ({ children }) => heading(3, children),
