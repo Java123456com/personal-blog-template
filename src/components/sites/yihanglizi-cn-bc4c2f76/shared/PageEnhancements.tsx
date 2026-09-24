@@ -8,6 +8,7 @@ import { enhanceResume } from "./resume";
 import { enhanceBlog } from "./blog";
 import { enhanceAssets } from "./assets";
 import { enhanceBackground } from "./background";
+import { enhanceTools } from "./tools";
 
 export default function PageEnhancements({ path, managed = false }: { path: string; managed?: boolean }) {
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function PageEnhancements({ path, managed = false }: { path: stri
     if (!managed && path.startsWith("/moments/")) cleanup.push(enhanceMoments(root, path));
     if (path === "/friends/") cleanup.push(enhanceFriends(root));
     if (path === "/resume/") cleanup.push(enhanceResume(root));
+    if (path === "/tools/") cleanup.push(enhanceTools(root));
     if (path.startsWith("/blog/")) cleanup.push(enhanceBlog(root, path));
     return () => cleanup.forEach(fn => fn());
   }, [path, managed]);

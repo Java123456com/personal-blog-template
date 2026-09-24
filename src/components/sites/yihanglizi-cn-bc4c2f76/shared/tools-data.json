@@ -1,0 +1,1593 @@
+[
+  {
+    "id": "trae-cn",
+    "name": "Trae CN",
+    "company": "字节跳动 ByteDance",
+    "description": "字节跳动推出的 AI 原生 IDE，基于 VS Code 深度定制，内置强大的 AI 编程助手，带来顺畅的智能编码体验。",
+    "icon": "icons/trae-cn.png",
+    "showcase": "trae-ui-showcase.jpg",
+    "accent": "#18cfc6",
+    "accentSoft": "rgba(24, 207, 198, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "trae.ai",
+      "trae.com.cn"
+    ],
+    "ctaUrl": "https://www.trae.cn/",
+    "ctaText": "前往官网下载",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "VS Code",
+        "label": "深度兼容"
+      },
+      {
+        "value": "AI",
+        "label": "原生内置"
+      },
+      {
+        "value": "免费",
+        "label": "即刻使用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "原生桌面客户端，图形化智能编程界面，开箱即用。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端集成能力有限，核心编程体验依赖桌面端与插件。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code 插件",
+        "desc": "提供 VS Code 插件版本，无缝融入现有开发工作流。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话式编程，随时向 AI 提问、生成与修改代码。"
+      },
+      {
+        "icon": "sparkles",
+        "title": "智能代码补全",
+        "desc": "基于上下文感知的补全，毫秒级响应，Tab 一键接受。"
+      },
+      {
+        "icon": "files",
+        "title": "多文件编辑",
+        "desc": "一次理解多个文件，跨文件级智能改写，重构更轻松。"
+      },
+      {
+        "icon": "bot",
+        "title": "Builder 模式",
+        "desc": "从想法到项目，自动规划并逐步构建完整应用。"
+      }
+    ]
+  },
+  {
+    "id": "trae-work-cn",
+    "name": "Trae Work CN",
+    "company": "字节跳动 ByteDance",
+    "description": "字节跳动推出的 AI 智能工作助手，桌面端、网页版与移动端全量上线，面向工作场景的 AI 协作平台。",
+    "icon": "icons/trae-work-cn.png",
+    "showcase": "trae-work-ui-showcase.jpg",
+    "accent": "#22d3ee",
+    "accentSoft": "rgba(34, 211, 238, 0.14)",
+    "badges": [
+      "全平台"
+    ],
+    "downloadUrls": [
+      "work.trae.cn",
+      "trae.cn/work"
+    ],
+    "ctaUrl": "https://work.trae.cn/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      },
+      {
+        "os": "Web",
+        "label": "Web"
+      },
+      {
+        "os": "iOS",
+        "label": "iOS"
+      },
+      {
+        "os": "Android",
+        "label": "Android"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "全端",
+        "label": "桌面/网页/移动"
+      },
+      {
+        "value": "AI",
+        "label": "智能协作"
+      },
+      {
+        "value": "Agent",
+        "label": "自定义智能体"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "原生桌面应用，完整图形化工作界面，开箱即用。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "内置终端 AI 辅助",
+        "desc": "内置终端支持 AI 命令辅助，与开发流程无缝衔接。",
+        "level": "full"
+      },
+      {
+        "icon": "globe",
+        "title": "IDE 插件 / Web",
+        "subtitle": "网页端 + 移动端 + IDE 集成",
+        "desc": "支持网页端与移动端访问，同时提供 IDE 集成能力。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "layout-dashboard",
+        "title": "智能工作台",
+        "desc": "AI 驱动的智能工作面板，任务管理与代码协作一体化。"
+      },
+      {
+        "icon": "refresh",
+        "title": "多端同步",
+        "desc": "桌面端、网页版、移动端全端覆盖，工作进度实时同步。"
+      },
+      {
+        "icon": "bot",
+        "title": "Agent 智能体",
+        "desc": "可配置的 AI 智能体体系，支持自定义工具与技能。"
+      },
+      {
+        "icon": "users",
+        "title": "团队协作",
+        "desc": "团队共享智能体与工作流，知识沉淀与协作效率双提升。"
+      }
+    ]
+  },
+  {
+    "id": "codebuddy-cn",
+    "name": "CodeBuddy CN",
+    "company": "腾讯 Tencent",
+    "description": "腾讯推出的 AI 编程助手，深度集成在 IDE 中，提供智能补全、生成与对话能力，覆盖多种开发场景。",
+    "icon": "icons/codebuddy-cn.png",
+    "showcase": "codebuddy-ui-showcase.jpg",
+    "accent": "#3b82f6",
+    "accentSoft": "rgba(59, 130, 246, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "codebuddy.ai",
+      "cnb.cool"
+    ],
+    "ctaUrl": "https://copilot.tencent.com/",
+    "ctaText": "前往官网下载",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "VS Code",
+        "label": "深度兼容"
+      },
+      {
+        "value": "腾讯",
+        "label": "大厂出品"
+      },
+      {
+        "value": "免费",
+        "label": "即刻使用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "独立 IDE 桌面应用",
+        "desc": "提供独立 IDE 桌面客户端，开箱即用，完整图形化开发体验。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "终端命令支持",
+        "desc": "支持终端命令行操作，AI 辅助命令生成与执行，流程无缝衔接。",
+        "level": "full"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "提供 VS Code 与 JetBrains 系列 IDE 插件，在熟悉的环境中使用 AI。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "侧边栏 AI 对话助手，自然语言驱动代码生成，对话式交互解决问题。"
+      },
+      {
+        "icon": "sparkles",
+        "title": "智能代码补全",
+        "desc": "行内实时补全建议，基于上下文预测代码意图，Tab 一键接受。"
+      },
+      {
+        "icon": "wrench",
+        "title": "代码重构优化",
+        "desc": "智能代码审查与重构建议，一键修复 Bug，优化代码质量与性能。"
+      },
+      {
+        "icon": "bot",
+        "title": "Craft 模式",
+        "desc": "Agent 模式下自主完成复杂编程任务，从需求到实现全流程自动化。"
+      }
+    ]
+  },
+  {
+    "id": "qoder-cn",
+    "name": "Qoder CN",
+    "company": "阿里巴巴 Alibaba",
+    "description": "阿里通义推出的 AI 原生 IDE，面向专业开发者的智能编程环境，融合大模型能力重塑编码体验。",
+    "icon": "icons/qoder-cn.png",
+    "showcase": "qoder-ui-showcase.jpg",
+    "accent": "#6366f1",
+    "accentSoft": "rgba(99, 102, 241, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "qoder.com",
+      "qoder.aliyun.com"
+    ],
+    "ctaUrl": "https://qoder.com/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "通义",
+        "label": "大模型驱动"
+      },
+      {
+        "value": "IDE",
+        "label": "原生集成"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "原生桌面 IDE 客户端，图形化智能编程，开箱即用。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "提供命令行辅助能力，核心体验集中在桌面端。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code 插件",
+        "desc": "兼容 VS Code 插件生态，扩展能力强。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码，理解项目全局上下文。"
+      },
+      {
+        "icon": "sparkles",
+        "title": "智能代码补全",
+        "desc": "上下文感知补全，毫秒级响应，Tab 一键接受。"
+      },
+      {
+        "icon": "files",
+        "title": "多文件编辑",
+        "desc": "跨文件智能改写，一次指令同步更新多个文件。"
+      },
+      {
+        "icon": "cpu",
+        "title": "通义大模型",
+        "desc": "通义千问大模型驱动，深度理解中文开发语境。"
+      }
+    ]
+  },
+  {
+    "id": "qoder-work-cn",
+    "name": "Qoder Work CN",
+    "company": "阿里巴巴 Alibaba",
+    "description": "阿里推出的桌面级 AI 通用智能体（QoderWork），一句话生成文档、表格、图表与幻灯片，本地优先、自主规划执行。",
+    "icon": "icons/qoder-work-cn.png",
+    "showcase": "qoder-work-ui-showcase.jpg",
+    "accent": "#8b5cf6",
+    "accentSoft": "rgba(139, 92, 246, 0.14)",
+    "badges": [
+      "企业版"
+    ],
+    "downloadUrls": [
+      "qoder.com/zh/qoderwork",
+      "www.aliyun.com/product/qoderwork"
+    ],
+    "ctaUrl": "https://qoder.com/zh/qoderwork",
+    "ctaText": "前往官网了解",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      },
+      {
+        "os": "Web",
+        "label": "Web"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "团队",
+        "label": "协作研发"
+      },
+      {
+        "value": "企业",
+        "label": "安全合规"
+      },
+      {
+        "value": "工作流",
+        "label": "流程自动化"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "原生桌面应用，完整图形化工作界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "流水线集成",
+        "desc": "命令行工具集成 CI/CD 流水线，支持自动化代码检查。",
+        "level": "full"
+      },
+      {
+        "icon": "globe",
+        "title": "IDE 插件 / Web",
+        "subtitle": "插件 + 云端",
+        "desc": "支持 IDE 插件接入与 Web 端在线工作空间。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "users",
+        "title": "团队协作研发",
+        "desc": "团队共享智能体与代码库，协作效率显著提升。"
+      },
+      {
+        "icon": "shield",
+        "title": "企业级安全",
+        "desc": "企业级安全与合规保障，代码数据可私有化部署。"
+      },
+      {
+        "icon": "workflow",
+        "title": "工作流自动化",
+        "desc": "自动化研发工作流，从需求到部署流程贯通。"
+      },
+      {
+        "icon": "file-check",
+        "title": "代码质量审查",
+        "desc": "内置规范与安全检查，实时发现漏洞并给出修复建议。"
+      }
+    ]
+  },
+  {
+    "id": "kimi-work",
+    "name": "Kimi Code",
+    "company": "月之暗面 Moonshot AI",
+    "description": "月之暗面推出的 AI 编程助手，依托 Kimi 长文本大模型能力，擅长处理超长上下文与复杂项目理解。",
+    "icon": "icons/kimi-work.png",
+    "showcase": "kimi-work-ui-showcase.jpg",
+    "accent": "#f59e0b",
+    "accentSoft": "rgba(245, 158, 11, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "kimi.moonshot.cn"
+    ],
+    "ctaUrl": "https://kimi.com/code",
+    "ctaText": "前往官网体验",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      },
+      {
+        "os": "Web",
+        "label": "Web"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "长文本",
+        "label": "百万字上下文"
+      },
+      {
+        "value": "Kimi",
+        "label": "大模型加持"
+      },
+      {
+        "value": "免费",
+        "label": "即刻体验"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "原生桌面应用，图形化 AI 编程工作环境，开箱即用。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "终端集成支持",
+        "desc": "终端内 AI 辅助命令执行，开发流程无缝衔接。",
+        "level": "full"
+      },
+      {
+        "icon": "globe",
+        "title": "IDE 插件 / Web",
+        "subtitle": "插件形态 + 浏览器访问",
+        "desc": "支持 IDE 插件集成，同时提供 Web 端在线编程工作空间。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "layers",
+        "title": "超长上下文理解",
+        "desc": "百万字级代码库上下文窗口，一次性理解整个项目结构。"
+      },
+      {
+        "icon": "chat",
+        "title": "智能对话编程",
+        "desc": "自然语言驱动的代码对话，描述需求即可生成、修改和解释代码。"
+      },
+      {
+        "icon": "code",
+        "title": "文档代码联动",
+        "desc": "文档与代码双向生成，注释自动生成文档，文档驱动代码实现。"
+      },
+      {
+        "icon": "files",
+        "title": "多文件编辑",
+        "desc": "跨文件智能代码修改，AI 理解文件关联，一次指令同步更新。"
+      }
+    ]
+  },
+  {
+    "id": "minimax-code",
+    "name": "MiniMax Code",
+    "company": "MiniMax 稀宇科技",
+    "description": "MiniMax 推出的 AI 编程助手，融合多模态与对话能力，提供贴近开发者习惯的智能编码体验。",
+    "icon": "icons/minimax-code.png",
+    "showcase": "minimax-code-ui-showcase.jpg",
+    "accent": "#a855f7",
+    "accentSoft": "rgba(168, 85, 247, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "agent.minimaxi.com/download",
+      "minimax.io"
+    ],
+    "ctaUrl": "https://agent.minimaxi.com/download",
+    "ctaText": "前往官网体验",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      },
+      {
+        "os": "Web",
+        "label": "Web"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "多模态",
+        "label": "图文音视频"
+      },
+      {
+        "value": "对话",
+        "label": "自然交互"
+      },
+      {
+        "value": "免费",
+        "label": "即刻体验"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "原生桌面应用，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "提供终端辅助能力，核心在桌面与 Web。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code 插件",
+        "desc": "提供 VS Code 插件，融入现有工作流。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "brain",
+        "title": "多模态理解",
+        "desc": "融合文本、图像、音频多模态能力，理解更丰富的编程语境。"
+      },
+      {
+        "icon": "chat",
+        "title": "智能对话编程",
+        "desc": "自然语言对话式编程，描述需求即可生成代码。"
+      },
+      {
+        "icon": "sparkles",
+        "title": "代码生成",
+        "desc": "根据上下文与注释智能生成函数与模块代码。"
+      },
+      {
+        "icon": "layers",
+        "title": "项目理解",
+        "desc": "深度理解项目结构与依赖，跨文件智能改写。"
+      }
+    ]
+  },
+  {
+    "id": "comate",
+    "name": "Comate",
+    "company": "百度 Baidu",
+    "description": "百度推出的 AI 编程助手，基于文心大模型打造，深度集成主流 IDE，提供智能补全与生成能力。",
+    "icon": "icons/comate.png",
+    "showcase": "comate-ui-showcase.jpg",
+    "accent": "#2563eb",
+    "accentSoft": "rgba(37, 99, 235, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "comate.baidu.com"
+    ],
+    "ctaUrl": "https://comate.baidu.com/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "文心",
+        "label": "大模型驱动"
+      },
+      {
+        "value": "IDE",
+        "label": "深度集成"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "独立 IDE 客户端",
+        "desc": "提供独立 IDE 客户端，图形化开发体验。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助能力有限，主要在 IDE 内使用。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "提供 VS Code 与 JetBrains 插件，融入熟悉环境。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "sparkles",
+        "title": "智能代码补全",
+        "desc": "行内实时补全，基于上下文预测代码意图，Tab 一键接受。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码，解答编程问题。"
+      },
+      {
+        "icon": "code",
+        "title": "代码注释生成",
+        "desc": "自动生成函数注释与文档，提升可读性。"
+      },
+      {
+        "icon": "file-check",
+        "title": "单元测试生成",
+        "desc": "智能生成单元测试，覆盖核心逻辑，提升测试效率。"
+      }
+    ]
+  },
+  {
+    "id": "codegeex",
+    "name": "CodeGeeX",
+    "company": "智谱 AI Zhipu",
+    "description": "智谱 AI 推出的开源 AI 编程助手，基于 CodeGeeX 大模型，支持多种语言与 IDE，社区活跃。",
+    "icon": "icons/codegeex.png",
+    "showcase": "codegeex-ui-showcase.jpg",
+    "accent": "#0ea5e9",
+    "accentSoft": "rgba(14, 165, 233, 0.14)",
+    "badges": [
+      "开源"
+    ],
+    "downloadUrls": [
+      "codegeex.cn",
+      "github.com/THUDM/CodeGeeX"
+    ],
+    "ctaUrl": "https://codegeex.cn/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "开源",
+        "label": "可本地部署"
+      },
+      {
+        "value": "多语言",
+        "label": "百余种语言"
+      },
+      {
+        "value": "免费",
+        "label": "社区可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "独立 IDE 客户端",
+        "desc": "提供独立客户端，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "支持命令行工具，核心在 IDE 插件。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "支持 VS Code 与 JetBrains，多语言补全。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "sparkles",
+        "title": "智能补全",
+        "desc": "多语言代码补全，基于上下文预测，Tab 一键接受。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言生成与解释代码，支持代码翻译。"
+      },
+      {
+        "icon": "languages",
+        "title": "代码翻译",
+        "desc": "跨语言代码翻译，助力多语言项目迁移。"
+      },
+      {
+        "icon": "shield",
+        "title": "开源可部署",
+        "desc": "模型开源，支持本地私有化部署，数据可控。"
+      }
+    ]
+  },
+  {
+    "id": "codearts-agent",
+    "name": "CodeArts Agent",
+    "company": "华为 Huawei",
+    "description": "华为 CodeArts 智能开发平台，企业级 AI 编程助手，覆盖需求、设计、编码、测试全流程。",
+    "icon": "icons/codearts-agent.png",
+    "showcase": "codearts-ui-showcase.jpg",
+    "accent": "#ef4444",
+    "accentSoft": "rgba(239, 68, 68, 0.14)",
+    "badges": [
+      "企业版"
+    ],
+    "downloadUrls": [
+      "huaweicloud.com/product/codearts",
+      "console.huaweicloud.com/devcloud"
+    ],
+    "ctaUrl": "https://www.huaweicloud.com/product/codearts/ai.html",
+    "ctaText": "前往官网体验",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      },
+      {
+        "os": "Web",
+        "label": "Web"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "DevOps",
+        "label": "全流程覆盖"
+      },
+      {
+        "value": "盘古",
+        "label": "大模型驱动"
+      },
+      {
+        "value": "安全",
+        "label": "企业级保障"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "桌面 IDE 客户端，图形化全流程开发管理。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "流水线集成",
+        "desc": "命令行工具集成 CI/CD 流水线，支持自动化代码检查与构建。",
+        "level": "full"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "支持主流 IDE 插件接入，也可作为独立云端开发环境。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "git-branch",
+        "title": "全流程 DevOps",
+        "desc": "从需求、设计、编码到测试部署，AI 辅助全流程覆盖。"
+      },
+      {
+        "icon": "cpu",
+        "title": "盘古大模型",
+        "desc": "华为盘古大模型驱动代码智能，深度理解中文语境与业务。"
+      },
+      {
+        "icon": "shield",
+        "title": "企业级安全",
+        "desc": "企业级安全与合规保障，代码数据不出域，支持私有化部署。"
+      },
+      {
+        "icon": "file-check",
+        "title": "代码质量检查",
+        "desc": "内置代码规范与安全检查，实时发现漏洞并提供修复建议。"
+      }
+    ]
+  },
+  {
+    "id": "fittencode",
+    "name": "Fitten Code",
+    "company": "非十科技 Fitten",
+    "description": "非十科技推出的 AI 编程助手，专注高性能代码补全与生成，支持多种 IDE 与语言。",
+    "icon": "icons/fittencode.png",
+    "showcase": "fittencode-ui-showcase.jpg",
+    "accent": "#10b981",
+    "accentSoft": "rgba(16, 185, 129, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "code.fittentech.com",
+      "fittenlab.cn"
+    ],
+    "ctaUrl": "https://code.fittentech.com/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "高性能",
+        "label": "极速补全"
+      },
+      {
+        "value": "多语言",
+        "label": "广泛支持"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "独立 IDE 客户端",
+        "desc": "提供独立客户端，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助有限，核心在 IDE 内。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "支持 VS Code 与 JetBrains 插件。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "sparkles",
+        "title": "智能代码补全",
+        "desc": "高性能行内补全，低延迟响应，Tab 一键接受。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码。"
+      },
+      {
+        "icon": "code",
+        "title": "代码解释",
+        "desc": "智能解释代码逻辑，帮助快速理解陌生项目。"
+      },
+      {
+        "icon": "languages",
+        "title": "多语言支持",
+        "desc": "支持主流编程语言，跨语言智能改写。"
+      }
+    ]
+  },
+  {
+    "id": "marvis",
+    "name": "Marvis",
+    "company": "腾讯 Tencent",
+    "description": "腾讯推出的操作系统级 AI 助手（马维斯），一句话操控电脑，跨端协同，覆盖文档、代码与自动化任务。",
+    "icon": "icons/marvis.png",
+    "showcase": "marvis-ui-showcase.jpg",
+    "accent": "#ec4899",
+    "accentSoft": "rgba(236, 72, 153, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "marvis.qq.com"
+    ],
+    "ctaUrl": "https://marvis.qq.com/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "轻量",
+        "label": "即开即用"
+      },
+      {
+        "value": "对话",
+        "label": "自然交互"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "桌面客户端",
+        "desc": "提供桌面客户端，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助有限。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code 插件",
+        "desc": "提供 VS Code 插件，融入现有工作流。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "sparkles",
+        "title": "智能补全",
+        "desc": "上下文感知补全，Tab 一键接受。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码。"
+      },
+      {
+        "icon": "code",
+        "title": "代码片段",
+        "desc": "智能生成可复用代码片段，提升开发效率。"
+      },
+      {
+        "icon": "layers",
+        "title": "项目管理",
+        "desc": "轻量项目理解，辅助梳理模块依赖。"
+      }
+    ]
+  },
+  {
+    "id": "zcode",
+    "name": "ZCode",
+    "company": "智谱 AI Zhipu",
+    "description": "智谱 AI 推出的 AI 编程工具，深度适配 GLM 大模型，提供智能补全、代码生成与自动化研发能力。",
+    "icon": "icons/zcode.png",
+    "showcase": "zcode-ui-showcase.jpg",
+    "accent": "#60a5fa",
+    "accentSoft": "rgba(96, 165, 250, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "zcode-ai.com"
+    ],
+    "ctaUrl": "https://zcode-ai.com/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "智能",
+        "label": "自动生成"
+      },
+      {
+        "value": "IDE",
+        "label": "深度集成"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "独立 IDE 客户端",
+        "desc": "提供独立客户端，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助能力有限。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "支持主流 IDE 插件，融入现有工作流。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "sparkles",
+        "title": "智能代码补全",
+        "desc": "上下文感知补全，Tab 一键接受。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码。"
+      },
+      {
+        "icon": "workflow",
+        "title": "自动化流程",
+        "desc": "自动化重复编码任务，提升交付效率。"
+      },
+      {
+        "icon": "file-check",
+        "title": "代码检查",
+        "desc": "内置规范检查，及时发现并修复问题。"
+      }
+    ]
+  },
+  {
+    "id": "lobsterai",
+    "name": "LobsterAI",
+    "company": "网易有道 NetEase Youdao",
+    "description": "网易有道推出的开源桌面级 AI Agent（有道龙虾），支持本地文件、终端与多工具联动，覆盖代码编写与办公场景。",
+    "icon": "icons/lobsterai.png",
+    "showcase": "lobsterai-ui-showcase.jpg",
+    "accent": "#ef4444",
+    "accentSoft": "rgba(239, 68, 68, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "lobsterai.youdao.com",
+      "github.com/netease-youdao/LobsterAI"
+    ],
+    "ctaUrl": "https://lobsterai.youdao.com/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "轻量",
+        "label": "即开即用"
+      },
+      {
+        "value": "对话",
+        "label": "自然交互"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "桌面客户端",
+        "desc": "提供桌面客户端，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助有限。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code 插件",
+        "desc": "提供 VS Code 插件，融入现有工作流。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码。"
+      },
+      {
+        "icon": "sparkles",
+        "title": "智能补全",
+        "desc": "上下文感知补全，Tab 一键接受。"
+      },
+      {
+        "icon": "code",
+        "title": "代码生成",
+        "desc": "根据注释与上下文生成函数与模块。"
+      },
+      {
+        "icon": "layers",
+        "title": "项目理解",
+        "desc": "理解项目结构，辅助跨文件改写。"
+      }
+    ]
+  },
+  {
+    "id": "dumate",
+    "name": "DuMate",
+    "company": "百度 Baidu",
+    "description": "百度推出的桌面级 AI 办公智能体（搭子），自然语言驱动任务全流程自动化，本地沙箱安全执行。",
+    "icon": "icons/dumate.png",
+    "showcase": "dumate-ui-showcase.jpg",
+    "accent": "#8b5cf6",
+    "accentSoft": "rgba(139, 92, 246, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "dumate.cn",
+      "cloud.baidu.com/product/dumate.html"
+    ],
+    "ctaUrl": "https://www.dumate.cn/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "协作",
+        "label": "团队共享"
+      },
+      {
+        "value": "对话",
+        "label": "自然交互"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "桌面客户端",
+        "desc": "提供桌面客户端，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助有限。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "支持主流 IDE 插件，融入现有工作流。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "users",
+        "title": "团队协作",
+        "desc": "团队共享智能体与提示词，协作效率提升。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码。"
+      },
+      {
+        "icon": "sparkles",
+        "title": "智能补全",
+        "desc": "上下文感知补全，Tab 一键接受。"
+      },
+      {
+        "icon": "layers",
+        "title": "知识沉淀",
+        "desc": "沉淀团队代码知识，辅助新人快速上手。"
+      }
+    ]
+  },
+  {
+    "id": "workbuddy-cn",
+    "name": "WorkBuddy CN",
+    "company": "腾讯 Tencent",
+    "description": "腾讯推出的 AI 办公助手，基于多智能体协作，自主拆解复杂任务并交付报告、演示与表格等成果。",
+    "icon": "icons/workbuddy-cn.png",
+    "showcase": "workbuddy-ui-showcase.jpg",
+    "accent": "#06b6d4",
+    "accentSoft": "rgba(6, 182, 212, 0.14)",
+    "badges": [
+      "FREE"
+    ],
+    "downloadUrls": [
+      "www.workbuddy.ai"
+    ],
+    "ctaUrl": "https://www.workbuddy.ai/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      },
+      {
+        "os": "Web",
+        "label": "Web"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "自动化",
+        "label": "办公提效"
+      },
+      {
+        "value": "对话",
+        "label": "自然交互"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "Windows / macOS / Linux",
+        "desc": "原生桌面应用，图形化工作界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助能力有限。",
+        "level": "partial"
+      },
+      {
+        "icon": "globe",
+        "title": "IDE 插件 / Web",
+        "subtitle": "插件 + 浏览器",
+        "desc": "支持 IDE 插件接入与 Web 端在线使用。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "layout-dashboard",
+        "title": "智能工作台",
+        "desc": "AI 驱动的工作面板，任务与编程一体化。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码。"
+      },
+      {
+        "icon": "workflow",
+        "title": "自动化流程",
+        "desc": "自动化办公与研发重复任务，提升效率。"
+      },
+      {
+        "icon": "sparkles",
+        "title": "智能补全",
+        "desc": "上下文感知补全，Tab 一键接受。"
+      }
+    ]
+  },
+  {
+    "id": "atomcode",
+    "name": "AtomCode",
+    "company": "AtomGit 开源社区",
+    "description": "AtomGit 开源社区推出的终端 AI 编程助手，开源替代 Claude Code / Cursor Agent，自然语言驱动读改运行与自验证。",
+    "icon": "icons/atomcode.png",
+    "showcase": "atomcode-ui-showcase.jpg",
+    "accent": "#22c55e",
+    "accentSoft": "rgba(34, 197, 94, 0.14)",
+    "badges": [
+      "开源"
+    ],
+    "downloadUrls": [
+      "atomcode.atomgit.com",
+      "github.com/atomgit-atomcode/atomcode"
+    ],
+    "ctaUrl": "https://atomcode.atomgit.com/",
+    "ctaText": "前往官网使用",
+    "platforms": [
+      {
+        "os": "Windows",
+        "label": "Windows"
+      },
+      {
+        "os": "macOS",
+        "label": "macOS"
+      },
+      {
+        "os": "Linux",
+        "label": "Linux"
+      }
+    ],
+    "quickStats": [
+      {
+        "value": "轻量",
+        "label": "即开即用"
+      },
+      {
+        "value": "开源",
+        "label": "社区驱动"
+      },
+      {
+        "value": "免费",
+        "label": "个人可用"
+      }
+    ],
+    "runtime": [
+      {
+        "icon": "monitor",
+        "title": "GUI 桌面端",
+        "subtitle": "独立 IDE 客户端",
+        "desc": "提供独立客户端，图形化编程界面。",
+        "level": "full"
+      },
+      {
+        "icon": "terminal",
+        "title": "CLI 终端",
+        "subtitle": "部分支持",
+        "desc": "终端辅助能力有限。",
+        "level": "partial"
+      },
+      {
+        "icon": "plugin",
+        "title": "IDE 插件",
+        "subtitle": "VS Code / JetBrains",
+        "desc": "支持主流 IDE 插件，融入现有工作流。",
+        "level": "full"
+      }
+    ],
+    "features": [
+      {
+        "icon": "sparkles",
+        "title": "智能补全",
+        "desc": "上下文感知补全，Tab 一键接受。"
+      },
+      {
+        "icon": "chat",
+        "title": "AI 对话编程",
+        "desc": "自然语言对话生成与修改代码。"
+      },
+      {
+        "icon": "code",
+        "title": "代码解释",
+        "desc": "智能解释代码逻辑，辅助理解项目。"
+      },
+      {
+        "icon": "shield",
+        "title": "开源可部署",
+        "desc": "开源方案，支持本地部署，数据可控。"
+      }
+    ]
+  }
+]

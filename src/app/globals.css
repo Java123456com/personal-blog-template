@@ -132,11 +132,12 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
   .wasteland{margin-top:0!important}
   .VPDoc .container{max-width:var(--clone-page-width)!important}
   .VPDoc .content,.VPDoc .content-container{max-width:none!important}
-  .bl-inner,.tools-root{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
+  .bl-inner{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
   .friends-page,.about-page,.resume-page{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
   .friends-page .section-inner,.friends-page .hero-inner,.about-page .section-inner,.about-page .hero-inner{max-width:var(--clone-page-width)!important}
   .moments-content{box-sizing:border-box;width:var(--clone-page-width)!important;max-width:none!important;margin-inline:auto!important}
 }
+.tools-root{box-sizing:border-box;width:min(960px,calc(100% - 32px))!important;max-width:960px!important;margin-inline:auto!important}
 @media (max-width:959px){.nav-admin-link{display:none}}
 .slh .galaxy canvas{width:100%!important;height:100%!important}
 
