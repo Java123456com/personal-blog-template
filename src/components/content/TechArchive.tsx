@@ -16,23 +16,46 @@ export default function TechArchive({ entries }: { entries: ContentEntry[] }) {
   const articles = entries
     .filter((entry) => entry.type === "article" && entry.status === "published" && entry.slug)
     .sort((a, b) => Date.parse(b.publishedAt ?? b.createdAt) - Date.parse(a.publishedAt ?? a.createdAt));
+  const currentYear = new Date().getFullYear();
+  const firstYear = articles.reduce((earliest, entry) => {
+    const year = new Date(entry.publishedAt ?? entry.createdAt).getFullYear();
+    return Number.isFinite(year) ? Math.min(earliest, year) : earliest;
+  }, currentYear);
 
   return (
     <main className="tech-archive">
       <header className="tech-archive__hero">
-        <div className="tech-archive__hero-media" aria-hidden="true" />
-        <div className="tech-archive__hero-inner">
-          <p className="tech-archive__eyebrow"><span aria-hidden="true">✶</span> TECH JOURNAL · 技术手记</p>
-          <h1>技术学习记录</h1>
-          <p className="tech-archive__subtitle">学过的知识，写成可以回看的文章。</p>
-          <a className="tech-archive__start" href="#tech-articles">
-            开始阅读 <span aria-hidden="true">↓</span>
-          </a>
-          <p className="tech-archive__hero-count">▤ {articles.length} 篇文章</p>
+        <video
+          className="tech-archive__hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/sites/yihanglizi-cn-bc4c2f76/shared/videos/tech-hero-frame.png"
+          aria-hidden="true"
+        >
+          <source src="/sites/yihanglizi-cn-bc4c2f76/moments-tech-e3a2705e/videos/tech.mp4" type="video/mp4" />
+        </video>
+        <div className="tech-archive__hero-overlay" aria-hidden="true" />
+        <div className="tech-archive__hero-orbs" aria-hidden="true">
+          <span className="tech-archive__orb tech-archive__orb--one" />
+          <span className="tech-archive__orb tech-archive__orb--two" />
+          <span className="tech-archive__orb tech-archive__orb--three" />
         </div>
-        <a className="tech-archive__scroll" href="#tech-articles" aria-label="跳转到文章列表">
-          <span>SCROLL TO EXPLORE</span><span aria-hidden="true">↓</span>
-        </a>
+        <div className="tech-archive__hero-inner">
+          <p className="tech-archive__eyebrow"><span aria-hidden="true">⚡</span> TECH</p>
+          <h1>技术学习记录</h1>
+          <p className="tech-archive__subtitle">一行行代码，铺成通往未来的路 · 记录每一次成长</p>
+          <div className="tech-archive__stats" aria-label="技术学习记录统计">
+            <span><b>{articles.length}</b> 条记录</span>
+            <i aria-hidden="true" />
+            <span>持续 <b>更新中</b></span>
+            <i aria-hidden="true" />
+            <span><b>{firstYear}</b> 至今</span>
+          </div>
+        </div>
+        <div className="tech-archive__hero-fade" aria-hidden="true" />
       </header>
 
       <section className="tech-archive__section" id="tech-articles" aria-labelledby="tech-articles-heading">
