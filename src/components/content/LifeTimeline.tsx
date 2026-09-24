@@ -37,6 +37,11 @@ export function LifeTimeline({ entries }: { entries: ContentEntry[] }) {
         return (sortOrder === "newest" ? delta : -delta) || a.id - b.id;
       });
   }, [entries, sortOrder]);
+  const currentYear = new Date().getFullYear();
+  const firstYear = visibleEntries.reduce((earliest, entry) => {
+    const year = new Date(entryDate(entry)).getFullYear();
+    return Number.isFinite(year) ? Math.min(earliest, year) : earliest;
+  }, currentYear);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -55,21 +60,32 @@ export function LifeTimeline({ entries }: { entries: ContentEntry[] }) {
   return (
     <section className="life-timeline" aria-label="日常生活记录">
       <header className="life-timeline__hero">
-        <img
-          className="life-timeline__hero-image"
-          src="/sites/yihanglizi-cn-bc4c2f76/shared/videos/life-hero-frame.png"
-          alt=""
+        <video
+          className="life-timeline__hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/media/lazy-river-poster.jpg"
           aria-hidden="true"
-        />
+        >
+          <source src="/media/lazy-river-bg.mp4" type="video/mp4" />
+        </video>
         <div className="life-timeline__hero-shade" aria-hidden="true" />
         <div className="life-timeline__hero-content">
           <span className="life-timeline__eyebrow">🌿 LIFE</span>
           <h1>日常生活记录</h1>
           <p>把日子里值得留住的片刻，慢慢记下来。</p>
-          <span className="life-timeline__count">
-            <strong>{visibleEntries.length}</strong> 条记录
-          </span>
+          <div className="life-timeline__stats" aria-label="日常生活记录统计">
+            <span><strong>{visibleEntries.length}</strong> 条记录</span>
+            <i aria-hidden="true" />
+            <span>持续 <strong>更新中</strong></span>
+            <i aria-hidden="true" />
+            <span><strong>{firstYear}</strong> 至今</span>
+          </div>
         </div>
+        <div className="life-timeline__hero-fade" aria-hidden="true" />
       </header>
 
       <div className="life-timeline__toolbar">
