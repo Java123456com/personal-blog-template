@@ -15,3 +15,4 @@ Reference: `https://yihanglizi.cn/friends/`.
 - Friend nodes can be dragged within the map; connection lines redraw as they move.
 - Reset clears manual positions and restores the orbit layout.
 - Clicking a card or an undragged node opens the corresponding public site in a new tab.
+- Before navigation, a full screen warp HUD identifies the target, draws accelerating star trails, streams connection logs, and fills a progress meter. Escape cancels the jump.

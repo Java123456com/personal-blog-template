@@ -10,8 +10,9 @@ function friendUrl(card: HTMLElement): string | null {
 }
 
 export function enhanceFriends(root: HTMLElement): () => void {
-  const page = root.querySelector<HTMLElement>(".friends-page");
-  if (!page) return () => {};
+  const foundPage = root.querySelector<HTMLElement>(".friends-page");
+  if (!foundPage) return () => {};
+  const page: HTMLElement = foundPage;
 
   const buttons = Array.from(page.querySelectorAll<HTMLButtonElement>(".view-btn"));
   const grid = page.querySelector<HTMLElement>(".friends-grid");
@@ -26,7 +27,154 @@ export function enhanceFriends(root: HTMLElement): () => void {
   const manualPositions = new Map<HTMLElement, { x: number; y: number }>();
   const suppressedClicks = new WeakSet<HTMLElement>();
   let starView = false;
+  let warping = false;
+  let stopWarp: (() => void) | null = null;
   let frame = 0;
+
+  function startWarp(card: HTMLElement, url: string) {
+    if (warping) return;
+    warping = true;
+    page.classList.add("is-warping");
+
+    const name = card.querySelector<HTMLElement>(".friend-name-text")?.textContent?.trim() || "UNKNOWN NODE";
+    const nodeId = card.querySelector<HTMLElement>(".friend-id")?.textContent?.trim() || "NODE";
+    const overlay = document.createElement("div");
+    overlay.className = "warp-overlay";
+    overlay.setAttribute("data-v-88f65db3", "");
+    overlay.setAttribute("role", "status");
+    overlay.setAttribute("aria-live", "polite");
+    overlay.innerHTML = `
+      <canvas class="warp-canvas" data-v-88f65db3="" aria-hidden="true"></canvas>
+      <div class="warp-vignette" data-v-88f65db3="" aria-hidden="true"></div>
+      <div class="warp-scanline" data-v-88f65db3="" aria-hidden="true"></div>
+      <div class="warp-hud" data-v-88f65db3="">
+        <div class="warp-hud-top" data-v-88f65db3="">
+          <span class="warp-hud-tag" data-v-88f65db3=""><span class="warp-hud-dot" data-v-88f65db3=""></span>UPLINK · ACTIVE</span>
+          <span class="warp-hud-tag dim" data-v-88f65db3="">ESC · ABORT</span>
+        </div>
+        <div class="warp-hud-center" data-v-88f65db3="">
+          <span class="warp-target-line" data-v-88f65db3="">TARGET ACQUIRED · <b data-warp-node></b></span>
+          <strong class="warp-target-name" data-v-88f65db3="" data-warp-name></strong>
+          <span class="warp-target-url" data-v-88f65db3="" data-warp-url></span>
+          <div class="warp-progress" data-v-88f65db3=""><div class="warp-progress-bar" data-v-88f65db3="" data-warp-bar></div><span class="warp-progress-text" data-v-88f65db3="" data-warp-percent>00%</span></div>
+          <div class="warp-log" data-v-88f65db3="" data-warp-log></div>
+        </div>
+        <div class="warp-hud-bottom" data-v-88f65db3=""><span class="warp-hud-tag dim" data-v-88f65db3="">CONSTELLATION NETWORK</span><span class="warp-hud-tag" data-v-88f65db3="">WARP DRIVE · READY</span></div>
+      </div>`;
+
+    overlay.querySelector<HTMLElement>("[data-warp-node]")!.textContent = nodeId;
+    overlay.querySelector<HTMLElement>("[data-warp-name]")!.textContent = name;
+    overlay.querySelector<HTMLElement>("[data-warp-url]")!.textContent = url;
+    const bar = overlay.querySelector<HTMLElement>("[data-warp-bar]")!;
+    const percent = overlay.querySelector<HTMLElement>("[data-warp-percent]")!;
+    const log = overlay.querySelector<HTMLElement>("[data-warp-log]")!;
+    const warpCanvas = overlay.querySelector<HTMLCanvasElement>(".warp-canvas")!;
+    const ctx = warpCanvas.getContext("2d");
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    page.appendChild(overlay);
+
+    const messages = [
+      [8, "resolving stellar coordinates"],
+      [28, `handshake accepted by ${nodeId}`],
+      [51, "encrypted route established"],
+      [74, "opening hyperspace channel"],
+      [93, "jump lock confirmed"],
+    ] as const;
+    let shown = 0;
+    let warpFrame = 0;
+    let finishTimer = 0;
+    const started = performance.now();
+    const duration = 1850;
+    const stars = Array.from({ length: 120 }, (_, index) => ({
+      angle: (index / 120) * Math.PI * 2 + Math.random() * .07,
+      offset: Math.random(),
+      speed: .55 + Math.random() * .9,
+      hue: index % 5 === 0 ? 268 : 190,
+    }));
+
+    const render = (now: number) => {
+      const raw = Math.min(1, (now - started) / duration);
+      const eased = 1 - Math.pow(1 - raw, 2.7);
+      const value = Math.min(100, Math.floor(eased * 100));
+      bar.style.width = `${value}%`;
+      percent.textContent = `${String(value).padStart(2, "0")}%`;
+      while (shown < messages.length && value >= messages[shown][0]) {
+        const item = document.createElement("span");
+        item.className = "warp-log-item";
+        item.setAttribute("data-v-88f65db3", "");
+        const arrow = document.createElement("span");
+        arrow.className = "warp-log-arrow";
+        arrow.setAttribute("data-v-88f65db3", "");
+        arrow.textContent = "›";
+        item.append(arrow, document.createTextNode(messages[shown][1]));
+        log.appendChild(item);
+        shown += 1;
+      }
+
+      if (ctx) {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const pixelWidth = Math.round(width * dpr);
+        const pixelHeight = Math.round(height * dpr);
+        if (warpCanvas.width !== pixelWidth || warpCanvas.height !== pixelHeight) {
+          warpCanvas.width = pixelWidth;
+          warpCanvas.height = pixelHeight;
+          warpCanvas.style.width = `${width}px`;
+          warpCanvas.style.height = `${height}px`;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, width, height);
+        ctx.globalCompositeOperation = "lighter";
+        const cx = width / 2;
+        const cy = height / 2;
+        const reach = Math.hypot(width, height) * .58;
+        stars.forEach((star) => {
+          const travel = (star.offset + eased * star.speed) % 1;
+          const radius = 18 + travel * reach;
+          const streak = 4 + eased * eased * 88 * (1 - travel * .35);
+          const cos = Math.cos(star.angle);
+          const sin = Math.sin(star.angle);
+          ctx.beginPath();
+          ctx.moveTo(cx + cos * Math.max(8, radius - streak), cy + sin * Math.max(8, radius - streak));
+          ctx.lineTo(cx + cos * radius, cy + sin * radius);
+          ctx.strokeStyle = `hsla(${star.hue}, 95%, 72%, ${.12 + eased * .64})`;
+          ctx.lineWidth = .6 + eased * 1.8;
+          ctx.stroke();
+        });
+        ctx.globalCompositeOperation = "source-over";
+      }
+
+      if (raw < 1) {
+        warpFrame = requestAnimationFrame(render);
+        return;
+      }
+      overlay.classList.add("is-out");
+      finishTimer = window.setTimeout(() => {
+        const opened = window.open(url, "_blank");
+        if (opened) opened.opener = null;
+        stopWarp?.();
+        if (!opened) window.location.assign(url);
+      }, 430);
+    };
+
+    const abort = (event: KeyboardEvent) => {
+      if (event.key === "Escape") stopWarp?.();
+    };
+    window.addEventListener("keydown", abort);
+    stopWarp = () => {
+      cancelAnimationFrame(warpFrame);
+      window.clearTimeout(finishTimer);
+      window.removeEventListener("keydown", abort);
+      overlay.remove();
+      document.body.style.overflow = previousOverflow;
+      page.classList.remove("is-warping");
+      warping = false;
+      stopWarp = null;
+    };
+    warpFrame = requestAnimationFrame(render);
+  }
 
   function drawMap() {
     if (!map || !canvas || !starView) return;
@@ -98,7 +246,7 @@ export function enhanceFriends(root: HTMLElement): () => void {
     const open = () => {
       const node = nodes[index];
       if (node && suppressedClicks.has(node)) return;
-      window.open(url, "_blank", "noopener,noreferrer");
+      startWarp(card, url);
     };
     card.addEventListener("click", open);
     cleanups.push(() => card.removeEventListener("click", open));
@@ -178,6 +326,7 @@ export function enhanceFriends(root: HTMLElement): () => void {
   setView(false);
 
   return () => {
+    stopWarp?.();
     cancelAnimationFrame(frame);
     cleanups.forEach(cleanup => cleanup());
     if (grid) grid.style.display = "";
