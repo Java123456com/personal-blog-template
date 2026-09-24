@@ -124,6 +124,9 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
 @media (max-width:959px){.nav-admin-link{display:none}}
 .slh .galaxy canvas{width:100%!important;height:100%!important}
 
+/* Give the observatory status bar more vertical presence and keep its contents centered. */
+.slh .slh-bar{box-sizing:border-box;min-height:64px;padding:.85rem 1.25rem}
+
 /* Give the home observatory sections the larger, airier vertical rhythm requested. */
 .slh .slh-sec-head{gap:1.1rem;min-height:58px;margin:5rem 0 1.9rem}
 .slh .slh-sec-num{padding:.42rem .78rem;border-radius:8px;font-size:1rem;line-height:1.35}

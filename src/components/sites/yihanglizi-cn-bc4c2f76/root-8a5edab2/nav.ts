@@ -16,6 +16,17 @@ const searchLinks = [...links, ...journalLinks];
 function paintGalaxy(container: HTMLElement) {
   const canvas = container.querySelector<HTMLCanvasElement>(".galaxy canvas");
   if (!canvas) return () => {};
+  const clock = container.querySelector<HTMLElement>(".slh-bar-clock");
+  const updateClock = () => {
+    if (clock) {
+      clock.textContent = new Date().toLocaleTimeString("zh-CN", {
+        hour12: false,
+        timeZone: "Asia/Shanghai",
+      });
+    }
+  };
+  updateClock();
+  const clockInterval = window.setInterval(updateClock, 1000);
   const disposeCosmic = mountCosmicGalaxy(container);
   const buttons=container.querySelectorAll<HTMLButtonElement>(".slh-btn");
   const scrollGalaxy=()=>container.querySelector(".slh-nav")?.scrollIntoView({behavior:"smooth"});
@@ -157,7 +168,7 @@ function paintGalaxy(container: HTMLElement) {
   const toggleZodiacSound=()=>{wheelMuted=!wheelMuted;zodiacSound?.classList.toggle("off",wheelMuted);if(zodiacSound){zodiacSound.title=wheelMuted?"开启轮盘音效":"关闭轮盘音效";const icon=zodiacSound.querySelector("span");if(icon)icon.textContent=wheelMuted?"🔇":"🔊";}if(!wheelMuted)playZodiacTone("triangle",784,.1,.06);};
   spin?.addEventListener("click",turn);
   zodiacSound?.addEventListener("click",toggleZodiacSound);
-  return ()=>{disposeCosmic();window.cancelAnimationFrame(wheelFrame);window.clearTimeout(pointerTimer);void zodiacAudioContext?.close();dipperSwap++;dipperAnimation?.cancel();buttons[0]?.removeEventListener("click",scrollGalaxy);buttons[1]?.removeEventListener("click",scrollGame);dipperListeners.forEach(fn=>fn());zodiacListeners.forEach(fn=>fn());spin?.removeEventListener("click",turn);zodiacSound?.removeEventListener("click",toggleZodiacSound);};
+  return ()=>{window.clearInterval(clockInterval);disposeCosmic();window.cancelAnimationFrame(wheelFrame);window.clearTimeout(pointerTimer);void zodiacAudioContext?.close();dipperSwap++;dipperAnimation?.cancel();buttons[0]?.removeEventListener("click",scrollGalaxy);buttons[1]?.removeEventListener("click",scrollGame);dipperListeners.forEach(fn=>fn());zodiacListeners.forEach(fn=>fn());spin?.removeEventListener("click",turn);zodiacSound?.removeEventListener("click",toggleZodiacSound);};
 }
 
 export function enhanceNav(root: HTMLElement, starMarkup: string) {

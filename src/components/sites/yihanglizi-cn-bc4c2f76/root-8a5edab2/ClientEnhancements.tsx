@@ -20,7 +20,10 @@ function enhanceTerminal(root: HTMLElement) {
   const start = Date.now();
   const update = () => {
     const clock = root.querySelector<HTMLElement>(".hud-bar-right .hud-bar-text:last-child");
-    if (clock) clock.textContent = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+    if (clock) clock.textContent = new Date().toLocaleTimeString("zh-CN", {
+      hour12: false,
+      timeZone: "Asia/Shanghai",
+    });
     const uptime = root.querySelector<HTMLElement>(".panel-meta");
     if (uptime) uptime.textContent = `uptime ${new Date(Date.now() - start).toISOString().slice(11, 19)}`;
     root.querySelectorAll<HTMLElement>(".meter").forEach((meter, index) => {
