@@ -1,31 +1,25 @@
-# 个人博客前端模板
+# 个人博客
 
-基于公开网站的视觉布局制作的个人博客前端模板。当前版本使用 Next.js、React 和 TypeScript，内容为静态占位；管理端、API、MySQL 和云服务器部署留待下一阶段实现。
+Next.js 15、MySQL 8 和 Markdown 驱动的个人博客。首页有星空极光与赛博编程两套主题；技术学习、日常生活、文章阅读和写作页共享导航与背景。
 
-## 本地运行
+## Windows MySQL 8.0 本地启动
 
-```powershell
-npm.cmd install
-npm.cmd run dev
-```
+1. 确认 Windows 的 `MySQL80` 服务已启动。
+2. 使用已有管理员账号执行 `db/schema.sql`，例如：`mysql.exe -u root -p < db/schema.sql`。
+3. 让一个 MySQL 用户拥有 `personal_blog` 库的 `SELECT、INSERT、UPDATE、DELETE` 权限。
+4. 复制 `.env.local.example` 为 `.env.local`，填写该用户密码、写作密码和至少 32 字符的会话密钥。
+5. 运行 `npm.cmd install` 和 `npm.cmd run dev -- -p 4173`。
 
-默认访问 <http://localhost:3000/>。如需使用 4173 端口，运行 `npm.cmd run dev -- -p 4173`。类型检查：`npm.cmd run typecheck`；生产构建：`npm.cmd run build`。
+打开 <http://localhost:4173/>。技术学习记录在 `/moments/tech/`，日常生活记录在 `/moments/life/`。不要把 `.env.local` 提交到 Git；正文和图片都在 MySQL 中，备份时要备份 `personal_blog` 数据库。
 
-## 页面
+## 云服务器 Docker 部署
 
-| 页面 | 地址 | 当前内容 |
-| --- | --- | --- |
-| 首页 | `/` | 主题切换、星图、任务卡、解密弹窗、2048 |
-| 博客 | `/blog/` | 空文章列表 |
-| 技术学习记录 | `/moments/tech/` | 空记录列表 |
-| 日常生活记录 | `/moments/life/` | 空记录列表 |
-| 简历 | `/resume/` | 视觉模板与占位内容 |
-| 关于 | `/about/` | 个人介绍模板与占位内容 |
-| 友链 | `/friends/` | 空友链列表 |
-| 工具 | `/tools/` | 空工具列表 |
+以后上传云服务器时，复制 `.env.example` 为 `.env`，替换所有 `CHANGE_ME`，再运行 `docker compose up --build -d`。该配置只用于服务器；本机开发直接连接 Windows MySQL 8.0。生产环境应放在 HTTPS 反向代理后面。
 
-导航栏的“博客”菜单只包含“技术学习记录”“日常生活记录”。“朋友圈”入口已移除。原站博主的文章、动态、履历、个人介绍及联系方式没有作为模板内容保留。填入自己的内容之前，列表会显示空状态。
+## 写作与图片
 
-主题效果：星空极光首页使用 `/media/starlight-orbit.mp4` 视频；博客、简历等内页使用闪烁星点、淡色极光与流星的画布背景。赛博编程主题保留字符雨。首次打开内页默认星空极光，主题选择保存在浏览器本地。
+在技术学习或日常生活页右侧点击「＋ 记录」，输入管理员密码进入 `/write/`。写作页可以新建、保存草稿、发布、编辑和删除；文章地址是 `/moments/tech/<slug>/`。正文使用 Markdown，支持常见 GFM 语法。技术文章图片上传后会插入 Markdown；生活记录图片显示在卡片图库中。
 
-页面快照在 `src/components/sites/yihanglizi-cn-bc4c2f76/`，静态资源在 `public/sites/yihanglizi-cn-bc4c2f76/`。这些目录名称是开发阶段保留的内部路径；站点展示名称已改为“个人博客”。后续接入管理端时，需要将静态占位内容改为从 API 读取，不应直接编辑快照中的 HTML 作为长期内容管理方式。
+图片保存在 MySQL 的 `media` 表。目前接受 JPEG、PNG、WebP、GIF，每张最多 5 MB。这样部署只需要 MySQL，不需要 MinIO；如果日后图片量增长，可以把媒体接口迁往 MinIO，文章数据结构仍可继续使用。
+
+`/blog/` 是旧页面，已不再使用。导航栏「博客」下只保留「技术学习记录」「日常生活记录」。其他页面中的模板占位内容仍可按需逐步替换。
