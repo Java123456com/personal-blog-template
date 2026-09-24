@@ -95,22 +95,27 @@ export async function getPublishedArticle(slug: string): Promise<ContentEntry | 
   return rows[0] ? entryFromRow(rows[0]) : null;
 }
 
-export type EntryInput = Pick<ContentEntry, "type" | "slug" | "title" | "summary" | "bodyMd" | "tags" | "status" | "coverMediaId" | "imageIds">;
+export type EntryInput = Pick<ContentEntry, "type" | "slug" | "title" | "summary" | "bodyMd" | "tags" | "status" | "coverMediaId" | "imageIds" | "publishedAt">;
+
+function publicationValue(input: EntryInput): Date | null {
+  if (input.publishedAt) return new Date(input.publishedAt);
+  return input.status === "published" ? new Date() : null;
+}
 
 export async function createEntry(input: EntryInput): Promise<ContentEntry> {
   const [result] = await getPool().execute<ResultSetHeader>(
     "INSERT INTO entries (type,slug,title,summary,body_md,tags,status,cover_media_id,image_ids,published_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
     [input.type, input.slug, input.title, input.summary, input.bodyMd, JSON.stringify(input.tags), input.status,
-      input.coverMediaId, JSON.stringify(input.imageIds), input.status === "published" ? new Date() : null],
+      input.coverMediaId, JSON.stringify(input.imageIds), publicationValue(input)],
   );
   return (await getEntryById(result.insertId))!;
 }
 
 export async function updateEntry(id: number, input: EntryInput): Promise<ContentEntry | null> {
   const [result] = await getPool().execute<ResultSetHeader>(
-    "UPDATE entries SET type=?,slug=?,title=?,summary=?,body_md=?,tags=?,status=?,cover_media_id=?,image_ids=?,published_at=CASE WHEN ?='published' THEN COALESCE(published_at,NOW(3)) ELSE NULL END WHERE id=?",
+    "UPDATE entries SET type=?,slug=?,title=?,summary=?,body_md=?,tags=?,status=?,cover_media_id=?,image_ids=?,published_at=? WHERE id=?",
     [input.type, input.slug, input.title, input.summary, input.bodyMd, JSON.stringify(input.tags), input.status,
-      input.coverMediaId, JSON.stringify(input.imageIds), input.status, id],
+      input.coverMediaId, JSON.stringify(input.imageIds), publicationValue(input), id],
   );
   return result.affectedRows ? getEntryById(id) : null;
 }

@@ -7,22 +7,33 @@ import type { ContentEntry, EntryStatus, EntryType } from "@/lib/content/types";
 import { mediaUrl } from "@/lib/content/types";
 import "./ContentEditor.css";
 
-type EditorForm = Pick<ContentEntry, "type" | "slug" | "title" | "summary" | "bodyMd" | "tags" | "coverMediaId" | "imageIds">;
+type EditorForm = Pick<ContentEntry, "type" | "slug" | "title" | "summary" | "bodyMd" | "tags" | "coverMediaId" | "imageIds" | "publishedAt">;
 type SessionResult = { authenticated: boolean; configured: boolean };
 type EntriesResult = { entries: ContentEntry[] };
 type EntryResult = { entry: ContentEntry };
 type UploadResult = { id: string; url: string };
 
 function blankForm(type: EntryType): EditorForm {
-  return { type, slug: "", title: "", summary: "", bodyMd: "", tags: [], coverMediaId: null, imageIds: [] };
+  return { type, slug: "", title: "", summary: "", bodyMd: "", tags: [], coverMediaId: null, imageIds: [], publishedAt: null };
 }
 
 function formFromEntry(entry: ContentEntry): EditorForm {
   return {
     type: entry.type, slug: entry.slug, title: entry.title, summary: entry.summary,
     bodyMd: entry.bodyMd, tags: entry.tags, coverMediaId: entry.coverMediaId,
-    imageIds: entry.imageIds,
+    imageIds: entry.imageIds, publishedAt: entry.publishedAt,
   };
+}
+
+function dateInputValue(value: string | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Shanghai",
+  }).formatToParts(date);
+  const pick = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${pick("year")}-${pick("month")}-${pick("day")}`;
 }
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
@@ -40,9 +51,12 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
 
 function dateLabel(value: string): string {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("zh-CN", {
+  if (Number.isNaN(date.getTime())) return value;
+  const parts = new Intl.DateTimeFormat("en-CA", {
     year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Shanghai",
-  }).format(date);
+  }).formatToParts(date);
+  const pick = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${pick("year")}-${pick("month")}-${pick("day")}`;
 }
 
 export default function ContentEditor() {
@@ -311,6 +325,7 @@ export default function ContentEditor() {
               <div className="content-editor__field-row">
                 <label>链接标识 <span>可留空自动生成</span><input value={form.slug} maxLength={120} onChange={(event) => setForm({ ...form, slug: event.target.value.toLowerCase() })} placeholder="my-first-post" spellCheck={false} /></label>
                 <label>标签 <span>用逗号分隔，最多 12 个</span><input value={tagsText} onChange={(event) => setTagsText(event.target.value)} placeholder="学习笔记，Next.js" /></label>
+                <label>发布日期 <span>可自定义，留空则使用发布时间</span><input type="date" value={dateInputValue(form.publishedAt)} onChange={(event) => setForm({ ...form, publishedAt: event.target.value ? `${event.target.value}T12:00:00+08:00` : null })} /></label>
               </div>
 
               <div className="content-editor__body-head"><label htmlFor="content-editor-body">正文 <span>Markdown</span></label><button type="button" onClick={() => fileRef.current?.click()} disabled={uploading || busy}>{uploading ? "正在上传…" : "＋ 上传图片"}</button><input ref={fileRef} className="content-editor__file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={uploadImage} /></div>

@@ -6,11 +6,11 @@ Next.js 15、MySQL 8 和 Markdown 驱动的个人博客。首页有星空极光�
 
 1. 确认 Windows 的 `MySQL80` 服务已启动。
 2. 使用已有管理员账号执行 `db/schema.sql`，例如：`mysql.exe -u root -p < db/schema.sql`。
-3. 让一个 MySQL 用户拥有 `personal_blog` 库的 `SELECT、INSERT、UPDATE、DELETE` 权限。
+3. 让一个 MySQL 用户拥有 `blog` 库的 `SELECT、INSERT、UPDATE、DELETE` 权限。
 4. 复制 `.env.local.example` 为 `.env.local`，填写该用户密码、写作密码和至少 32 字符的会话密钥。
 5. 运行 `npm.cmd install` 和 `npm.cmd run dev -- -p 4173`。
 
-打开 <http://localhost:4173/>。技术学习记录在 `/moments/tech/`，日常生活记录在 `/moments/life/`。不要把 `.env.local` 提交到 Git；正文和图片都在 MySQL 中，备份时要备份 `personal_blog` 数据库。
+打开 <http://localhost:4173/>。技术学习记录在 `/moments/tech/`，日常生活记录在 `/moments/life/`。不要把 `.env.local` 提交到 Git；正文和图片都在 MySQL 中，备份时要备份 `blog` 数据库。
 
 ## 云服务器 Docker 部署
 
@@ -18,7 +18,7 @@ Next.js 15、MySQL 8 和 Markdown 驱动的个人博客。首页有星空极光�
 
 ## 写作与图片
 
-在技术学习或日常生活页右侧点击「＋ 记录」，输入管理员密码进入 `/write/`。写作页可以新建、保存草稿、发布、编辑和删除；文章地址是 `/moments/tech/<slug>/`。正文使用 Markdown，支持常见 GFM 语法。技术文章图片上传后会插入 Markdown；生活记录图片显示在卡片图库中。
+点击全站导航最右侧的「＋」进入 `/write/` 管理端。写作页可以新建、保存草稿、发布、编辑、删除和自定义发布日期；文章地址是 `/moments/tech/<slug>/`。正文使用 Markdown，支持常见 GFM 语法。技术文章图片上传后会插入 Markdown；生活记录图片显示在卡片图库中。
 
 图片保存在 MySQL 的 `media` 表。目前接受 JPEG、PNG、WebP、GIF，每张最多 5 MB。这样部署只需要 MySQL，不需要 MinIO；如果日后图片量增长，可以把媒体接口迁往 MinIO，文章数据结构仍可继续使用。
 

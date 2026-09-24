@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
-      MYSQL_DATABASE: personal_blog
+      MYSQL_DATABASE: blog
       MYSQL_TIMEZONE_OFFSET: +00:00
       MYSQL_USER: ${MYSQL_USER:?Set MYSQL_USER in .env}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
@@ -31,7 +31,7 @@ services:
       MYSQL_PORT: 3306
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: personal_blog
+      MYSQL_DATABASE: blog
       BLOG_ADMIN_PASSWORD: ${BLOG_ADMIN_PASSWORD:?Set BLOG_ADMIN_PASSWORD in .env}
       BLOG_SESSION_SECRET: ${BLOG_SESSION_SECRET:?Set BLOG_SESSION_SECRET in .env}
       TZ: UTC

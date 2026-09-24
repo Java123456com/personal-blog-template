@@ -5,12 +5,11 @@ function publishedDate(entry: ContentEntry): string {
   const raw = entry.publishedAt ?? entry.createdAt;
   const date = new Date(raw);
   if (Number.isNaN(date.getTime())) return raw;
-  return new Intl.DateTimeFormat("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "Asia/Shanghai",
-  }).format(date);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Shanghai",
+  }).formatToParts(date);
+  const pick = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${pick("year")}-${pick("month")}-${pick("day")}`;
 }
 
 export default function TechArchive({ entries }: { entries: ContentEntry[] }) {
@@ -57,16 +56,16 @@ export default function TechArchive({ entries }: { entries: ContentEntry[] }) {
               {articles.map((entry, index) => {
                 const href = `/moments/tech/${encodeURIComponent(entry.slug)}/`;
                 return (
-                  <article className="tech-archive__card" key={entry.id} id={`article-${entry.id}`}>
+                  <article className={`tech-archive__card tech-archive__card--tone-${index % 4}`} key={entry.id} id={`article-${entry.id}`}>
                     <div className="tech-archive__card-kicker">
                       <span className="tech-archive__card-number">{String(index + 1).padStart(2, "0")}</span>
-                      <span>技术学习</span>
+                      <span className="tech-archive__card-category">{entry.tags[0] || "技术学习"}</span>
                     </div>
                     <h3><a href={href}>{entry.title}</a></h3>
                     {entry.summary && <p className="tech-archive__summary">{entry.summary}</p>}
                     {entry.tags.length > 0 && (
                       <ul className="tech-archive__tags" aria-label="文章标签">
-                        {entry.tags.map((tag) => <li key={tag}>{tag}</li>)}
+                        {entry.tags.map((tag) => <li key={tag}>#{tag}</li>)}
                       </ul>
                     )}
                     <div className="tech-archive__card-bottom">
@@ -80,10 +79,6 @@ export default function TechArchive({ entries }: { entries: ContentEntry[] }) {
           )}
         </div>
       </section>
-
-      <a className="tech-archive__write" href="/write/?type=article" aria-label="记录新的技术学习文章">
-        <span aria-hidden="true">＋</span><span>记录</span>
-      </a>
     </main>
   );
 }

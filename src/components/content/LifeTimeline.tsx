@@ -91,9 +91,6 @@ export function LifeTimeline({ entries }: { entries: ContentEntry[] }) {
             最早
           </button>
         </div>
-        <a className="life-timeline__write" href="/write/?type=moment">
-          <span aria-hidden="true">＋</span> 记录
-        </a>
       </div>
 
       {visibleEntries.length === 0 ? (

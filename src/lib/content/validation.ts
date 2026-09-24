@@ -18,6 +18,8 @@ export function parseEntryInput(raw: unknown): EntryInput {
   const tags = Array.isArray(value.tags) ? value.tags : [];
   const imageIds = Array.isArray(value.imageIds) ? value.imageIds : [];
   const coverMediaId = value.coverMediaId == null || value.coverMediaId === "" ? null : value.coverMediaId;
+  const publishedAtRaw = typeof value.publishedAt === "string" ? value.publishedAt.trim() : "";
+  const publishedAtDate = publishedAtRaw ? new Date(publishedAtRaw) : null;
 
   if (type !== "article" && type !== "moment") throw new Error("内容类型无效");
   if (status !== "draft" && status !== "published") throw new Error("发布状态无效");
@@ -28,6 +30,7 @@ export function parseEntryInput(raw: unknown): EntryInput {
   if (tags.length > 12 || !tags.every(tag => typeof tag === "string" && tag.trim().length > 0 && tag.length <= 30)) throw new Error("标签最多 12 个，每个不超过 30 字");
   if (imageIds.length > 12 || !imageIds.every(id => typeof id === "string" && mediaId.test(id))) throw new Error("图片最多 12 张");
   if (coverMediaId !== null && (typeof coverMediaId !== "string" || !mediaId.test(coverMediaId))) throw new Error("封面图片无效");
+  if (publishedAtDate && Number.isNaN(publishedAtDate.getTime())) throw new Error("发布日期无效");
 
   return {
     type,
@@ -39,5 +42,6 @@ export function parseEntryInput(raw: unknown): EntryInput {
     tags: tags.map(tag => (tag as string).trim()),
     coverMediaId,
     imageIds,
+    publishedAt: publishedAtDate?.toISOString() ?? null,
   };
 }

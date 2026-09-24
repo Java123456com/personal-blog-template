@@ -68,9 +68,11 @@ function publishedDate(entry: ContentEntry): string {
   const raw = entry.publishedAt ?? entry.createdAt;
   const date = new Date(raw);
   if (Number.isNaN(date.getTime())) return raw;
-  return new Intl.DateTimeFormat("zh-CN", {
+  const parts = new Intl.DateTimeFormat("en-CA", {
     year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Shanghai",
-  }).format(date);
+  }).formatToParts(date);
+  const pick = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${pick("year")}-${pick("month")}-${pick("day")}`;
 }
 
 export default function ArticleReader({ entry }: { entry: ContentEntry }) {
@@ -124,7 +126,7 @@ export default function ArticleReader({ entry }: { entry: ContentEntry }) {
 
         <aside className="article-reader__toc" aria-label="文章目录">
           <div className="article-reader__toc-inner">
-            <p className="article-reader__toc-title">文章目录</p>
+            <p className="article-reader__toc-title">{entry.title}</p>
             {headings.length > 0 ? (
               <nav>
                 {headings.map((item) => (
