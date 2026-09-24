@@ -235,6 +235,8 @@ html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;
 .template-empty h3{font-size:1.35rem;line-height:1.4;margin:0 0 8px;font-weight:700}
 .template-empty p{font-size:.95rem;line-height:1.7;margin:0;color:var(--clone-muted,#b9a989)}
 .template-avatar{width:100%;height:100%;display:grid;place-items:center;font-size:clamp(3rem,7vw,6rem);color:var(--clone-accent,#ffbd56);background:radial-gradient(circle at 50% 40%,var(--clone-glow,rgba(255,125,28,.3)),transparent 65%)}
+.friends-page .template-owner-symbol{display:grid!important;place-items:center;color:#6ee7ff!important;background:radial-gradient(circle at 50% 42%,rgba(34,211,238,.3),rgba(12,18,38,.96) 66%)!important;font-family:Georgia,serif!important;font-size:clamp(1.8rem,4vw,3.4rem)!important;line-height:1!important;text-shadow:0 0 18px rgba(34,211,238,.9)}
+.friends-page .sm-node-avatar.template-owner-symbol{font-size:1.55rem!important}
 .clone-mobile-blog{border-bottom:1px solid var(--clone-border,#40301c)}
 .clone-mobile-blog summary{list-style:none;color:var(--clone-text,#e6dccb);padding:15px;font-size:16px;cursor:pointer;display:flex;justify-content:space-between}
 .clone-mobile-blog summary::-webkit-details-marker{display:none}

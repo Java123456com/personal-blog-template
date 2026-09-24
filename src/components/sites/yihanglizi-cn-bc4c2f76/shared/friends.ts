@@ -21,9 +21,10 @@ export function enhanceFriends(root: HTMLElement): () => void {
   const thumb = page.querySelector<HTMLElement>(".view-switch-thumb");
   const cards = Array.from(page.querySelectorAll<HTMLButtonElement>(".friend-card"));
   const nodes = Array.from(page.querySelectorAll<HTMLElement>(".sm-node-friend"));
-  const copies = Array.from(page.querySelectorAll<HTMLButtonElement>(".apply-copy"));
+  const resetButton = page.querySelector<HTMLButtonElement>(".sm-mini-btn");
   const cleanups: Array<() => void> = [];
-  const timers = new Set<number>();
+  const manualPositions = new Map<HTMLElement, { x: number; y: number }>();
+  const suppressedClicks = new WeakSet<HTMLElement>();
   let starView = false;
   let frame = 0;
 
@@ -46,8 +47,9 @@ export function enhanceFriends(root: HTMLElement): () => void {
     const radiusY = Math.max(85, Math.min(height * .34, 190));
     const points = nodes.map((node, index) => {
       const angle = -Math.PI / 2 + index * (Math.PI * 2 / Math.max(nodes.length, 1));
-      const x = cx + Math.cos(angle) * radiusX;
-      const y = cy + Math.sin(angle) * radiusY;
+      const manual = manualPositions.get(node);
+      const x = manual ? Math.max(34, Math.min(width - 34, manual.x)) : cx + Math.cos(angle) * radiusX;
+      const y = manual ? Math.max(34, Math.min(height - 64, manual.y)) : cy + Math.sin(angle) * radiusY;
       node.style.left = `${x}px`;
       node.style.top = `${y}px`;
       return { x, y };
@@ -71,6 +73,7 @@ export function enhanceFriends(root: HTMLElement): () => void {
     starView = next;
     if (grid) grid.style.display = next ? "none" : "";
     if (mapWrap) mapWrap.style.display = next ? "" : "none";
+    mapWrap?.classList.toggle("in-view", next);
     buttons.forEach((button, index) => {
       const active = index === (next ? 1 : 0);
       button.classList.toggle("active", active);
@@ -92,7 +95,11 @@ export function enhanceFriends(root: HTMLElement): () => void {
   cards.forEach((card, index) => {
     const url = friendUrl(card);
     if (!url) return;
-    const open = () => window.open(url, "_blank", "noopener,noreferrer");
+    const open = () => {
+      const node = nodes[index];
+      if (node && suppressedClicks.has(node)) return;
+      window.open(url, "_blank", "noopener,noreferrer");
+    };
     card.addEventListener("click", open);
     cleanups.push(() => card.removeEventListener("click", open));
     const node = nodes[index];
@@ -108,34 +115,62 @@ export function enhanceFriends(root: HTMLElement): () => void {
     };
     node.addEventListener("click", open);
     node.addEventListener("keydown", keydown);
+
+    let dragging = false;
+    let moved = false;
+    let startX = 0;
+    let startY = 0;
+    const pointerDown = (event: PointerEvent) => {
+      if (event.button !== 0 || !map) return;
+      dragging = true;
+      moved = false;
+      startX = event.clientX;
+      startY = event.clientY;
+      node.setPointerCapture(event.pointerId);
+    };
+    const pointerMove = (event: PointerEvent) => {
+      if (!dragging || !map) return;
+      if (Math.hypot(event.clientX - startX, event.clientY - startY) > 4) moved = true;
+      if (!moved) return;
+      const rect = map.getBoundingClientRect();
+      manualPositions.set(node, { x: event.clientX - rect.left, y: event.clientY - rect.top });
+      drawMap();
+    };
+    const pointerUp = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      if (node.hasPointerCapture(event.pointerId)) node.releasePointerCapture(event.pointerId);
+      if (!moved) return;
+      suppressedClicks.add(node);
+      window.setTimeout(() => suppressedClicks.delete(node), 0);
+    };
+    node.style.touchAction = "none";
+    node.addEventListener("pointerdown", pointerDown);
+    node.addEventListener("pointermove", pointerMove);
+    node.addEventListener("pointerup", pointerUp);
+    node.addEventListener("pointercancel", pointerUp);
     cleanups.push(() => {
       node.removeEventListener("click", open);
       node.removeEventListener("keydown", keydown);
+      node.removeEventListener("pointerdown", pointerDown);
+      node.removeEventListener("pointermove", pointerMove);
+      node.removeEventListener("pointerup", pointerUp);
+      node.removeEventListener("pointercancel", pointerUp);
       node.removeAttribute("role");
       node.removeAttribute("tabindex");
       node.removeAttribute("aria-label");
       node.style.left = "0px";
       node.style.top = "0px";
+      node.style.touchAction = "";
     });
   });
 
-  copies.forEach(button => {
-    const label = button.textContent || "copy";
-    const click = async () => {
-      const value = button.closest(".apply-field-val")?.querySelector<HTMLElement>(".apply-field-text")?.textContent?.trim();
-      if (!value) return;
-      try {
-        await navigator.clipboard.writeText(value);
-        button.textContent = "copied ✓";
-      } catch {
-        button.textContent = "复制失败";
-      }
-      const timer = window.setTimeout(() => { button.textContent = label; timers.delete(timer); }, 1700);
-      timers.add(timer);
-    };
-    button.addEventListener("click", click);
-    cleanups.push(() => { button.removeEventListener("click", click); button.textContent = label; });
-  });
+  const reset = () => {
+    manualPositions.clear();
+    drawMap();
+  };
+  resetButton?.addEventListener("click", reset);
+  cleanups.push(() => resetButton?.removeEventListener("click", reset));
 
   const resize = () => { if (starView) drawMap(); };
   window.addEventListener("resize", resize);
@@ -144,7 +179,6 @@ export function enhanceFriends(root: HTMLElement): () => void {
 
   return () => {
     cancelAnimationFrame(frame);
-    timers.forEach(timer => window.clearTimeout(timer));
     cleanups.forEach(cleanup => cleanup());
     if (grid) grid.style.display = "";
     if (mapWrap) mapWrap.style.display = "none";
