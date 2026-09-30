@@ -1,0 +1,14 @@
+name: noova-blog
+
+services:
+  app:
+    networks:
+      default:
+      proxy:
+        aliases:
+          - blog-app
+
+networks:
+  proxy:
+    external: true
+    name: ${CADDY_NETWORK:-gogo-app_app}
