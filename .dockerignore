@@ -4,5 +4,7 @@ node_modules
 .git
 .env
 .env.local
+source.tar
+blog.sql
 *.tsbuildinfo
 docs
