@@ -5,13 +5,14 @@
 
 ## 首次启用
 
-当前仓库是私有仓库。GitHub Free 只支持从公开仓库发布 Pages；私有仓库需要支持 Pages 的付费套餐。首次启用前请确认账号套餐。仓库尚未启用 Pages 时，工作流会生成静态产物并跳过部署，不会修改仓库的可见性。
+当前仓库已公开，并启用了通过 GitHub Actions 发布的 Pages。`blog.noova.cloud` 已通过账号级域名所有权验证。以下步骤用于检查配置或重新部署。
 
 1. 仓库 Settings → Pages → Build and deployment，将 Source 设为 GitHub Actions。
-2. Custom domain 填入 `blog.noova.cloud` 并保存。建议先在 GitHub 账号 Settings → Pages 按提示添加 TXT 记录，验证域名所有权。
+2. Custom domain 填入 `blog.noova.cloud` 并保存。在 GitHub 账号 Settings → Pages 验证域名所有权，验证成功后保留对应 TXT 记录。
 3. DNSPod 删除 `blog` 当前指向腾讯云的 A 记录（以及同名冲突的 AAAA 记录，如有），添加 CNAME：主机记录 `blog`，记录值 `Java123456com.github.io`。不带协议、路径或仓库名。
 4. 等待域名检查和证书签发完成，开启 Enforce HTTPS。
-5. 首次启用后推送一次静态分支提交触发部署。如果工作流已在默认分支中，也可从 Actions → Publish static blog 手动运行并选择 `codex/static`。
+5. 仓库 Settings → Environments → github-pages 的 Deployment branches and tags 中允许 `codex/static` 分支部署。
+6. 推送一次静态分支提交触发部署，或从 Actions → Publish static blog 手动运行并选择 `codex/static`。工作流只构建和部署静态分支。
 
 只调整 blog 子域名。主域名的网站部署和备案独立处理；域名注册和 DNS 服务可以继续留在腾讯云。
 

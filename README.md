@@ -67,8 +67,8 @@ images:
 
 ## 自动发布
 
-当前仓库是私有仓库。GitHub Free 的 Pages 需要公开发布仓库；私有仓库需要支持 Pages 的付费套餐。可以保留当前仓库私有，使用独立公开发布仓库或其他支持私有源仓库的静态托管服务。
+当前仓库已公开，GitHub Pages 已启用，使用 GitHub Actions 发布 `codex/static` 分支。域名为 `blog.noova.cloud`；解析和 HTTPS 状态可在仓库 Settings → Pages 中查看。
 
-推送 `codex/static` 后，GitHub Actions 构建 `out/`；Pages 启用后自动部署，未启用时保留构建产物。首次需要在仓库 Settings → Pages 中选择 GitHub Actions，并配置 `blog.noova.cloud`。操作步骤见 [DEPLOYMENT.md](DEPLOYMENT.md)。
+推送 `codex/static` 后，GitHub Actions 构建并部署 `out/`。也可以从 Actions → Publish static blog → Run workflow 中选择 `codex/static` 手动发布。操作步骤见 [DEPLOYMENT.md](DEPLOYMENT.md)。
 
 静态文件更新需要等待构建和部署完成。不要上传 `.env`、数据库备份或私钥。
