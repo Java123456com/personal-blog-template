@@ -1,43 +1,17 @@
-# Production deployment
+# 部署说明 · 两套版本
 
-Domain: https://blog.noova.cloud
+## 静态版
 
-Server directory: `/home/ubuntu/personal-blog`
+当前博客使用 `codex/static` 分支发布，目标域名为 `blog.noova.cloud`。GitHub Actions 生成 `out/` 静态文件，启用 GitHub Pages 后自动部署，也可将产物放到其他静态托管平台。
 
-The blog runs as Compose project `noova-blog`. MySQL 8.0 uses its own
-`noova-blog_mysql_data` volume. Images and Markdown records are stored in
-the `blog` database. Both containers use Asia/Shanghai time.
+仓库目前是私有的，Pages 尚未启用。私有仓库需要支持 Pages 的账号套餐，或使用独立公开发布仓库、其他静态托管平台。
 
-```sh
-cd /home/ubuntu/personal-blog
-docker compose -f compose.yaml -f compose.caddy.yaml up -d --build
-docker compose -f compose.yaml -f compose.caddy.yaml ps
-docker compose -f compose.yaml -f compose.caddy.yaml logs --tail=80 app
-```
+完整配置见[静态版部署说明](https://github.com/Java123456com/personal-blog-template/blob/codex/static/DEPLOYMENT.md)。
 
-The protected `.env` contains production credentials. Keep it out of Git.
-The administration page is `/write`; the navigation `+` opens it.
+## 前后端版
 
-## Existing Caddy
+`codex/fullstack` 保留 Next.js + MySQL + Docker + Caddy 的原有实现，用于本地运行和开发参考。
 
-The existing `gogo-app-caddy-1` container serves `noova.cloud` and
-`www.noova.cloud`. Its host configuration is:
-`/home/ubuntu/gogo-app/deploy/production/Caddyfile`.
+`129.211.11.127` 上的旧博客不再作为部署目标。旧部署目录为 `/home/ubuntu/personal-blog`，Compose 项目名为 `noova-blog`。停用只涉及博客容器及共享 Caddy 中的 `blog.noova.cloud` 代理；保留主域名项目、共享 Caddy、外部网络和 MySQL 数据卷。
 
-The blog app joins the external `gogo-app_app` network under alias
-`blog-app`. Caddy proxies `blog.noova.cloud` to `blog-app:3000`.
-The existing Compose file now mounts the host Caddyfile read-only, so
-future container recreations preserve this route. Date-stamped backups
-of the original Caddyfile and Compose file are beside them.
-
-## Backups
-
-Back up the blog database separately, including `media` image blobs.
-Do not delete its volume when updating the app. For a private dump:
-
-```sh
-umask 077
-docker compose -f compose.yaml -f compose.caddy.yaml exec -T db sh -c \
-  'MYSQL_PWD="$MYSQL_PASSWORD" mysqldump -u "$MYSQL_USER" --single-transaction --hex-blob --no-tablespaces blog' \
-  > blog-backup.sql
-```
+历史配置见[前后端版部署参考](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/DEPLOYMENT.md)。

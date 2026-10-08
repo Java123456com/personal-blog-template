@@ -1,25 +1,54 @@
-# 个人博客
+# 个人博客 · 两套版本
 
-Next.js 15、MySQL 8 和 Markdown 驱动的个人博客。首页有星空极光与赛博编程两套主题；技术学习、日常生活、文章阅读和写作页共享导航与背景。
+基于 Next.js / React 的个人博客，保留星空极光与赛博编程两套主题，以及技术学习、日常生活、简历、友链、工具和关于页面。
 
-## Windows MySQL 8.0 本地启动
+仓库分为前后端版和静态版。当前网站后续使用静态版发布，前后端版保留作为本地运行和开发参考。`main` 提供版本入口说明，具体代码请切换到对应分支。
 
-1. 确认 Windows 的 `MySQL80` 服务已启动。
-2. 使用已有管理员账号执行 `db/schema.sql`，例如：`mysql.exe -u root -p < db/schema.sql`。
-3. 让一个 MySQL 用户拥有 `blog` 库的 `SELECT、INSERT、UPDATE、DELETE` 权限。
-4. 复制 `.env.local.example` 为 `.env.local`，填写该用户密码、写作密码和至少 32 字符的会话密钥。
-5. 运行 `npm.cmd install` 和 `npm.cmd run dev -- -p 4173`。
+| 项目 | 前后端版 | 静态版 |
+| --- | --- | --- |
+| 分支 | [`codex/fullstack`](https://github.com/Java123456com/personal-blog-template/tree/codex/fullstack) | [`codex/static`](https://github.com/Java123456com/personal-blog-template/tree/codex/static) |
+| 内容存储 | MySQL 8 | 本地 Markdown 文件 |
+| 写作方式 | 网页「＋」管理端，支持草稿、编辑、发布 | 本地编辑 Markdown，提交后自动构建 |
+| 图片 | 网页上传到 MySQL | 放入 `public/images/`，在 Markdown 中引用 |
+| 运行方式 | Next.js 后端 + MySQL | 静态文件，无需后端或数据库 |
+| 页面与浏览功能 | 原有页面和交互 | 保留原有页面和交互，移除「＋」写作入口 |
 
-打开 <http://localhost:4173/>。技术学习记录在 `/moments/tech/`，日常生活记录在 `/moments/life/`。不要把 `.env.local` 提交到 Git；正文和图片都在 MySQL 中，备份时要备份 `blog` 数据库。
+## 静态版 · 当前使用
 
-## 云服务器 Docker 部署
+```sh
+git switch codex/static
+npm ci
+npm run dev
+```
 
-以后上传云服务器时，复制 `.env.example` 为 `.env`，替换所有 `CHANGE_ME`，再运行 `docker compose up --build -d`。该配置只用于服务器；本机开发直接连接 Windows MySQL 8.0。生产环境应放在 HTTPS 反向代理后面。
+开发地址为 `http://localhost:3000`。技术文章放在 `content/articles/`，生活记录放在 `content/life/`，图片放在 `public/images/`。复制目录中的草稿模板，填写标题、日期、正文等字段，发布时移除 `draft: true` 或改为 `draft: false`。
 
-## 写作与图片
+```sh
+npm run build
+npm start
+```
 
-点击全站导航最右侧的「＋」进入 `/write/` 管理端。写作页可以新建、保存草稿、发布、编辑、删除和自定义发布日期；文章地址是 `/moments/tech/<slug>/`。正文使用 Markdown，支持常见 GFM 语法。技术文章图片上传后会插入 Markdown；生活记录图片显示在卡片图库中。
+静态产物位于 `out/`，预览地址为 `http://127.0.0.1:4173`。推送到 `codex/static` 后，GitHub Actions 自动构建；启用 Pages 后自动部署。公开入口计划使用 `blog.noova.cloud`，仓库当前尚未启用 Pages。
 
-图片保存在 MySQL 的 `media` 表。目前接受 JPEG、PNG、WebP、GIF，每张最多 5 MB。这样部署只需要 MySQL，不需要 MinIO；如果日后图片量增长，可以把媒体接口迁往 MinIO，文章数据结构仍可继续使用。
+- [静态版完整使用说明](https://github.com/Java123456com/personal-blog-template/blob/codex/static/README.md)
+- [静态托管与域名配置](https://github.com/Java123456com/personal-blog-template/blob/codex/static/DEPLOYMENT.md)
 
-`/blog/` 是旧页面，已不再使用。导航栏「博客」下只保留「技术学习记录」「日常生活记录」。其他页面中的模板占位内容仍可按需逐步替换。
+## 前后端版 · 保留参考
+
+```sh
+git switch codex/fullstack
+npm ci
+```
+
+启动 Windows `MySQL80` 服务，用管理员导入 `db/schema.sql`，为应用配置 `blog` 库的读写权限。复制 `.env.local.example` 为 `.env.local`，填写数据库连接、写作密码和会话密钥，再运行：
+
+```sh
+npm run dev -- -p 4173
+```
+
+打开 `http://localhost:4173`，通过导航「＋」进入 `/write/` 写作。文章正文和上传的图片保存在 MySQL 中，需要备份数据库。
+
+- [前后端版完整使用说明](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/README.md)
+- [历史 Docker / Caddy 部署参考](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/DEPLOYMENT.md)
+
+`129.211.11.127` 上的旧博客不再作为部署目标。停用范围限于博客项目 `noova-blog` 及其子域名代理，共享 Caddy 和主域名项目继续保留。
