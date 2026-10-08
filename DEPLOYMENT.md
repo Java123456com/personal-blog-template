@@ -2,9 +2,9 @@
 
 ## 静态版
 
-当前博客使用 `codex/static` 分支发布，目标域名为 `blog.noova.cloud`。GitHub Actions 生成 `out/` 静态文件，启用 GitHub Pages 后自动部署，也可将产物放到其他静态托管平台。
+当前博客使用 `codex/static` 分支发布，目标域名为 `blog.noova.cloud`。GitHub Actions 生成并部署 `out/` 静态文件，也可将产物放到其他静态托管平台。
 
-仓库目前是私有的，Pages 尚未启用。私有仓库需要支持 Pages 的账号套餐，或使用独立公开发布仓库、其他静态托管平台。
+仓库已公开，Pages 已启用并绑定了通过所有权验证的 `blog.noova.cloud`。在 DNSPod 将 `blog` 设置为指向 `Java123456com.github.io` 的 CNAME，待证书签发后启用 HTTPS。保留 GitHub 域名验证所用的 TXT 记录。
 
 完整配置见[静态版部署说明](https://github.com/Java123456com/personal-blog-template/blob/codex/static/DEPLOYMENT.md)。
 

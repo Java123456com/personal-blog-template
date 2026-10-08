@@ -28,7 +28,7 @@ npm run build
 npm start
 ```
 
-静态产物位于 `out/`，预览地址为 `http://127.0.0.1:4173`。推送到 `codex/static` 后，GitHub Actions 自动构建；启用 Pages 后自动部署。公开入口计划使用 `blog.noova.cloud`，仓库当前尚未启用 Pages。
+静态产物位于 `out/`，预览地址为 `http://127.0.0.1:4173`。本仓库已公开并启用 GitHub Pages，推送到 `codex/static` 后自动构建和部署。自定义域名为 `blog.noova.cloud`，DNS 和 HTTPS 状态可在仓库 Settings → Pages 中查看。
 
 - [静态版完整使用说明](https://github.com/Java123456com/personal-blog-template/blob/codex/static/README.md)
 - [静态托管与域名配置](https://github.com/Java123456com/personal-blog-template/blob/codex/static/DEPLOYMENT.md)
