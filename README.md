@@ -2,12 +2,13 @@
 
 保留现有 Next.js / React 页面、星空极光与赛博编程主题、搜索、Markdown 阅读、Mermaid、生活照片图库和其他浏览交互。内容从本地 Markdown 构建成静态文件，公开网站无需后端或数据库。
 
-## 两个分支
+## 版本与分支
 
 - `codex/fullstack`：原有 Next.js + MySQL + Docker + Caddy 版本，保留「＋」写作功能。
-- `codex/static`：静态版，去掉「＋」，用本地 Markdown 和图片更新内容。
+- `main`：当前静态版和唯一的自动发布分支，去掉「＋」，用本地 Markdown 和图片更新内容。
+- `codex/static`：保留静态版分支，供参考，不触发网站自动发布。
 
-本页对应静态分支。[仓库首页](https://github.com/Java123456com/personal-blog-template/tree/main)提供两套版本的入口；需要在线写作时请查看[前后端版说明](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/README.md)。
+日常更新请选择 `main`。需要在线写作时请查看[前后端版说明](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/README.md)。
 
 ## 本地开发和发布预览
 
@@ -31,6 +32,8 @@ npm start
 - 生活记录：`content/life/*.md`，支持子目录。
 - 图片：`public/images/`。
 - 两个目录中的 `_example.md` 都是草稿模板，不会发布到网站或搜索中。
+
+在 GitHub 网页上传时，先选 `main`，进入文章或图片对应的目录，再使用 Add file → Upload files，提交到 `main` 即可自动发布。技术文章和生活记录都要带下方所示的 YAML 元数据；正文引用 `public/images/photo.jpg` 时，网页路径写 `/images/photo.jpg`。
 
 复制模板，填写标题、日期、正文和 slug，再将 `draft: true` 改为 `draft: false`，或删除 draft 字段。slug 使用小写英文、数字和连字符，同一分类不能重复。
 
@@ -73,8 +76,8 @@ images:
 
 ## 自动发布
 
-当前仓库已公开，GitHub Pages 已启用，使用 GitHub Actions 发布 `codex/static` 分支。域名为 `blog.noova.cloud`；解析和 HTTPS 状态可在仓库 Settings → Pages 中查看。
+当前仓库已公开，GitHub Pages 已启用，使用 GitHub Actions 发布 `main` 分支。域名为 `blog.noova.cloud`；解析和 HTTPS 状态可在仓库 Settings → Pages 中查看。
 
-推送 `codex/static` 后，GitHub Actions 构建并部署 `out/`。也可以从 Actions → Publish static blog → Run workflow 中选择 `codex/static` 手动发布。操作步骤见 [DEPLOYMENT.md](DEPLOYMENT.md)。
+推送 `main` 后，GitHub Actions 构建并部署 `out/`。也可以从 Actions → Publish static blog → Run workflow 中选择 `main` 手动发布。操作步骤见 [DEPLOYMENT.md](DEPLOYMENT.md)。
 
 静态文件更新需要等待构建和部署完成。不要上传 `.env`、数据库备份或私钥。

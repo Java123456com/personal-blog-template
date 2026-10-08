@@ -1,6 +1,6 @@
 # 后续管理端内容模型
 
-本文保留早期管理端规划，供 `codex/fullstack` 版本参考。当前 `codex/static` 分支从 Markdown 文件生成内容，实际使用方式见 [README.md](../README.md)。
+本文保留早期管理端规划，供 `codex/fullstack` 版本参考。当前 `main` 分支从 Markdown 文件生成内容，实际使用方式见 [README.md](../README.md)。
 
 以下为历史方案：管理端和 MySQL 接入时，页面组件不需要重做，只需用以下数据替换对应快照内容。
 
