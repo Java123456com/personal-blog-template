@@ -82,6 +82,85 @@ try {
     assert.equal(await page.locator(".slh-video-layer video").count(), 0, "Saved cyber theme must not start the hidden starry video");
     await context.close();
   }
+  // A 1.5 Mbps connection cannot sustain the old ~3 Mbps background. Check a
+  // cold cache against the optimized asset and the initial buffer threshold.
+  const slowContext = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
+  const slowPage = await slowContext.newPage();
+  slowPage.on("pageerror", error => errors.push(`slow-network: ${error.message}`));
+  await slowPage.addInitScript(() => {
+    window.backgroundPlayback = { initialBuffer: null, waits: 0, waitingEvents: [] };
+    document.addEventListener("playing", event => {
+      const video = event.target;
+      if (!(video instanceof HTMLVideoElement) || !video.matches(".slh-video")) return;
+      if (window.backgroundPlayback.initialBuffer === null) {
+        window.backgroundPlayback.initialBuffer = video.buffered.end(0) - video.currentTime;
+      }
+    }, true);
+    document.addEventListener("waiting", event => {
+      const video = event.target;
+      if (video instanceof HTMLVideoElement && video.matches(".slh-video") && video.currentTime > .1) {
+        window.backgroundPlayback.waits++;
+        window.backgroundPlayback.waitingEvents.push({
+          time: video.currentTime, ready: video.readyState,
+          buffer: Array.from({ length: video.buffered.length }, (_, i) => [video.buffered.start(i), video.buffered.end(i)]),
+        });
+      }
+    }, true);
+  });
+  const network = await slowContext.newCDPSession(slowPage);
+  await network.send("Network.enable");
+  await network.send("Network.setCacheDisabled", { cacheDisabled: true });
+  await network.send("Network.emulateNetworkConditions", {
+    offline: false, latency: 100, downloadThroughput: 192 * 1024, uploadThroughput: 128 * 1024,
+  });
+  await slowPage.goto(base + "/", { waitUntil: "domcontentloaded" });
+  await slowPage.waitForFunction(() => window.backgroundPlayback.initialBuffer !== null, null, { timeout: 45000 });
+  await slowPage.waitForTimeout(12000);
+  const playback = await slowPage.evaluate(() => ({
+    ...window.backgroundPlayback,
+    time: document.querySelector(".slh-video-layer video").currentTime,
+  }));
+  assert.ok(playback.initialBuffer >= 2.8, `Playback should start with three seconds buffered: ${JSON.stringify(playback)}`);
+  assert.equal(playback.waits, 0, `The optimized video should play without rebuffering at 1.5 Mbps: ${JSON.stringify(playback)}`);
+  assert.ok(playback.time > 10, "Playback must keep advancing on a slow connection");
+  console.log(`Slow network passed: ${playback.initialBuffer.toFixed(2)}s buffered before playing, no buffering stalls in 12s.`);
+  await slowContext.close();
+
+  const recoveryContext = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
+  const recoveryPage = await recoveryContext.newPage();
+  recoveryPage.on("pageerror", error => errors.push(`playback-recovery: ${error.message}`));
+  await recoveryPage.addInitScript(() => {
+    const play = HTMLMediaElement.prototype.play;
+    window.blockedBackgroundAttempts = 0;
+    HTMLMediaElement.prototype.play = function () {
+      if (this.matches(".slh-video") && window.blockedBackgroundAttempts++ === 0) {
+        return Promise.reject(new DOMException("Simulated autoplay policy", "NotAllowedError"));
+      }
+      return play.call(this);
+    };
+  });
+  await recoveryPage.goto(base + "/");
+  await recoveryPage.waitForFunction(() => window.blockedBackgroundAttempts > 0);
+  const recoveredVideo = recoveryPage.locator(".slh-video-layer video");
+  assert.equal(await recoveredVideo.evaluate(video => video.paused), true, "Blocked autoplay must wait for user interaction");
+  await recoveryPage.keyboard.press("Shift");
+  await recoveryPage.waitForFunction(() => document.querySelector(".slh-video-layer video")?.currentTime > .1);
+  await recoveryPage.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  assert.equal(await recoveredVideo.evaluate(video => video.paused), true, "Hidden pages must pause playback");
+  await recoveryPage.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await recoveryPage.waitForFunction(() => !document.querySelector(".slh-video-layer video")?.paused);
+  await recoveredVideo.evaluate(video => { video.dispatchEvent(new Event("waiting")); });
+  await recoveryPage.waitForFunction(() => !document.querySelector(".slh-video-layer video")?.paused);
+  await recoveredVideo.evaluate(video => { video.currentTime = video.duration - .15; });
+  await recoveryPage.waitForFunction(() => document.querySelector(".slh-video-layer video")?.currentTime < 3);
+  await recoveryContext.close();
+
   assert.deepEqual(errors, []);
-  console.log("Backgrounds passed: Baidu Android/iOS/browser and reduced-motion use posters without MP4 requests; navigation, search and theme switching work; desktop/mobile Chrome retain inline video.");
+  console.log("Backgrounds passed: fallback browsers avoid MP4 requests; desktop/mobile retain inline video; slow-network buffering, autoplay retry, page visibility, and looping work.");
 } finally { await browser.close(); }

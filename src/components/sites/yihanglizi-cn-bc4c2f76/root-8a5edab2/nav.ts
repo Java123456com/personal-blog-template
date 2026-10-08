@@ -1,7 +1,7 @@
 import dipperStates from "./dipper-states.json";
 import zodiacStates from "./zodiac-states.json";
 import { mountCosmicGalaxy } from "./cosmic-galaxy";
-import { canPlayBackgroundVideo, inlineVideoAttributes } from "@/lib/background-video";
+import { canPlayBackgroundVideo, inlineVideoAttributes, manageBackgroundVideo } from "@/lib/background-video";
 
 const links: ReadonlyArray<readonly [string, string]> = [
   ["首页", "/"],
@@ -259,6 +259,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     window.localStorage.setItem(themeDefaultKey, themeDefaultVersion);
   }
   let themeChoice = window.localStorage.getItem(themeStorageKey) || "星空极光";
+  let orbitPlayback: ReturnType<typeof manageBackgroundVideo> | undefined;
   const syncOrbitPlayback = () => {
     const layer = star?.querySelector<HTMLElement>(".slh-video-layer");
     if (!layer) return;
@@ -266,6 +267,8 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     // Never expose an autoplaying video to Baidu before the compatibility check.
     if (!canPlayBackgroundVideo()) {
       if (video) {
+        orbitPlayback?.dispose();
+        orbitPlayback = undefined;
         video.pause();
         video.removeAttribute("src");
         video.load();
@@ -273,7 +276,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
       }
       return;
     }
-    if (document.hidden || themeChoice !== "星空极光") { video?.pause(); return; }
+    if (document.hidden || themeChoice !== "星空极光") { orbitPlayback?.sync(); return; }
     if (!video) {
       video = document.createElement("video");
       video.className = "slh-video";
@@ -281,7 +284,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
       video.defaultMuted = true;
       video.loop = true;
       video.playsInline = true;
-      video.preload = "metadata";
+      video.preload = "auto";
       video.disablePictureInPicture = true;
       video.disableRemotePlayback = true;
       for (const [name, value] of Object.entries(inlineVideoAttributes)) video.setAttribute(name, value);
@@ -289,7 +292,9 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
       video.src = "/media/starlight-orbit.mp4";
       layer.append(video);
     }
-    void video.play().catch(() => {});
+    // React's development remount can leave the existing video in the layer.
+    orbitPlayback ??= manageBackgroundVideo(video, () => themeChoice === "星空极光");
+    orbitPlayback?.sync();
   };
   const selectTheme = (name: string) => {
     themeChoice = name;
@@ -526,5 +531,5 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape"){closeBlogMenu();closeThemePanel();closeSoundPanel();closeSearch();}};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer,true);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeBlogMenu();blogPanelTitle.remove();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer,true);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();orbitPlayback?.dispose();void audioContext?.close();closeBlogMenu();blogPanelTitle.remove();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }
