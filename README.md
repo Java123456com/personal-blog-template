@@ -7,6 +7,8 @@
 - `codex/fullstack`：原有 Next.js + MySQL + Docker + Caddy 版本，保留「＋」写作功能。
 - `codex/static`：静态版，去掉「＋」，用本地 Markdown 和图片更新内容。
 
+本页对应静态分支。[仓库首页](https://github.com/Java123456com/personal-blog-template/tree/main)提供两套版本的入口；需要在线写作时请查看[前后端版说明](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/README.md)。
+
 ## 本地开发和发布预览
 
 ```sh

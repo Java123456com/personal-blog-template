@@ -31,7 +31,9 @@ npm start
 
 ## 原有后端
 
-`codex/fullstack` 保留原有代码和部署文档。静态分支不操作腾讯云上已运行的容器、数据库或 Caddy；此次无需迁移数据。
+`codex/fullstack` 保留原有代码和部署文档，供本地运行或以后参考。`129.211.11.127` 上的旧博客不再作为发布目标，后续内容只通过静态版发布。
+
+旧部署停用只涉及 Compose 项目 `noova-blog` 和共享 Caddy 中的 `blog.noova.cloud` 代理。`noova.cloud`、`www.noova.cloud` 和服务器上的其他项目继续保留。数据库无需迁移，停用时保留其数据卷和配置便于恢复。
 
 ## 官方文档
 
