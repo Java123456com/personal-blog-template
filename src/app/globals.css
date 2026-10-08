@@ -30,6 +30,8 @@
 .clone-mobile-menu{position:fixed;top:64px;left:0;right:0;bottom:0;z-index:100;background:#0a0805;overflow:auto;padding:20px 26px;display:flex;flex-direction:column}.clone-mobile-menu a{color:#e6dccb;text-decoration:none;padding:15px;border-bottom:1px solid #40301c;font-size:16px}.clone-mobile-menu a:hover{color:#ffb000}
 html[data-doc-theme=starry] .clone-mobile-menu{background:#101427}
 html[data-doc-theme=starry] body{background:#05060e}
+/* Let the shared starfield/code rain show through document page shells. */
+html[data-doc-theme] :is(.friends-page,.about-page){background:transparent!important}
 html[data-doc-theme=starry] .wasteland,html:not([data-doc-theme=starry]) .slh{display:none!important}
 html[data-doc-theme=starry] .VPNav{background:rgba(14,18,36,.91)!important}
 html[data-doc-theme=starry] .slh{background:linear-gradient(180deg,rgba(15,20,43,.58),rgba(14,22,42,.16) 40%,transparent)}
