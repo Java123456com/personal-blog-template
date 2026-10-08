@@ -1,7 +1,7 @@
 # GitHub Pages 静态部署
 
 仓库：`Java123456com/personal-blog-template`。
-当前静态版和发布分支：`main`。静态参考分支：`codex/static`。原有前后端版本：`codex/fullstack`。
+日常开发和内容提交分支：`codex/static`。静态版发布分支：`main`。原有前后端版本：`codex/fullstack`。
 
 ## 首次启用
 
@@ -20,7 +20,28 @@
 
 ## 日常发布
 
-编辑 `content/articles/`、`content/life/` 中的 Markdown，图片放到 `public/images/`，提交并推送到 `main`。在 GitHub 网页操作时，先选择 `main`，进入对应目录后使用 Add file → Upload files。工作流重新生成公开网页和搜索索引；构建失败时不会部署半成品。
+在 `codex/static` 编辑 `content/articles/`、`content/life/` 中的 Markdown，图片放到 `public/images/`，验证后先提交并推送到 `codex/static`，再合并到 `main` 并推送。工作流只从 `main` 重新生成公开网页和搜索索引；构建失败时不会部署半成品。
+
+在 GitHub 网页操作时，先选择 `codex/static`，进入对应目录后使用 Add file → Upload files。提交后创建从 `codex/static` 到 `main` 的 Pull Request（base 为 `main`，compare 为 `codex/static`），合并后自动发布。
+
+本地提交和发布流程：
+
+```sh
+git switch codex/static
+# 修改代码、Markdown 或图片后验证
+npm run build
+git add .
+git commit -m "更新博客"
+git push origin codex/static
+git switch main
+git merge --ff-only codex/static
+git push origin main
+git switch codex/static
+```
+
+开始修改前先同步远端分支。如果网页合并产生了新的 `main` 提交，下一次开发前在 `codex/static` 执行 `git merge --ff-only origin/main`，使两分支从相同提交继续。日常修改都先进入 `codex/static`，每次发布后检查 `git diff main codex/static` 没有内容差异。
+
+本地预览：
 
 ```sh
 npm ci
