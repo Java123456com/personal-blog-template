@@ -84,9 +84,8 @@ export function createBackgroundMusic(options: {
   document.addEventListener("keydown", onGesture);
   window.addEventListener("online", onOnline);
   report(enabled ? "loading" : "off");
-  const onPageLoad = () => { if (enabled) play(); };
-  if (document.readyState === "complete") onPageLoad();
-  else window.addEventListener("load", onPageLoad, { once: true });
+  // A slow decorative video must never postpone an enabled music preference.
+  if (enabled) play();
 
   return {
     audio,
@@ -109,7 +108,6 @@ export function createBackgroundMusic(options: {
       document.removeEventListener("pointerdown", onGesture);
       document.removeEventListener("keydown", onGesture);
       window.removeEventListener("online", onOnline);
-      window.removeEventListener("load", onPageLoad);
       audio.pause();
       audio.removeAttribute("src");
       audio.load();

@@ -20,33 +20,29 @@ export const homeBackgroundVideo = {
   poster: "/media/starlight-orbit-poster-v2.webp",
 };
 
-/** Standalone bootstrap: start decoration once navigation completes. */
+/** Standalone bootstrap: start media immediately without gating page features on window.load. */
 export function bootstrapHomeBackground(
   src: string, poster: string, allowed: (browser: Window) => boolean, attributes: Record<string, string>,
 ) {
-  const start = () => {
-    if (!allowed(window) || document.hidden || document.documentElement.dataset.docTheme !== "starry") return;
-    const layer = document.querySelector(".slh-video-layer");
-    if (!layer || layer.querySelector("video")) return;
-    const video = document.createElement("video");
-    video.className = "slh-video";
-    video.muted = video.defaultMuted = true;
-    video.loop = video.playsInline = true;
-    video.preload = "auto";
-    video.disablePictureInPicture = video.disableRemotePlayback = true;
-    video.setAttribute("aria-hidden", "true");
-    for (const [name, value] of Object.entries(attributes)) video.setAttribute(name, value);
-    video.poster = poster;
-    video.src = src;
-    layer.append(video);
-    void video.play().then(() => {
-      if (document.hidden || document.documentElement.dataset.docTheme !== "starry") video.pause();
-    }).catch((error: unknown) => {
-      if (error instanceof DOMException && error.name === "NotAllowedError") video.dataset.autoplayBlocked = "true";
-    });
-  };
-  if (document.readyState === "complete") start();
-  else window.addEventListener("load", start, { once: true });
+  if (!allowed(window) || document.hidden || document.documentElement.dataset.docTheme !== "starry") return;
+  const layer = document.querySelector(".slh-video-layer");
+  if (!layer || layer.querySelector("video")) return;
+  const video = document.createElement("video");
+  video.className = "slh-video";
+  video.muted = video.defaultMuted = true;
+  video.loop = video.playsInline = true;
+  video.preload = "auto";
+  video.disablePictureInPicture = video.disableRemotePlayback = true;
+  video.setAttribute("aria-hidden", "true");
+  for (const [name, value] of Object.entries(attributes)) video.setAttribute(name, value);
+  video.poster = poster;
+  video.src = src;
+  layer.append(video);
+  void video.play().then(() => {
+    if (document.hidden || document.documentElement.dataset.docTheme !== "starry") video.pause();
+  }).catch((error: unknown) => {
+    if (error instanceof DOMException && error.name === "NotAllowedError") video.dataset.autoplayBlocked = "true";
+  });
 }
 
 /** Buffer before starting/resuming instead of displaying a stop-start background. */

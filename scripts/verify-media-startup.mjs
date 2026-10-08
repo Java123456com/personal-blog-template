@@ -35,20 +35,32 @@ async function createPage(options = {}) {
 const music = page => page.locator(".st-row").filter({ hasText: "背景音乐" });
 try {
   const early = await createPage();
+  let releaseVideo;
+  await early.page.route("**/starlight-orbit-v2.mp4", async route => {
+    await new Promise(resolve => { releaseVideo = resolve; });
+    await route.continue().catch(() => {});
+  });
   await early.page.addInitScript(() => {
     document.addEventListener("loadstart", event => {
       if (event.target instanceof HTMLVideoElement) window.videoStartedAt = performance.now();
     }, true);
   });
-  await early.page.goto(base + "/", { waitUntil: "load" });
-  await early.page.waitForFunction(() => document.querySelector(".slh-video-layer video")?.currentTime > .1, null, { timeout: 3000 });
+  const videoRequest = early.page.waitForRequest("**/starlight-orbit-v2.mp4");
+  await early.page.goto(base + "/", { waitUntil: "domcontentloaded" });
+  await videoRequest;
+  await early.page.locator(".clone-nav-panel-title").waitFor({ state: "attached" });
+  await early.page.locator(".cosmic-markers").waitFor({ state: "attached" });
+  await early.page.locator(".ns-btn").click();
+  await early.page.locator(".ns-opt").filter({ hasText: "赛博编程" }).click();
   const startup = await early.page.evaluate(() => ({
     load: performance.getEntriesByType("navigation")[0].loadEventStart,
     video: window.videoStartedAt,
+    theme: document.documentElement.dataset.docTheme,
   }));
-  assert.ok(startup.video >= startup.load, "Decorative video must start after navigation completes");
-  assert.ok(startup.video - startup.load < 300, "The video must start promptly after page load");
-  await early.page.locator(".clone-nav-panel-title").waitFor({ state: "attached" });
+  assert.ok(startup.video > 0, "Decorative video must start immediately");
+  assert.equal(startup.theme, "cyber", "Theme controls must work while the video request is still pending");
+  releaseVideo?.();
+  await early.page.unroute("**/starlight-orbit-v2.mp4");
   await early.context.close();
 
   const { context, page } = await createPage();
@@ -58,7 +70,8 @@ try {
   await page.locator(".clone-nav-panel-title").waitFor({ state: "attached" });
   await page.waitForFunction(() => document.querySelector(".slh-video-layer video")?.currentTime > .2);
   assert.deepEqual(requests, [], "Disabled music and untouched pet sounds must not download on the first screen");
-  assert.equal(await page.locator(".cosmic-markers").count(), 0, "Offscreen WebGL must not initialize before the hero starts");
+  await page.locator(".cosmic-markers").waitFor({ state: "attached" });
+  assert.equal(await page.locator(".cosmic-marker").count() > 0, true, "The galaxy must initialize with the rest of the page");
   await page.locator(".st-btn").click();
   const started = Date.now();
   await music(page).click();
@@ -83,9 +96,6 @@ try {
   assert.ok(energy > .001, `Decoded music must contain audible audio samples, RMS=${energy}`);
   await music(page).click();
   assert.equal(await page.locator("html").getAttribute("data-background-music"), "off");
-  await page.locator(".galaxy").scrollIntoViewIfNeeded();
-  await page.locator(".cosmic-markers").waitFor({ state: "attached" });
-  assert.equal(await page.locator(".cosmic-marker").count() > 0, true, "The deferred galaxy must still load when scrolled into view");
   await context.close();
 
   const retry = await createPage({ enabled: true, block: true, position: 120 });
@@ -131,5 +141,5 @@ try {
   await slow.page.waitForFunction(() => document.documentElement.dataset.backgroundMusic === "playing");
   await slow.context.close();
   assert.deepEqual(errors, []);
-  console.log(`Media startup passed: no idle audio downloads; music starts, emits nonzero samples (RMS ${energy.toFixed(3)}), restores position, retries blocked autoplay, reports mute, and exits a stalled load after 6 seconds; galaxy loads on scroll.`);
+  console.log(`Media startup passed: video and galaxy start immediately; controls remain usable while video is pending; no idle audio downloads; music starts, emits nonzero samples (RMS ${energy.toFixed(3)}), restores position, retries blocked autoplay, reports mute, and exits a stalled load after 6 seconds.`);
 } finally { await browser.close(); }
