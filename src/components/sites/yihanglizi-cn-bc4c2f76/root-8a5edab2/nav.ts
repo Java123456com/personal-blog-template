@@ -217,10 +217,22 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   const navButton = nav?.querySelector<HTMLButtonElement>(".ns-btn");
   const sound = document.querySelector<HTMLElement>(".sound-toggle");
   const soundButton = sound?.querySelector<HTMLButtonElement>(".st-btn");
+  const blogMenu = document.querySelector<HTMLButtonElement>(".VPNavBarMenuGroup button");
+  const blogFlyout = blogMenu?.closest<HTMLElement>(".VPFlyout");
+  const blogPanelTitle = document.createElement("div");
+  blogPanelTitle.className = "clone-nav-panel-title";
+  blogPanelTitle.textContent = "博客";
+  blogFlyout?.querySelector(".VPMenu")?.prepend(blogPanelTitle);
+  const closeBlogMenu = () => {
+    blogMenu?.setAttribute("aria-expanded", "false");
+    blogFlyout?.classList.remove("clone-flyout-open");
+  };
+  closeBlogMenu();
   const closeThemePanel = () => {
     nav?.classList.remove("open");
     nav?.querySelector(".ns-panel")?.remove();
     navButton?.setAttribute("title", "切换背景主题");
+    navButton?.setAttribute("aria-expanded", "false");
   };
   const closeSoundPanel = () => {
     sound?.classList.remove("open");
@@ -230,6 +242,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   const closePanelsOnOutsidePointer = (event: PointerEvent) => {
     const target = event.target;
     if (!(target instanceof Node)) return;
+    if (blogFlyout && !blogFlyout.contains(target)) closeBlogMenu();
     if (nav?.classList.contains("open") && !nav.contains(target)) closeThemePanel();
     if (sound?.classList.contains("open") && !sound.contains(target)) closeSoundPanel();
   };
@@ -295,9 +308,11 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     if (!nav) return;
     const open=!nav.classList.contains("open");
     if (!open) { closeThemePanel(); return; }
+    closeBlogMenu();
     closeSoundPanel();
     nav.classList.add("open");
     navButton?.setAttribute("title","收起");
+    navButton?.setAttribute("aria-expanded", "true");
     nav.querySelector(".ns-panel")?.remove();
     const panel=document.createElement("div");panel.className="ns-panel";panel.setAttribute("data-v-deb9fdfc","");
     panel.innerHTML=`<div data-v-deb9fdfc class="ns-title">背景主题</div>${[["✦","星空极光"],["⚡","赛博编程"]].map(([icon,name])=>`<button data-v-deb9fdfc class="ns-opt ${name===themeChoice?"active":""}"><span data-v-deb9fdfc class="ns-opt-icon">${icon}</span><span data-v-deb9fdfc class="ns-opt-label">${name}</span>${name===themeChoice?'<span data-v-deb9fdfc class="ns-opt-check">✓</span>':""}</button>`).join("")}`;
@@ -375,6 +390,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     if(!sound)return;
     const open=!sound.classList.contains("open");
     if(!open){closeSoundPanel();return;}
+    closeBlogMenu();
     closeThemePanel();
     sound.classList.add("open");
     soundButton?.setAttribute("title","收起声音设置");sound.querySelector(".st-panel")?.remove();
@@ -385,13 +401,18 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     panel.querySelector<HTMLInputElement>(".st-range")?.addEventListener("input",e=>{soundVolume=Number((e.target as HTMLInputElement).value);panel.querySelector(".st-vol-num")!.textContent=String(soundVolume);audio.volume=soundVolume/100;document.documentElement.dataset.soundVolume=String(soundVolume/100);window.localStorage.setItem("clone-sound-volume",String(soundVolume));});
   };
   soundButton?.addEventListener("click",toggleSound);
-  document.addEventListener("pointerdown",closePanelsOnOutsidePointer);
+  document.addEventListener("pointerdown",closePanelsOnOutsidePointer,true);
 
   const burger=document.querySelector<HTMLButtonElement>(".VPNavBarHamburger");let mobile:HTMLElement|null=null;
   const toggleMobile=()=>{const open=burger?.getAttribute("aria-expanded")!=="true";burger?.setAttribute("aria-expanded",String(open));document.querySelector(".VPNavBar")?.classList.toggle("screen-open",open);mobile?.remove();mobile=null;if(open){mobile=document.createElement("div");mobile.className="clone-mobile-menu";mobile.innerHTML=`<details class="clone-mobile-blog"><summary>博客 <span aria-hidden="true">⌄</span></summary>${journalLinks.map(([label,url])=>`<a href="${url}">${label}</a>`).join("")}</details>${links.map(([name,href])=>`<a href="${href}">${name}</a>`).join("")}`;document.body.append(mobile);}};
   burger?.addEventListener("click",toggleMobile);
-  const blogMenu=document.querySelector<HTMLButtonElement>(".VPNavBarMenuGroup button");
-  const toggleBlogMenu=()=>{const expanded=blogMenu?.getAttribute("aria-expanded")!=="true";blogMenu?.setAttribute("aria-expanded",String(expanded));blogMenu?.closest(".VPFlyout")?.classList.toggle("clone-flyout-open",expanded);};
+  const toggleBlogMenu = () => {
+    if (blogMenu?.getAttribute("aria-expanded") === "true") { closeBlogMenu(); return; }
+    closeThemePanel();
+    closeSoundPanel();
+    blogMenu?.setAttribute("aria-expanded", "true");
+    blogFlyout?.classList.add("clone-flyout-open");
+  };
   blogMenu?.addEventListener("click",toggleBlogMenu);
 
   const searchButton=document.querySelector<HTMLButtonElement>(".DocSearch-Button");let search:HTMLElement|null=null;
@@ -435,6 +456,9 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     finally{if(request===searchRequest&&layer.isConnected){searchLoading=false;update();}}
   };
   const openSearch=()=>{
+    closeBlogMenu();
+    closeThemePanel();
+    closeSoundPanel();
     if(search){search.querySelector<HTMLInputElement>("input")?.focus();return;}
     searchPreviousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
     searchPreviousOverflow=document.body.style.overflow;document.body.style.overflow="hidden";
@@ -477,7 +501,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     update();input.focus();void loadSearchEntries(layer,update);
   };
   searchButton?.addEventListener("click",openSearch);
-  const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape")closeSearch();};
+  const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape"){closeBlogMenu();closeThemePanel();closeSoundPanel();closeSearch();}};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer,true);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeBlogMenu();blogPanelTitle.remove();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }
