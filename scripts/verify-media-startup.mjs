@@ -36,7 +36,7 @@ const music = page => page.locator(".st-row").filter({ hasText: "背景音乐" }
 try {
   const early = await createPage();
   let releaseVideo;
-  await early.page.route("**/starlight-orbit-v2.mp4", async route => {
+  await early.page.route("**/starlight-orbit-v6.mp4", async route => {
     await new Promise(resolve => { releaseVideo = resolve; });
     await route.continue().catch(() => {});
   });
@@ -45,7 +45,7 @@ try {
       if (event.target instanceof HTMLVideoElement) window.videoStartedAt = performance.now();
     }, true);
   });
-  const videoRequest = early.page.waitForRequest("**/starlight-orbit-v2.mp4");
+  const videoRequest = early.page.waitForRequest("**/starlight-orbit-v6.mp4");
   await early.page.goto(base + "/", { waitUntil: "domcontentloaded" });
   await videoRequest;
   await early.page.locator(".clone-nav-panel-title").waitFor({ state: "attached" });
@@ -60,7 +60,7 @@ try {
   assert.ok(startup.video > 0, "Decorative video must start immediately");
   assert.equal(startup.theme, "cyber", "Theme controls must work while the video request is still pending");
   releaseVideo?.();
-  await early.page.unroute("**/starlight-orbit-v2.mp4");
+  await early.page.unroute("**/starlight-orbit-v6.mp4");
   await early.context.close();
 
   const { context, page } = await createPage();

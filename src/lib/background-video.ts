@@ -16,7 +16,7 @@ export const inlineVideoAttributes = {
 };
 
 export const homeBackgroundVideo = {
-  src: "/media/starlight-orbit-v2.mp4",
+  src: "/media/starlight-orbit-v6.mp4",
   poster: "/media/starlight-orbit-poster-v2.webp",
 };
 
@@ -104,6 +104,10 @@ export function manageBackgroundVideo(video: HTMLVideoElement, isActive = () => 
     }
     sync();
   };
+  // Some Chromium/network combinations emit progress events only after large
+  // chunks. Poll while mounted so the video starts as soon as the target lead
+  // is available instead of waiting for a late progress notification.
+  const bufferTimer = window.setInterval(sync, 200);
 
   for (const event of ["loadeddata", "canplay", "progress", "stalled"]) video.addEventListener(event, sync);
   video.addEventListener("waiting", onWaiting);
@@ -127,6 +131,7 @@ export function manageBackgroundVideo(video: HTMLVideoElement, isActive = () => 
       window.removeEventListener("pageshow", sync);
       window.removeEventListener("online", onOnline);
       reducedMotion.removeEventListener("change", sync);
+      window.clearInterval(bufferTimer);
       video.pause();
     },
   };
