@@ -1,6 +1,8 @@
-# 个人博客
+# 个人博客 · 前后端版
 
 Next.js 15、MySQL 8 和 Markdown 驱动的个人博客。首页有星空极光与赛博编程两套主题；技术学习、日常生活、文章阅读和写作页共享导航与背景。
+
+当前分支为 `codex/fullstack`，保留在线写作和图片上传功能，供本地运行或以后参考。网站后续使用[静态版 `codex/static`](https://github.com/Java123456com/personal-blog-template/tree/codex/static)发布；[仓库首页](https://github.com/Java123456com/personal-blog-template/tree/main)提供两套版本的入口。
 
 ## Windows MySQL 8.0 本地启动
 
@@ -12,9 +14,9 @@ Next.js 15、MySQL 8 和 Markdown 驱动的个人博客。首页有星空极光�
 
 打开 <http://localhost:4173/>。技术学习记录在 `/moments/tech/`，日常生活记录在 `/moments/life/`。不要把 `.env.local` 提交到 Git；正文和图片都在 MySQL 中，备份时要备份 `blog` 数据库。
 
-## 云服务器 Docker 部署
+## Docker 部署参考
 
-以后上传云服务器时，复制 `.env.example` 为 `.env`，替换所有 `CHANGE_ME`，再运行 `docker compose up --build -d`。该配置只用于服务器；本机开发直接连接 Windows MySQL 8.0。生产环境应放在 HTTPS 反向代理后面。
+`129.211.11.127` 上的旧博客不再作为发布目标。本分支保留 Docker 配置作为历史部署参考，具体布局见 [DEPLOYMENT.md](DEPLOYMENT.md)。如以后另行部署，复制 `.env.example` 为 `.env`，填写配置后运行 `docker compose up --build -d`，并配置 HTTPS 反向代理。本机开发直接连接 Windows MySQL 8.0。
 
 ## 写作与图片
 

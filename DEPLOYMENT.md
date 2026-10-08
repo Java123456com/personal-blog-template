@@ -1,10 +1,15 @@
-# Production deployment
+# Full-stack deployment reference
+
+This document records the previous deployment on `129.211.11.127`.
+That server is no longer the blog's publishing target. The active edition
+is [`codex/static`](https://github.com/Java123456com/personal-blog-template/tree/codex/static).
+Keep this layout as a reference for local development or a future deployment.
 
 Domain: https://blog.noova.cloud
 
 Server directory: `/home/ubuntu/personal-blog`
 
-The blog runs as Compose project `noova-blog`. MySQL 8.0 uses its own
+The previous deployment used Compose project `noova-blog`. MySQL 8.0 uses its own
 `noova-blog_mysql_data` volume. Images and Markdown records are stored in
 the `blog` database. Both containers use Asia/Shanghai time.
 
@@ -18,9 +23,9 @@ docker compose -f compose.yaml -f compose.caddy.yaml logs --tail=80 app
 The protected `.env` contains production credentials. Keep it out of Git.
 The administration page is `/write`; the navigation `+` opens it.
 
-## Existing Caddy
+## Shared Caddy in the previous deployment
 
-The existing `gogo-app-caddy-1` container serves `noova.cloud` and
+The shared `gogo-app-caddy-1` container serves `noova.cloud` and
 `www.noova.cloud`. Its host configuration is:
 `/home/ubuntu/gogo-app/deploy/production/Caddyfile`.
 
@@ -29,6 +34,10 @@ The blog app joins the external `gogo-app_app` network under alias
 The existing Compose file now mounts the host Caddyfile read-only, so
 future container recreations preserve this route. Date-stamped backups
 of the original Caddyfile and Compose file are beside them.
+
+When retiring the blog, remove only the `blog.noova.cloud` proxy and the
+`noova-blog` containers. Keep the shared Caddy, its main-domain routes,
+the external network, and the MySQL volume. Do not run a global Docker cleanup.
 
 ## Backups
 
