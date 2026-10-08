@@ -263,7 +263,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   const themeStorageKey = "clone-site-theme";
   const themeDefaultKey = "clone-site-theme-default";
   const themeDefaultVersion = "starry-default-v2";
-  const orbitPosterMarkup = '<img class="slh-video slh-video-poster" src="/media/starlight-orbit-poster.jpg" alt="">';
+  const orbitPosterMarkup = `<img class="slh-video slh-video-poster" src="${homeBackgroundVideo.poster}" alt="" loading="lazy" decoding="async" fetchpriority="high">`;
   if (window.localStorage.getItem(themeDefaultKey) !== themeDefaultVersion) {
     window.localStorage.setItem(themeStorageKey, "星空极光");
     window.localStorage.setItem(themeDefaultKey, themeDefaultVersion);
@@ -271,6 +271,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   let themeChoice = window.localStorage.getItem(themeStorageKey) || "星空极光";
   let orbitPlayback: ReturnType<typeof manageBackgroundVideo> | undefined;
   const syncOrbitPlayback = () => {
+    if (document.readyState !== "complete") return;
     const layer = star?.querySelector<HTMLElement>(".slh-video-layer");
     if (!layer) return;
     let video = layer.querySelector<HTMLVideoElement>("video.slh-video");
@@ -298,7 +299,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
       video.disablePictureInPicture = true;
       video.disableRemotePlayback = true;
       for (const [name, value] of Object.entries(inlineVideoAttributes)) video.setAttribute(name, value);
-      video.poster = "/media/starlight-orbit-poster.jpg";
+      video.poster = homeBackgroundVideo.poster;
       video.src = homeBackgroundVideo.src;
       layer.append(video);
     }
@@ -341,6 +342,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     window.scrollTo({top:0,behavior:"instant"});
   };
   selectTheme(themeChoice);
+  window.addEventListener("load", syncOrbitPlayback, { once: true });
   document.addEventListener("visibilitychange", syncOrbitPlayback);
   const toggleTheme = () => {
     if (!nav) return;
@@ -574,5 +576,5 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape"){closeBlogMenu();closeThemePanel();closeSoundPanel();closeSearch();}};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer,true);document.removeEventListener("visibilitychange",syncOrbitPlayback);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);saveMusicProgress();backgroundMusic.dispose();orbitPlayback?.dispose();void audioContext?.close();closeBlogMenu();blogPanelTitle.remove();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer,true);document.removeEventListener("visibilitychange",syncOrbitPlayback);window.removeEventListener("load",syncOrbitPlayback);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);saveMusicProgress();backgroundMusic.dispose();orbitPlayback?.dispose();void audioContext?.close();closeBlogMenu();blogPanelTitle.remove();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }

@@ -11,7 +11,12 @@ export default function BackgroundVideo({ className, src, poster }: {
 }) {
   const [enabled, setEnabled] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  useEffect(() => { setEnabled(canPlayBackgroundVideo()); }, []);
+  useEffect(() => {
+    const start = () => setEnabled(canPlayBackgroundVideo());
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => window.removeEventListener("load", start);
+  }, []);
   useEffect(() => {
     if (!enabled || !videoRef.current) return;
     return manageBackgroundVideo(videoRef.current).dispose;
@@ -22,6 +27,6 @@ export default function BackgroundVideo({ className, src, poster }: {
       playsInline preload="auto" disablePictureInPicture disableRemotePlayback
       {...inlineVideoAttributes} aria-hidden="true" />
   ) : (
-    <img className={className} src={poster} alt="" aria-hidden="true" />
+    <img className={className} src={poster} alt="" loading="lazy" decoding="async" aria-hidden="true" />
   );
 }

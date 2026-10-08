@@ -33,6 +33,7 @@ export default async function SitePage({ params }: { params: Promise<{ slug: str
   const path = routeFor((await params).slug);
   const key = pages[path];
   if (!key) notFound();
-  const markup = readFileSync(join(process.cwd(), site, key, "markup.html"), "utf8");
+  const markup = readFileSync(join(process.cwd(), site, key, "markup.html"), "utf8")
+    .replace(/<img\b(?![^>]*\bloading\s*=)/g, '<img loading="lazy" decoding="async"');
   return <><div id="app" dangerouslySetInnerHTML={{ __html: markup }} /><PageEnhancements path={path} /></>;
 }

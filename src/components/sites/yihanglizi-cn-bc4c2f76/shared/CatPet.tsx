@@ -100,7 +100,6 @@ export default function CatPet() {
       stage.style.height = `${size}px`;
       sprite.style.width = `${size}px`;
       sprite.style.height = `${size}px`;
-      sprite.style.backgroundImage = `url(${SPRITE})`;
       sprite.style.backgroundRepeat = "no-repeat";
       sprite.style.backgroundSize = `${BASE * COLS * scale}px ${BASE * 10 * scale}px`;
     };
@@ -355,6 +354,9 @@ export default function CatPet() {
     };
 
     setDimensions();
+    const loadSprite = () => { sprite.style.backgroundImage = `url(${SPRITE})`; };
+    if (document.readyState === "complete") loadSprite();
+    else window.addEventListener("load", loadSprite, { once: true });
     stage.style.left = `${Math.round(x)}px`;
     setFrame(0);
     window.addEventListener("resize", onResize);
@@ -375,6 +377,7 @@ export default function CatPet() {
       activeAudio?.pause();
       meowPool.forEach(audio => { audio.pause(); audio.src = ""; });
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("load", loadSprite);
       window.removeEventListener("keydown", onKeyDown);
       stage.removeEventListener("pointerdown", onPointerDown);
       stage.removeEventListener("pointermove", onPointerMove);

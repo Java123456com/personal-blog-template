@@ -35,13 +35,19 @@ async function createPage(options = {}) {
 const music = page => page.locator(".st-row").filter({ hasText: "背景音乐" });
 try {
   const early = await createPage();
-  await early.page.route("**/_next/static/chunks/**", async route => {
-    if (/\.js(?:\?|$)/.test(route.request().url())) await new Promise(resolve => setTimeout(resolve, 6000));
-    await route.continue().catch(() => {});
+  await early.page.addInitScript(() => {
+    document.addEventListener("loadstart", event => {
+      if (event.target instanceof HTMLVideoElement) window.videoStartedAt = performance.now();
+    }, true);
   });
-  await early.page.goto(base + "/", { waitUntil: "commit" });
+  await early.page.goto(base + "/", { waitUntil: "load" });
   await early.page.waitForFunction(() => document.querySelector(".slh-video-layer video")?.currentTime > .1, null, { timeout: 3000 });
-  assert.equal(await early.page.locator(".clone-nav-panel-title").count(), 0, "The video must start while React chunks are still delayed");
+  const startup = await early.page.evaluate(() => ({
+    load: performance.getEntriesByType("navigation")[0].loadEventStart,
+    video: window.videoStartedAt,
+  }));
+  assert.ok(startup.video >= startup.load, "Decorative video must start after navigation completes");
+  assert.ok(startup.video - startup.load < 300, "The video must start promptly after page load");
   await early.page.locator(".clone-nav-panel-title").waitFor({ state: "attached" });
   await early.context.close();
 
