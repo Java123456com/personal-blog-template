@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ContentEntry } from "../../lib/content/types";
-import { mediaUrl } from "../../lib/content/types";
+import BackgroundVideo from "./BackgroundVideo";
 import "./LifeTimeline.css";
 
 type SortOrder = "newest" | "oldest";
@@ -60,18 +60,11 @@ export function LifeTimeline({ entries }: { entries: ContentEntry[] }) {
   return (
     <section className="life-timeline" aria-label="日常生活记录">
       <header className="life-timeline__hero">
-        <video
+        <BackgroundVideo
           className="life-timeline__hero-video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
+          src="/media/lazy-river-bg.mp4"
           poster="/media/lazy-river-poster.jpg"
-          aria-hidden="true"
-        >
-          <source src="/media/lazy-river-bg.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="life-timeline__hero-shade" aria-hidden="true" />
         <div className="life-timeline__hero-content">
           <span className="life-timeline__eyebrow">🌿 LIFE</span>
@@ -146,16 +139,15 @@ export function LifeTimeline({ entries }: { entries: ContentEntry[] }) {
                     {entry.bodyMd}
                   </ReactMarkdown>
                 </div>
-                {entry.imageIds.length > 0 && (
+                {entry.imageUrls.length > 0 && (
                   <div className="life-timeline__images" aria-label="记录图片">
-                    {entry.imageIds.map((id, index) => {
-                      const src = mediaUrl(id);
+                    {entry.imageUrls.map((src, index) => {
                       const alt = `${entry.title || "生活记录"}，图片 ${index + 1}`;
                       return (
                         <button
                           className="life-timeline__image"
                           type="button"
-                          key={id}
+                          key={`${src}-${index}`}
                           aria-label={`查看${alt}`}
                           onClick={() => setLightbox({ src, alt })}
                         >

@@ -10,13 +10,9 @@ export interface ContentEntry {
   bodyMd: string;
   tags: string[];
   status: EntryStatus;
-  coverMediaId: string | null;
-  imageIds: string[];
+  coverImageUrl: string | null;
+  imageUrls: string[];
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
-}
-
-export function mediaUrl(id: string): string {
-  return `/api/media/${encodeURIComponent(id)}`;
 }

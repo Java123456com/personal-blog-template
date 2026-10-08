@@ -1,54 +1,83 @@
-# 个人博客 · 两套版本
+# 个人博客 · 静态版
 
-基于 Next.js / React 的个人博客，保留星空极光与赛博编程两套主题，以及技术学习、日常生活、简历、友链、工具和关于页面。
+保留现有 Next.js / React 页面、星空极光与赛博编程主题、搜索、Markdown 阅读、Mermaid、生活照片图库和其他浏览交互。内容从本地 Markdown 构建成静态文件，公开网站无需后端或数据库。
 
-仓库分为前后端版和静态版。当前网站后续使用静态版发布，前后端版保留作为本地运行和开发参考。`main` 提供版本入口说明，具体代码请切换到对应分支。
+## 版本与分支
 
-| 项目 | 前后端版 | 静态版 |
-| --- | --- | --- |
-| 分支 | [`codex/fullstack`](https://github.com/Java123456com/personal-blog-template/tree/codex/fullstack) | [`codex/static`](https://github.com/Java123456com/personal-blog-template/tree/codex/static) |
-| 内容存储 | MySQL 8 | 本地 Markdown 文件 |
-| 写作方式 | 网页「＋」管理端，支持草稿、编辑、发布 | 本地编辑 Markdown，提交后自动构建 |
-| 图片 | 网页上传到 MySQL | 放入 `public/images/`，在 Markdown 中引用 |
-| 运行方式 | Next.js 后端 + MySQL | 静态文件，无需后端或数据库 |
-| 页面与浏览功能 | 原有页面和交互 | 保留原有页面和交互，移除「＋」写作入口 |
+- `codex/fullstack`：原有 Next.js + MySQL + Docker + Caddy 版本，保留「＋」写作功能。
+- `main`：当前静态版和唯一的自动发布分支，去掉「＋」，用本地 Markdown 和图片更新内容。
+- `codex/static`：保留静态版分支，供参考，不触发网站自动发布。
 
-## 静态版 · 当前使用
+日常更新请选择 `main`。需要在线写作时请查看[前后端版说明](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/README.md)。
+
+## 本地开发和发布预览
 
 ```sh
-git switch codex/static
 npm ci
 npm run dev
 ```
 
-开发地址为 `http://localhost:3000`。技术文章放在 `content/articles/`，生活记录放在 `content/life/`，图片放在 `public/images/`。复制目录中的草稿模板，填写标题、日期、正文等字段，发布时移除 `draft: true` 或改为 `draft: false`。
+开发地址为 `http://localhost:3000`。修改 Markdown 后重启开发命令，以重新生成搜索索引。
 
 ```sh
 npm run build
 npm start
 ```
 
-静态产物位于 `out/`，预览地址为 `http://127.0.0.1:4173`。本仓库已公开并启用 GitHub Pages，推送到 `codex/static` 后自动构建和部署。自定义域名为 `blog.noova.cloud`，DNS 和 HTTPS 状态可在仓库 Settings → Pages 中查看。
+第二组命令在 `http://127.0.0.1:4173` 预览真正的静态产物 `out/`，不运行 Next.js 后端。
 
-- [静态版完整使用说明](https://github.com/Java123456com/personal-blog-template/blob/codex/static/README.md)
-- [静态托管与域名配置](https://github.com/Java123456com/personal-blog-template/blob/codex/static/DEPLOYMENT.md)
+## 内容文件
 
-## 前后端版 · 保留参考
+- 技术文章：`content/articles/*.md`，支持子目录。
+- 生活记录：`content/life/*.md`，支持子目录。
+- 图片：`public/images/`。
+- 两个目录中的 `_example.md` 都是草稿模板，不会发布到网站或搜索中。
 
-```sh
-git switch codex/fullstack
-npm ci
+在 GitHub 网页上传时，先选 `main`，进入文章或图片对应的目录，再使用 Add file → Upload files，提交到 `main` 即可自动发布。技术文章和生活记录都要带下方所示的 YAML 元数据；正文引用 `public/images/photo.jpg` 时，网页路径写 `/images/photo.jpg`。
+
+复制模板，填写标题、日期、正文和 slug，再将 `draft: true` 改为 `draft: false`，或删除 draft 字段。slug 使用小写英文、数字和连字符，同一分类不能重复。
+
+```markdown
+---
+title: 我的技术学习记录
+slug: my-first-post
+date: "2026-10-08"
+summary: 这篇文章讲了什么。
+tags: [Java, 学习记录]
+draft: false
+---
+
+## 一个小标题
+
+正文支持 Markdown、GFM 表格、任务列表、代码块和 Mermaid 图表。
+
+![项目架构图](/images/project-architecture.png)
 ```
 
-启动 Windows `MySQL80` 服务，用管理员导入 `db/schema.sql`，为应用配置 `blog` 库的读写权限。复制 `.env.local.example` 为 `.env.local`，填写数据库连接、写作密码和会话密钥，再运行：
+`date` 必填，使用带引号的 `YYYY-MM-DD` 或带时区的 ISO 时间，如 `2026-10-08T20:00:00+08:00`。显示日期保持北京时间。`updated` 可选，格式相同；`summary`、`tags`、`cover`、`images` 也可选。
 
-```sh
-npm run dev -- -p 4173
+生活记录的照片列表写在元数据中：
+
+```yaml
+images:
+  - /images/trip/01.jpg
+  - /images/trip/02.jpg
 ```
 
-打开 `http://localhost:4173`，通过导航「＋」进入 `/write/` 写作。文章正文和上传的图片保存在 MySQL 中，需要备份数据库。
+照片继续使用原有图库和点击放大效果，也可以嵌入 Markdown 正文。images 和 cover 必须指向 `public/images/` 中已存在的文件。
 
-- [前后端版完整使用说明](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/README.md)
-- [历史 Docker / Caddy 部署参考](https://github.com/Java123456com/personal-blog-template/blob/codex/fullstack/DEPLOYMENT.md)
+技术文章地址为 `/moments/tech/<slug>/`。搜索索引包括标题、标签、摘要和正文。草稿不会生成网页或进入搜索；公开 GitHub 仓库中的草稿源文件仍可被仓库访客读取。
 
-`129.211.11.127` 上的旧博客不再作为部署目标。停用范围限于博客项目 `noova-blog` 及其子域名代理，共享 Caddy 和主域名项目继续保留。
+## 背景视频兼容
+
+首页、技术和生活页先显示背景封面图，再启用视频。百度 App / 百度浏览器，以及开启系统「减少动态效果」的设备使用静态封面，避免内置播放器覆盖网页；主题切换、菜单、搜索和星空交互仍可使用。其他浏览器保留静音内联背景视频。
+
+运行 `node scripts/verify-background-video.mjs` 检查背景兼容逻辑。该检查在 Chrome 中模拟百度的浏览器标识；百度实际设备的播放器表现仍需在手机上验证。
+
+## 自动发布
+
+当前仓库已公开，GitHub Pages 已启用，使用 GitHub Actions 发布 `main` 分支。域名为 `blog.noova.cloud`；解析和 HTTPS 状态可在仓库 Settings → Pages 中查看。
+
+推送 `main` 后，GitHub Actions 构建并部署 `out/`。也可以从 Actions → Publish static blog → Run workflow 中选择 `main` 手动发布。操作步骤见 [DEPLOYMENT.md](DEPLOYMENT.md)。
+
+静态文件更新需要等待构建和部署完成。不要上传 `.env`、数据库备份或私钥。

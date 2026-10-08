@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   devIndicators: false,
-  // Separate production output from the active development cache.
-  distDir: process.env.NODE_ENV === "production" ? ".next-build" : ".next",
+  output: "export",
+  trailingSlash: true,
+  // In export mode Next.js uses distDir for the published static files.
+  distDir: process.env.NODE_ENV === "production" ? "out" : ".next-static-dev",
 };
 
 export default nextConfig;
