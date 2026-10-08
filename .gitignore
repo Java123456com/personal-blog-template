@@ -1,6 +1,11 @@
 node_modules/
 .next/
 .next-build/
+.next-static/
+.next-static-dev/
+out/
+public/search-index.json
+artifacts/
 .next-broken-*/
 *.tsbuildinfo
 .env*

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ContentEntry } from "../../lib/content/types";
-import { mediaUrl } from "../../lib/content/types";
 import "./LifeTimeline.css";
 
 type SortOrder = "newest" | "oldest";
@@ -146,16 +145,15 @@ export function LifeTimeline({ entries }: { entries: ContentEntry[] }) {
                     {entry.bodyMd}
                   </ReactMarkdown>
                 </div>
-                {entry.imageIds.length > 0 && (
+                {entry.imageUrls.length > 0 && (
                   <div className="life-timeline__images" aria-label="记录图片">
-                    {entry.imageIds.map((id, index) => {
-                      const src = mediaUrl(id);
+                    {entry.imageUrls.map((src, index) => {
                       const alt = `${entry.title || "生活记录"}，图片 ${index + 1}`;
                       return (
                         <button
                           className="life-timeline__image"
                           type="button"
-                          key={id}
+                          key={`${src}-${index}`}
                           aria-label={`查看${alt}`}
                           onClick={() => setLightbox({ src, alt })}
                         >

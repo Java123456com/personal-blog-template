@@ -217,16 +217,6 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   const navButton = nav?.querySelector<HTMLButtonElement>(".ns-btn");
   const sound = document.querySelector<HTMLElement>(".sound-toggle");
   const soundButton = sound?.querySelector<HTMLButtonElement>(".st-btn");
-  const existingAdminLink = document.querySelector<HTMLAnchorElement>(".nav-admin-link");
-  const adminLink = existingAdminLink ?? document.createElement("a");
-  if (!existingAdminLink) {
-    adminLink.className = "nav-admin-link";
-    adminLink.href = "/write/";
-    adminLink.title = "内容管理";
-    adminLink.setAttribute("aria-label", "进入内容管理端");
-    adminLink.textContent = "+";
-    sound?.insertAdjacentElement("afterend", adminLink);
-  }
   const closeThemePanel = () => {
     nav?.classList.remove("open");
     nav?.querySelector(".ns-panel")?.remove();
@@ -398,7 +388,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   document.addEventListener("pointerdown",closePanelsOnOutsidePointer);
 
   const burger=document.querySelector<HTMLButtonElement>(".VPNavBarHamburger");let mobile:HTMLElement|null=null;
-  const toggleMobile=()=>{const open=burger?.getAttribute("aria-expanded")!=="true";burger?.setAttribute("aria-expanded",String(open));document.querySelector(".VPNavBar")?.classList.toggle("screen-open",open);mobile?.remove();mobile=null;if(open){mobile=document.createElement("div");mobile.className="clone-mobile-menu";mobile.innerHTML=`<details class="clone-mobile-blog"><summary>博客 <span aria-hidden="true">⌄</span></summary>${journalLinks.map(([label,url])=>`<a href="${url}">${label}</a>`).join("")}</details>${links.map(([name,href])=>`<a href="${href}">${name}</a>`).join("")}<a href="/write/">＋ 内容管理</a>`;document.body.append(mobile);}};
+  const toggleMobile=()=>{const open=burger?.getAttribute("aria-expanded")!=="true";burger?.setAttribute("aria-expanded",String(open));document.querySelector(".VPNavBar")?.classList.toggle("screen-open",open);mobile?.remove();mobile=null;if(open){mobile=document.createElement("div");mobile.className="clone-mobile-menu";mobile.innerHTML=`<details class="clone-mobile-blog"><summary>博客 <span aria-hidden="true">⌄</span></summary>${journalLinks.map(([label,url])=>`<a href="${url}">${label}</a>`).join("")}</details>${links.map(([name,href])=>`<a href="${href}">${name}</a>`).join("")}`;document.body.append(mobile);}};
   burger?.addEventListener("click",toggleMobile);
   const blogMenu=document.querySelector<HTMLButtonElement>(".VPNavBarMenuGroup button");
   const toggleBlogMenu=()=>{const expanded=blogMenu?.getAttribute("aria-expanded")!=="true";blogMenu?.setAttribute("aria-expanded",String(expanded));blogMenu?.closest(".VPFlyout")?.classList.toggle("clone-flyout-open",expanded);};
@@ -433,7 +423,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   const loadSearchEntries=async(layer:HTMLElement,update:()=>void)=>{
     const request=++searchRequest;
     try{
-      const response=await fetch("/api/entries?type=article",{cache:"no-store"});
+      const response=await fetch("/search-index.json",{cache:"no-store"});
       if(!response.ok)throw new Error("article search unavailable");
       const payload=await response.json();
       if(request!==searchRequest||!layer.isConnected)return;
@@ -489,5 +479,5 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape")closeSearch();};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(!existingAdminLink)adminLink.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();star?.querySelector("video")?.pause();void audioContext?.close();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }
