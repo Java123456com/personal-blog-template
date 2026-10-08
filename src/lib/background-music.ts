@@ -18,10 +18,28 @@ export function createBackgroundMusic(options: {
   let disposed = false;
   let attempt = 0;
   let resumeAt = options.resumeAt;
+  let loadingTimer: number | undefined;
+  const clearLoadingTimer = () => {
+    window.clearTimeout(loadingTimer);
+    loadingTimer = undefined;
+  };
   const report = (next: MusicState) => {
     if (disposed) return;
     state = enabled ? next : "off";
+    if (state !== "loading") clearLoadingTimer();
     options.onState(state);
+  };
+  const beginLoading = () => {
+    if (state !== "loading") report("loading");
+    if (loadingTimer !== undefined) return;
+    loadingTimer = window.setTimeout(() => {
+      if (disposed || !enabled || state !== "loading") return;
+      attempt++;
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      report("error");
+    }, 6000);
   };
   const restorePosition = () => {
     if (Number.isFinite(resumeAt) && resumeAt > 0 && Number.isFinite(audio.duration) && audio.duration > 0) {
@@ -31,12 +49,13 @@ export function createBackgroundMusic(options: {
   };
   const play = () => {
     if (disposed || !enabled) return;
+    if (!audio.getAttribute("src")) audio.src = options.src;
     if (audio.error) {
       if (audio.readyState >= HTMLMediaElement.HAVE_METADATA) resumeAt = audio.currentTime;
       audio.load();
     }
     const currentAttempt = ++attempt;
-    report("loading");
+    beginLoading();
     // Keep play() directly inside the click/key handler to retain activation.
     void audio.play().catch((error: unknown) => {
       if (disposed || !enabled || currentAttempt !== attempt) return;
@@ -46,7 +65,7 @@ export function createBackgroundMusic(options: {
     });
   };
   const onPlaying = () => { if (enabled) report("playing"); else audio.pause(); };
-  const onWaiting = () => report("loading");
+  const onWaiting = () => beginLoading();
   const onPause = () => { if (state !== "blocked" && state !== "error") report("paused"); };
   const onError = () => report("error");
   const onGesture = (event: Event) => {
@@ -81,6 +100,7 @@ export function createBackgroundMusic(options: {
     dispose: () => {
       disposed = true;
       attempt++;
+      clearLoadingTimer();
       audio.removeEventListener("loadedmetadata", restorePosition);
       audio.removeEventListener("playing", onPlaying);
       audio.removeEventListener("waiting", onWaiting);

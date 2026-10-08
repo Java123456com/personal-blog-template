@@ -94,7 +94,7 @@ try {
   await retry.page.locator(".st-btn").click();
   // Opening the panel is a gesture that retries the saved enabled preference.
   await retry.page.waitForFunction(() => document.documentElement.dataset.backgroundMusic === "playing");
-  await retry.page.waitForFunction(() => window.testAudios.some(audio => audio.src.includes("background-music") && audio.currentTime > 120 && !audio.paused));
+  await retry.page.waitForFunction(() => window.testAudios.some(audio => audio.src.includes("background-music") && audio.currentTime > 23 && audio.currentTime < 30 && !audio.paused));
   assert.match(await music(retry.page).textContent(), /播放中/);
   const range = retry.page.locator(".st-range");
   await range.evaluate(input => { input.value = "0"; input.dispatchEvent(new Event("input", { bubbles: true })); });
@@ -114,6 +114,22 @@ try {
   await explicitRetry.page.waitForFunction(() => document.documentElement.dataset.backgroundMusic === "playing");
   assert.equal(await explicitRetry.page.evaluate(() => localStorage.getItem("clone-background-music")), "on", "Clicking retry must not turn music off");
   await explicitRetry.context.close();
+  const slow = await createPage();
+  let releaseMusic;
+  await slow.page.route("**/background-music-v2.m4a", async route => {
+    await new Promise(resolve => { releaseMusic = resolve; });
+    await route.continue().catch(() => {});
+  });
+  await slow.page.goto(base + "/");
+  await slow.page.locator(".st-btn").click();
+  await music(slow.page).click();
+  await slow.page.waitForFunction(() => document.documentElement.dataset.backgroundMusic === "error", null, { timeout: 7500 });
+  assert.match(await music(slow.page).textContent(), /网络慢·重试/);
+  releaseMusic?.();
+  await slow.page.unroute("**/background-music-v2.m4a");
+  await music(slow.page).click();
+  await slow.page.waitForFunction(() => document.documentElement.dataset.backgroundMusic === "playing");
+  await slow.context.close();
   assert.deepEqual(errors, []);
-  console.log(`Media startup passed: no idle audio downloads; music starts, emits nonzero samples (RMS ${energy.toFixed(3)}), restores position, retries blocked autoplay, and reports mute; galaxy loads on scroll.`);
+  console.log(`Media startup passed: no idle audio downloads; music starts, emits nonzero samples (RMS ${energy.toFixed(3)}), restores position, retries blocked autoplay, reports mute, and exits a stalled load after 6 seconds; galaxy loads on scroll.`);
 } finally { await browser.close(); }

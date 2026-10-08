@@ -374,14 +374,14 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     const button = sound?.querySelectorAll<HTMLButtonElement>(".st-row")[1];
     if (!button) return;
     button.setAttribute("data-background-music-toggle", "");
-    const labels = { off: "OFF", loading: "加载中", playing: soundVolume === 0 ? "已静音" : "播放中", paused: "点击播放", blocked: "点击播放", error: "点击重试" };
+    const labels = { off: "OFF", loading: "加载中…", playing: soundVolume === 0 ? "已静音" : "播放中", paused: "点击播放", blocked: "点击播放", error: "网络慢·重试" };
     button.classList.toggle("on", music);
     button.setAttribute("aria-pressed", String(music));
     const label = button.querySelector(".st-row-state");
     if (label) label.textContent = labels[musicState];
   };
   const backgroundMusic = createBackgroundMusic({
-    src: "/media/background-music.m4a",
+    src: "/media/background-music-v2.m4a",
     enabled: music,
     volume: soundVolume / 100,
     resumeAt: Number(window.sessionStorage.getItem("clone-background-music-time") || "0"),
