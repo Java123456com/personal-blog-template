@@ -85,9 +85,9 @@ export default function CatPet() {
     let helpTimer: number | undefined;
     let holdTimer: number | undefined;
     const meowPool = MEOWS.map(source => {
-      const audio = new Audio(source);
-      audio.preload = "auto";
-      audio.load();
+      const audio = new Audio();
+      audio.preload = "none";
+      audio.src = source;
       return audio;
     });
     let activeAudio: HTMLAudioElement | null = null;

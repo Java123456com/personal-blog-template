@@ -5,7 +5,7 @@ import { resolve, join, extname, sep } from "node:path";
 const root = resolve("out");
 if (!existsSync(join(root, "index.html"))) throw new Error("Run npm run build before starting the static preview.");
 const port = Number(process.env.PORT || 4173);
-const mime = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif", ".mp4": "video/mp4", ".mp3": "audio/mpeg", ".woff2": "font/woff2", ".txt": "text/plain" };
+const mime = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif", ".mp4": "video/mp4", ".mp3": "audio/mpeg", ".m4a": "audio/mp4", ".woff2": "font/woff2", ".txt": "text/plain" };
 createServer((request, response) => {
   let pathname;
   try { pathname = decodeURIComponent(new URL(request.url || "/", "http://localhost").pathname); }

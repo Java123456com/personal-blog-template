@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import ClientEnhancements from "@/components/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2/ClientEnhancements";
+import { bootstrapHomeBackground, canPlayBackgroundVideoIn, homeBackgroundVideo, inlineVideoAttributes } from "@/lib/background-video";
 
 export default function Home() {
   const markup = readFileSync(
@@ -16,5 +17,6 @@ export default function Home() {
   const insertionPoint = "</footer></div><!----><!----><!----></div></div></div><!--[--><!--]--></div></div><footer";
   if (!markup.includes(insertionPoint)) throw new Error("Home theme insertion point is missing");
   const homeMarkup = markup.replace(insertionPoint, `</footer></div><!----><!----><!----></div>${starHome}</div></div><!--[--><!--]--></div></div><footer`);
-  return <><div id="app" dangerouslySetInnerHTML={{ __html: homeMarkup }} /><ClientEnhancements starMarkup={starMarkup} /></>;
+  const bootstrap = `(${bootstrapHomeBackground.toString()})(${JSON.stringify(homeBackgroundVideo.src)},${JSON.stringify(homeBackgroundVideo.poster)},(${canPlayBackgroundVideoIn.toString()}),${JSON.stringify(inlineVideoAttributes)});`;
+  return <><div id="app" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: homeMarkup }} /><script dangerouslySetInnerHTML={{ __html: bootstrap }} /><ClientEnhancements starMarkup={starMarkup} /></>;
 }

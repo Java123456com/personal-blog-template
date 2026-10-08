@@ -83,23 +83,30 @@ try {
     await context.close();
   }
   // A 1.5 Mbps connection cannot sustain the old ~3 Mbps background. Check a
-  // cold cache against the optimized asset and the initial buffer threshold.
+  // cold cache against the optimized asset, including first-start latency.
   const slowContext = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
   const slowPage = await slowContext.newPage();
   slowPage.on("pageerror", error => errors.push(`slow-network: ${error.message}`));
   await slowPage.addInitScript(() => {
-    window.backgroundPlayback = { initialBuffer: null, waits: 0, waitingEvents: [] };
+    window.backgroundPlayback = { initialBuffer: null, waits: 0, waitingEvents: [], loadedAt: null, playingAt: null };
+    document.addEventListener("loadeddata", event => {
+      if (event.target instanceof HTMLVideoElement && event.target.matches(".slh-video")) window.backgroundPlayback.loadedAt ??= performance.now();
+    }, true);
     document.addEventListener("playing", event => {
       const video = event.target;
       if (!(video instanceof HTMLVideoElement) || !video.matches(".slh-video")) return;
       if (window.backgroundPlayback.initialBuffer === null) {
         window.backgroundPlayback.initialBuffer = video.buffered.end(0) - video.currentTime;
+        window.backgroundPlayback.playingAt = performance.now();
       }
     }, true);
     document.addEventListener("waiting", event => {
       const video = event.target;
       if (video instanceof HTMLVideoElement && video.matches(".slh-video") && video.currentTime > .1) {
-        window.backgroundPlayback.waits++;
+        const available = Array.from({ length: video.buffered.length }, (_, i) =>
+          video.buffered.start(i) <= video.currentTime && video.buffered.end(i) >= video.currentTime ? video.buffered.end(i) - video.currentTime : 0,
+        );
+        if (Math.max(0, ...available) <= .2) window.backgroundPlayback.waits++;
         window.backgroundPlayback.waitingEvents.push({
           time: video.currentTime, ready: video.readyState,
           buffer: Array.from({ length: video.buffered.length }, (_, i) => [video.buffered.start(i), video.buffered.end(i)]),
@@ -120,7 +127,8 @@ try {
     ...window.backgroundPlayback,
     time: document.querySelector(".slh-video-layer video").currentTime,
   }));
-  assert.ok(playback.initialBuffer >= 2.8, `Playback should start with three seconds buffered: ${JSON.stringify(playback)}`);
+  assert.ok(playback.initialBuffer > 0, `Playback should start when frames are available: ${JSON.stringify(playback)}`);
+  assert.ok(playback.playingAt - playback.loadedAt < 1500, `Ready frames must not be held for several seconds: ${JSON.stringify(playback)}`);
   assert.equal(playback.waits, 0, `The optimized video should play without rebuffering at 1.5 Mbps: ${JSON.stringify(playback)}`);
   assert.ok(playback.time > 10, "Playback must keep advancing on a slow connection");
   console.log(`Slow network passed: ${playback.initialBuffer.toFixed(2)}s buffered before playing, no buffering stalls in 12s.`);

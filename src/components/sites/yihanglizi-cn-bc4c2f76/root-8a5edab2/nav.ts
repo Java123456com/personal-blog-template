@@ -1,7 +1,7 @@
+import { createBackgroundMusic, type MusicState } from "@/lib/background-music";
 import dipperStates from "./dipper-states.json";
 import zodiacStates from "./zodiac-states.json";
-import { mountCosmicGalaxy } from "./cosmic-galaxy";
-import { canPlayBackgroundVideo, inlineVideoAttributes, manageBackgroundVideo } from "@/lib/background-video";
+import { canPlayBackgroundVideo, homeBackgroundVideo, inlineVideoAttributes, manageBackgroundVideo } from "@/lib/background-video";
 
 const links: ReadonlyArray<readonly [string, string]> = [
   ["首页", "/"],
@@ -68,7 +68,17 @@ function paintGalaxy(container: HTMLElement) {
   };
   updateClock();
   const clockInterval = window.setInterval(updateClock, 1000);
-  const disposeCosmic = mountCosmicGalaxy(container);
+  // The below-the-fold WebGL scene must not delay the hero or sound controls.
+  let cancelled = false;
+  let disposeCosmic = () => {};
+  const galaxyObserver = new IntersectionObserver(entries => {
+    if (!entries.some(entry => entry.intersectionRatio >= .5)) return;
+    galaxyObserver.disconnect();
+    void import("./cosmic-galaxy").then(({ mountCosmicGalaxy }) => {
+      if (!cancelled) disposeCosmic = mountCosmicGalaxy(container);
+    }).catch(error => console.warn("Galaxy could not be loaded", error));
+  }, { threshold: .5 });
+  galaxyObserver.observe(canvas);
   const buttons=container.querySelectorAll<HTMLButtonElement>(".slh-btn");
   const scrollGalaxy=()=>container.querySelector(".slh-nav")?.scrollIntoView({behavior:"smooth"});
   const scrollGame=()=>container.querySelector(".slh-tech")?.scrollIntoView({behavior:"smooth"});
@@ -209,7 +219,7 @@ function paintGalaxy(container: HTMLElement) {
   const toggleZodiacSound=()=>{wheelMuted=!wheelMuted;zodiacSound?.classList.toggle("off",wheelMuted);if(zodiacSound){zodiacSound.title=wheelMuted?"开启轮盘音效":"关闭轮盘音效";const icon=zodiacSound.querySelector("span");if(icon)icon.textContent=wheelMuted?"🔇":"🔊";}if(!wheelMuted)playZodiacTone("triangle",784,.1,.06);};
   spin?.addEventListener("click",turn);
   zodiacSound?.addEventListener("click",toggleZodiacSound);
-  return ()=>{window.clearInterval(clockInterval);disposeCosmic();window.cancelAnimationFrame(wheelFrame);window.clearTimeout(pointerTimer);void zodiacAudioContext?.close();dipperSwap++;dipperAnimation?.cancel();buttons[0]?.removeEventListener("click",scrollGalaxy);buttons[1]?.removeEventListener("click",scrollGame);dipperListeners.forEach(fn=>fn());zodiacListeners.forEach(fn=>fn());spin?.removeEventListener("click",turn);zodiacSound?.removeEventListener("click",toggleZodiacSound);};
+  return ()=>{window.clearInterval(clockInterval);cancelled=true;galaxyObserver.disconnect();disposeCosmic();window.cancelAnimationFrame(wheelFrame);window.clearTimeout(pointerTimer);void zodiacAudioContext?.close();dipperSwap++;dipperAnimation?.cancel();buttons[0]?.removeEventListener("click",scrollGalaxy);buttons[1]?.removeEventListener("click",scrollGame);dipperListeners.forEach(fn=>fn());zodiacListeners.forEach(fn=>fn());spin?.removeEventListener("click",turn);zodiacSound?.removeEventListener("click",toggleZodiacSound);};
 }
 
 export function enhanceNav(root: HTMLElement, starMarkup: string) {
@@ -289,7 +299,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
       video.disableRemotePlayback = true;
       for (const [name, value] of Object.entries(inlineVideoAttributes)) video.setAttribute(name, value);
       video.poster = "/media/starlight-orbit-poster.jpg";
-      video.src = "/media/starlight-orbit.mp4";
+      video.src = homeBackgroundVideo.src;
       layer.append(video);
     }
     // React's development remount can leave the existing video in the layer.
@@ -357,29 +367,36 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   let soundVolume=Number.isFinite(storedVolume)?Math.min(100,Math.max(0,storedVolume)):100;
   document.documentElement.dataset.soundEffects=effects?"on":"off";
   document.documentElement.dataset.soundVolume=String(soundVolume/100);
-  const audio = new Audio("/sites/yihanglizi-cn-bc4c2f76/root-8a5edab2/audio/bgm.mp3");
-  audio.loop = true; audio.volume = soundVolume/100;
-  document.documentElement.dataset.backgroundMusic=music?"loading":"off";
-  const markMusicPlaying=()=>{document.documentElement.dataset.backgroundMusic="playing";};
-  const markMusicPaused=()=>{document.documentElement.dataset.backgroundMusic=music?"paused":"off";};
-  audio.addEventListener("playing",markMusicPlaying);
-  audio.addEventListener("pause",markMusicPaused);
-  const savedMusicTime=Number(window.sessionStorage.getItem("clone-background-music-time")||"0");
-  const restoreMusicTime=()=>{if(Number.isFinite(savedMusicTime)&&savedMusicTime>0&&Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=savedMusicTime%audio.duration;};
-  audio.addEventListener("loadedmetadata",restoreMusicTime,{once:true});
-  let resumeMusic:((event:Event)=>void)|null=null;
-  const tryPlayMusic=()=>{
-    if(!music)return;
-    void audio.play().catch(()=>{
-      if(resumeMusic)return;
-      resumeMusic=()=>{resumeMusic=null;if(music)void audio.play().catch(()=>{});};
-      document.addEventListener("pointerdown",resumeMusic,{once:true});
-    });
+  let musicState: MusicState = "off";
+  const updateMusicRow = () => {
+    const button = sound?.querySelectorAll<HTMLButtonElement>(".st-row")[1];
+    if (!button) return;
+    button.setAttribute("data-background-music-toggle", "");
+    const labels = { off: "OFF", loading: "加载中", playing: soundVolume === 0 ? "已静音" : "播放中", paused: "点击播放", blocked: "点击播放", error: "点击重试" };
+    button.classList.toggle("on", music);
+    button.setAttribute("aria-pressed", String(music));
+    const label = button.querySelector(".st-row-state");
+    if (label) label.textContent = labels[musicState];
   };
-  const saveMusicProgress=()=>{if(Number.isFinite(audio.currentTime))window.sessionStorage.setItem("clone-background-music-time",String(audio.currentTime));};
-  audio.addEventListener("timeupdate",saveMusicProgress);
-  window.addEventListener("beforeunload",saveMusicProgress);
-  if(music)tryPlayMusic();
+  const backgroundMusic = createBackgroundMusic({
+    src: "/media/background-music.m4a",
+    enabled: music,
+    volume: soundVolume / 100,
+    resumeAt: Number(window.sessionStorage.getItem("clone-background-music-time") || "0"),
+    onState: state => {
+      musicState = state;
+      document.documentElement.dataset.backgroundMusic = state;
+      updateMusicRow();
+    },
+  });
+  const audio = backgroundMusic.audio;
+  const saveMusicProgress = () => {
+    if (audio.readyState >= HTMLMediaElement.HAVE_METADATA && Number.isFinite(audio.currentTime)) {
+      window.sessionStorage.setItem("clone-background-music-time", String(audio.currentTime));
+    }
+  };
+  audio.addEventListener("timeupdate", saveMusicProgress);
+  window.addEventListener("beforeunload", saveMusicProgress);
   let audioContext: AudioContext | null = null;
   const playTone=(type:OscillatorType,from:number,to:number,duration:number,level:number,delay=0)=>{
     audioContext??=new AudioContext();
@@ -425,8 +442,34 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
     const panel=document.createElement("div");panel.className="st-panel";panel.setAttribute("data-v-316b056f","");
     panel.innerHTML=`<div data-v-316b056f class="st-title">声音设置</div><button data-v-316b056f class="st-row ${effects?"on":""}"><span data-v-316b056f class="st-row-ico">🔔</span><span data-v-316b056f class="st-row-label">交互音效</span><span data-v-316b056f class="st-row-state">${effects?"ON":"OFF"}</span></button><button data-v-316b056f class="st-row ${music?"on":""}"><span data-v-316b056f class="st-row-ico">🎶</span><span data-v-316b056f class="st-row-label">背景音乐</span><span data-v-316b056f class="st-row-state">${music?"ON":"OFF"}</span></button><div data-v-316b056f class="st-vol"><span data-v-316b056f class="st-vol-ico">🔊</span><input data-v-316b056f class="st-range" type="range" min="0" max="100" step="1" aria-label="音量 ${soundVolume}%" value="${soundVolume}"><span data-v-316b056f class="st-vol-num">${soundVolume}</span></div><div data-v-316b056f class="st-tip">音乐状态与播放进度会跨页面保持</div>`;
     sound.append(panel);
-    panel.querySelectorAll<HTMLButtonElement>(".st-row").forEach((button,index)=>button.addEventListener("click",()=>{if(index===0){effects=!effects;window.localStorage.setItem("clone-sound-effects",effects?"on":"off");document.documentElement.dataset.soundEffects=effects?"on":"off";}else {music=!music;window.localStorage.setItem("clone-background-music",music?"on":"off");if(music)tryPlayMusic();else {saveMusicProgress();audio.pause();}}const on=index===0?effects:music;button.classList.toggle("on",on);button.querySelector(".st-row-state")!.textContent=on?"ON":"OFF";}));
-    panel.querySelector<HTMLInputElement>(".st-range")?.addEventListener("input",e=>{soundVolume=Number((e.target as HTMLInputElement).value);panel.querySelector(".st-vol-num")!.textContent=String(soundVolume);audio.volume=soundVolume/100;document.documentElement.dataset.soundVolume=String(soundVolume/100);window.localStorage.setItem("clone-sound-volume",String(soundVolume));});
+    updateMusicRow();
+    panel.querySelectorAll<HTMLButtonElement>(".st-row").forEach((button, index) => button.addEventListener("click", () => {
+      if (index === 0) {
+        effects = !effects;
+        window.localStorage.setItem("clone-sound-effects", effects ? "on" : "off");
+        document.documentElement.dataset.soundEffects = effects ? "on" : "off";
+        button.classList.toggle("on", effects);
+        button.querySelector(".st-row-state")!.textContent = effects ? "ON" : "OFF";
+      } else if (music && ["blocked", "paused", "error"].includes(musicState)) {
+        backgroundMusic.play();
+      } else {
+        music = !music;
+        window.localStorage.setItem("clone-background-music", music ? "on" : "off");
+        if (!music) saveMusicProgress();
+        backgroundMusic.setEnabled(music);
+        updateMusicRow();
+      }
+    }));
+    panel.querySelector<HTMLInputElement>(".st-range")?.addEventListener("input", event => {
+      const range = event.target as HTMLInputElement;
+      soundVolume = Number(range.value);
+      range.setAttribute("aria-label", "音量 " + soundVolume + "%");
+      panel.querySelector(".st-vol-num")!.textContent = String(soundVolume);
+      audio.volume = soundVolume / 100;
+      document.documentElement.dataset.soundVolume = String(soundVolume / 100);
+      window.localStorage.setItem("clone-sound-volume", String(soundVolume));
+      updateMusicRow();
+    });
   };
   soundButton?.addEventListener("click",toggleSound);
   document.addEventListener("pointerdown",closePanelsOnOutsidePointer,true);
@@ -531,5 +574,5 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   searchButton?.addEventListener("click",openSearch);
   const keydown=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch();}if(e.key==="Escape"){closeBlogMenu();closeThemePanel();closeSoundPanel();closeSearch();}};
   document.addEventListener("keydown",keydown);
-  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer,true);document.removeEventListener("visibilitychange",syncOrbitPlayback);if(resumeMusic)document.removeEventListener("pointerdown",resumeMusic);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);audio.removeEventListener("playing",markMusicPlaying);audio.removeEventListener("pause",markMusicPaused);saveMusicProgress();audio.pause();orbitPlayback?.dispose();void audioContext?.close();closeBlogMenu();blogPanelTitle.remove();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
+  return ()=>{navButton?.removeEventListener("click",toggleTheme);soundButton?.removeEventListener("click",toggleSound);burger?.removeEventListener("click",toggleMobile);blogMenu?.removeEventListener("click",toggleBlogMenu);searchButton?.removeEventListener("click",openSearch);if(searchButton){if(searchButtonLabel===null)searchButton.removeAttribute("aria-label");else searchButton.setAttribute("aria-label",searchButtonLabel);}if(searchButtonPlaceholder&&searchButtonPlaceholderText!==null)searchButtonPlaceholder.textContent=searchButtonPlaceholderText;document.removeEventListener("keydown",keydown);document.removeEventListener("click",clickTone);document.removeEventListener("pointerdown",closePanelsOnOutsidePointer,true);document.removeEventListener("visibilitychange",syncOrbitPlayback);window.removeEventListener("beforeunload",saveMusicProgress);audio.removeEventListener("timeupdate",saveMusicProgress);saveMusicProgress();backgroundMusic.dispose();orbitPlayback?.dispose();void audioContext?.close();closeBlogMenu();blogPanelTitle.remove();closeThemePanel();closeSoundPanel();closeSearch();mobile?.remove();if(createdStar)star?.remove();disposeGalaxy();};
 }
