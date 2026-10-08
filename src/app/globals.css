@@ -64,6 +64,8 @@ html[data-doc-theme=starry]{
   --vp-c-text-1:#e6ecff;--vp-c-text-2:#b4c0df;--vp-c-text-3:#8290b5;--vp-c-divider:rgba(126,184,255,.16)
 }
 html[data-doc-theme=cyber] body{background:#080705;background-image:linear-gradient(rgba(255,174,26,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,174,26,.028) 1px,transparent 1px);background-size:26px 26px;background-attachment:fixed}
+html[data-doc-theme=cyber] .wasteland .rain-canvas{opacity:.52!important;filter:drop-shadow(0 0 2px rgba(255,176,0,.2))}
+@media(max-width:960px){html[data-doc-theme=cyber] .wasteland .rain-canvas{opacity:.34!important}}
 html[data-doc-theme=starry] body{background:#05060e}
 html[data-doc-theme=cyber] .doc-bg{background:radial-gradient(circle at 75% 10%,rgba(255,102,20,.13),transparent 27%),radial-gradient(circle at 12% 22%,rgba(255,196,52,.1),transparent 28%),#080705!important}
 html[data-doc-theme=starry] .doc-bg{background:#05060e!important}

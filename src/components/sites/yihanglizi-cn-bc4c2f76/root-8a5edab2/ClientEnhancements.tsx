@@ -13,6 +13,8 @@ const feedLines = [
 ];
 
 function enhanceTerminal(root: HTMLElement) {
+  const browser = window as Window & { __stopCyberRain?: () => void };
+  browser.__stopCyberRain?.();
   const feed = root.querySelector<HTMLElement>(".terminal-feed");
   if (feed) feed.innerHTML = feedLines.map(([prompt, text]) => `<div ${scope} class="feed-line"><span ${scope} class="feed-prompt">${prompt === "> " ? "&gt; " : "= "}</span><span ${scope} class="feed-text">${text}</span></div>`).join("");
   const command = root.querySelector<HTMLElement>(".ph-cmd");
@@ -54,8 +56,18 @@ function enhanceTerminal(root: HTMLElement) {
         if (++tick % 4) return;
         ctx.fillStyle = "rgba(10,8,5,.12)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.font = "13px monospace";
-        drops.forEach((d, i) => { ctx.fillStyle = `rgba(255,176,0,${.1 + Math.random() * .16})`; ctx.fillText("01{}[]<>/;"[Math.floor(Math.random() * 10)], i * 25, d * 16); drops[i] = d * 16 > canvas.height && Math.random() > .965 ? 0 : d + .4; });
+        const glyphs = "01{}[]<>/;:+-*=XYZ";
+        drops.forEach((d, i) => {
+          for (let trail = 0; trail < 12; trail++) {
+            const fade = 1 - trail / 12;
+            const y = (d * 16 - trail * 16 + canvas.height) % canvas.height;
+            ctx.fillStyle = `rgba(255,176,0,${(.08 + Math.random() * .34) * fade * fade})`;
+            ctx.fillText(glyphs[(i * 5 + trail * 7 + tick) % glyphs.length], i * 25, y);
+          }
+          drops[i] = d * 16 > canvas.height && Math.random() > .965 ? 0 : d + .4;
+        });
       };
+      canvas.dataset.rainReady = "enhanced";
       draw();
     }
   }
