@@ -243,7 +243,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .life-timeline__hero-video { display: none; }
+  video.life-timeline__hero-video { display: none; }
   .life-timeline__sort button,
   .life-timeline__write,
   .life-timeline__image img,

@@ -1,6 +1,7 @@
 import dipperStates from "./dipper-states.json";
 import zodiacStates from "./zodiac-states.json";
 import { mountCosmicGalaxy } from "./cosmic-galaxy";
+import { canPlayBackgroundVideo, inlineVideoAttributes } from "@/lib/background-video";
 
 const links: ReadonlyArray<readonly [string, string]> = [
   ["首页", "/"],
@@ -252,12 +253,44 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
   const themeStorageKey = "clone-site-theme";
   const themeDefaultKey = "clone-site-theme-default";
   const themeDefaultVersion = "starry-default-v2";
-  const orbitVideoMarkup = '<video class="slh-video" muted loop playsinline preload="auto" disablepictureinpicture><source src="/media/starlight-orbit.mp4" type="video/mp4"></video>';
+  const orbitPosterMarkup = '<img class="slh-video slh-video-poster" src="/media/starlight-orbit-poster.jpg" alt="">';
   if (window.localStorage.getItem(themeDefaultKey) !== themeDefaultVersion) {
     window.localStorage.setItem(themeStorageKey, "星空极光");
     window.localStorage.setItem(themeDefaultKey, themeDefaultVersion);
   }
   let themeChoice = window.localStorage.getItem(themeStorageKey) || "星空极光";
+  const syncOrbitPlayback = () => {
+    const layer = star?.querySelector<HTMLElement>(".slh-video-layer");
+    if (!layer) return;
+    let video = layer.querySelector<HTMLVideoElement>("video.slh-video");
+    // Never expose an autoplaying video to Baidu before the compatibility check.
+    if (!canPlayBackgroundVideo()) {
+      if (video) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+        video.remove();
+      }
+      return;
+    }
+    if (document.hidden || themeChoice !== "星空极光") { video?.pause(); return; }
+    if (!video) {
+      video = document.createElement("video");
+      video.className = "slh-video";
+      video.muted = true;
+      video.defaultMuted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      video.disablePictureInPicture = true;
+      video.disableRemotePlayback = true;
+      for (const [name, value] of Object.entries(inlineVideoAttributes)) video.setAttribute(name, value);
+      video.poster = "/media/starlight-orbit-poster.jpg";
+      video.src = "/media/starlight-orbit.mp4";
+      layer.append(video);
+    }
+    void video.play().catch(() => {});
+  };
   const selectTheme = (name: string) => {
     themeChoice = name;
     window.localStorage.setItem(themeStorageKey, name);
@@ -276,7 +309,7 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
         const videoLayer=document.createElement("div");
         videoLayer.className="slh-video-layer";
         videoLayer.setAttribute("aria-hidden","true");
-        videoLayer.innerHTML=orbitVideoMarkup;
+        videoLayer.innerHTML=orbitPosterMarkup;
         star.prepend(videoLayer);
         appContent.append(star);createdStar=true;
       }
@@ -288,21 +321,11 @@ export function enhanceNav(root: HTMLElement, starMarkup: string) {
       galaxyReady = false;
     }
     if (star) star.style.display = starry ? "" : "none";
-    const activeVideo = star?.querySelector("video");
-    if (activeVideo) {
-      if (starry && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) void activeVideo.play().catch(() => {});
-      else activeVideo.pause();
-    }
+    syncOrbitPlayback();
     closeThemePanel();
     window.scrollTo({top:0,behavior:"instant"});
   };
   selectTheme(themeChoice);
-  const syncOrbitPlayback = () => {
-    const video = star?.querySelector<HTMLVideoElement>(".slh-video");
-    if (!video) return;
-    if (!document.hidden && themeChoice === "星空极光" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) void video.play().catch(() => {});
-    else video.pause();
-  };
   document.addEventListener("visibilitychange", syncOrbitPlayback);
   const toggleTheme = () => {
     if (!nav) return;

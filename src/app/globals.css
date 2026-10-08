@@ -104,9 +104,9 @@ html[data-doc-theme] .clone-search-foot{border-color:var(--clone-border);color:v
 /* 星空极光首页：用户提供的星际轨道视频作为整页的沉浸式底图。 */
 html[data-doc-theme=starry] .slh{position:relative;isolation:isolate;background:transparent!important}
 html[data-doc-theme=starry] .slh-video-layer{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#070b1d}
-html[data-doc-theme=starry] .slh-video{width:100%;height:100%;display:block;object-fit:cover;object-position:center;opacity:.68;filter:saturate(1.02) contrast(1.03) brightness(.84);transform:translateZ(0);backface-visibility:hidden}
+html[data-doc-theme=starry] .slh-video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center;opacity:.68;filter:saturate(1.02) contrast(1.03) brightness(.84);transform:translateZ(0);backface-visibility:hidden}
 html[data-doc-theme=starry] .slh-video-layer:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,6,22,.34),rgba(5,9,29,.18) 42%,rgba(4,8,25,.44)),radial-gradient(ellipse at 50% 30%,transparent 0%,rgba(5,8,28,.18) 84%)}
-@media (prefers-reduced-motion:reduce){html[data-doc-theme=starry] .slh-video{display:none}}
+@media (prefers-reduced-motion:reduce){html[data-doc-theme=starry] video.slh-video{display:none}}
 .quest-grid[data-v-fcc15a3a]>.quest-card:last-of-type:nth-of-type(odd){grid-column:1/-1}
 
 /* One wide content measure for both home themes and document routes. */

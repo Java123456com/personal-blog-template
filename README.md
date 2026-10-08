@@ -65,6 +65,12 @@ images:
 
 技术文章地址为 `/moments/tech/<slug>/`。搜索索引包括标题、标签、摘要和正文。草稿不会生成网页或进入搜索；公开 GitHub 仓库中的草稿源文件仍可被仓库访客读取。
 
+## 背景视频兼容
+
+首页、技术和生活页先显示背景封面图，再启用视频。百度 App / 百度浏览器，以及开启系统「减少动态效果」的设备使用静态封面，避免内置播放器覆盖网页；主题切换、菜单、搜索和星空交互仍可使用。其他浏览器保留静音内联背景视频。
+
+运行 `node scripts/verify-background-video.mjs` 检查背景兼容逻辑。该检查在 Chrome 中模拟百度的浏览器标识；百度实际设备的播放器表现仍需在手机上验证。
+
 ## 自动发布
 
 当前仓库已公开，GitHub Pages 已启用，使用 GitHub Actions 发布 `codex/static` 分支。域名为 `blog.noova.cloud`；解析和 HTTPS 状态可在仓库 Settings → Pages 中查看。

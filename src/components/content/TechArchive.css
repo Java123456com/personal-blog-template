@@ -99,7 +99,7 @@
   .tech-archive__stats i { height: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tech-archive__hero-video { display: none; }
+  video.tech-archive__hero-video { display: none; }
   .tech-archive__orb { animation: none; }
   .tech-archive__card { transition: none; }
 }

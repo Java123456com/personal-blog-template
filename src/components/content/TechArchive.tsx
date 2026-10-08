@@ -1,4 +1,5 @@
 import type { ContentEntry } from "@/lib/content/types";
+import BackgroundVideo from "./BackgroundVideo";
 import "./TechArchive.css";
 
 function publishedDate(entry: ContentEntry): string {
@@ -25,18 +26,11 @@ export default function TechArchive({ entries }: { entries: ContentEntry[] }) {
   return (
     <main className="tech-archive">
       <header className="tech-archive__hero">
-        <video
+        <BackgroundVideo
           className="tech-archive__hero-video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
+          src="/sites/yihanglizi-cn-bc4c2f76/moments-tech-e3a2705e/videos/tech.mp4"
           poster="/sites/yihanglizi-cn-bc4c2f76/shared/videos/tech-hero-frame.png"
-          aria-hidden="true"
-        >
-          <source src="/sites/yihanglizi-cn-bc4c2f76/moments-tech-e3a2705e/videos/tech.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="tech-archive__hero-overlay" aria-hidden="true" />
         <div className="tech-archive__hero-orbs" aria-hidden="true">
           <span className="tech-archive__orb tech-archive__orb--one" />
